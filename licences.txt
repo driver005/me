@@ -1,0 +1,5 @@
+/nebula [Nebula skybox 16k] https://sketchfab.com/3d-models/nebula-skybox-16k-0d1e380993a842e6a0111f09c5cb6bdc
+/deep_space [Deep Space skybox] https://sketchfab.com/3d-models/deep-space-skybox-2d87bae35cff40598c859f2163b4b3b0
+/space_nebula [FREE - SkyBox Space Nebula] https://sketchfab.com/3d-models/free-skybox-space-nebula-fa5c19c4f7cc4525a24b99425bd520c8
+
+https://quaternius.com/
