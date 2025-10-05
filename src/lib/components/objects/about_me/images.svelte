@@ -1,14 +1,14 @@
 <script lang="ts">
   import { T } from '@threlte/core'
-  import { DoubleSide, MathUtils } from 'three'
+  import { DoubleSide } from 'three'
   import { ImageMaterial, Suspense } from '@threlte/extras'
   import * as THREE from 'three'
 
-  const IMAGE_CURVE = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 10, 0),
-    new THREE.Vector3(-10, 0, 0),
-    new THREE.Vector3(0, -10, 0)
-  ]);
+  let {
+    start = 0
+  }: {
+    start?: number
+  } = $props();
 
   const urls_list: string[][] = [
     [
@@ -23,56 +23,60 @@
     ],
   ]
 
-  const cellSize = 1.2
+  const size = 10;
+  const cell_size = size + 3;
+
   const numCols = urls_list[0].length
   const numRows = urls_list.length
-  const offsetX = ((numCols - 1) * cellSize) / 2
-  const offsetY = ((numRows - 1) * cellSize) / 2
+  const offsetX = ((numCols - 1) * cell_size) / 2
+  const offsetY = ((numRows - 1) * cell_size) / 2
 
-  let {
-    start = 0
-  }: {
-    start?: number
-  } = $props();
+  const Start = 60;
+  const End = -60;
 
+  let groupPosition = $derived.by(() => {
+    return [-20, Start + (End - Start) * start, -5] as [number, number, number]
+  });
 
-// Derived position based on start
-  const position = $derived.by(() => {
-    const p = IMAGE_CURVE.getPointAt(start)
-    return [p.x, p.y, p.z] as [number, number, number]
-  })
+  // const IMAGE_CURVE = new THREE.CatmullRomCurve3([
+  //   new THREE.Vector3(-30, -40, 0),
+  //   new THREE.Vector3(-30, 0, 0),
+  //   new THREE.Vector3(-30, 40, 0)
+  // ]);
 
-  // Derived rotation based on start
-  const rotation = $derived.by(() => {
-    let tangent = new THREE.Vector3(0, -1, 0);
-    console.log("tangent:", tangent);
-    let up = new THREE.Vector3(1, 0, 0)
-    let right = new THREE.Vector3().crossVectors(up, tangent).normalize()
-    console.log("right:", right);
-    let correctedUp = new THREE.Vector3().crossVectors(tangent, right).normalize()
-    console.log("correctedUp:", correctedUp);
+// // Derived position based on start
+//   const position = $derived.by(() => {
+//     const p = IMAGE_CURVE.getPointAt(start);
+//     return [p.x, p.y, p.z] as [number, number, number]
+//   })
 
-    let m = new THREE.Matrix4().makeBasis(right, correctedUp, tangent)
-    console.log("m:", m);
-    let euler = new THREE.Euler().setFromRotationMatrix(m, 'XYZ')
-    console.log("euler:",correctedUp);
-    return [euler.x, euler.y, euler.z] as [number, number, number]
-  })
+//   // Derived rotation based on start
+//   const rotation = $derived.by(() => {
+//     let tangent = IMAGE_CURVE.getPointAt(start).normalize();
+//      // Use a fixed global up vector
+//     const worldUp = new THREE.Vector3(0, 1, 0);
+//     let right = new THREE.Vector3().crossVectors(worldUp, tangent).normalize();
+//     let correctedUp = new THREE.Vector3().crossVectors(tangent, right).normalize();
+
+//     let m = new THREE.Matrix4().makeBasis(right, correctedUp, tangent);
+//     let euler = new THREE.Euler().setFromRotationMatrix(m, 'XYZ');
+//     return [euler.x, euler.y, euler.z] as [number, number, number]
+//   })
 </script>
 
-<T.Group position={position} rotation={rotation}>
+<T.Group position={groupPosition} rotation={[-THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(90)]}>
   <Suspense>
     {#each urls_list as row, rowIndex}
       {#each row as url, colIndex}
         <T.Mesh
           position={[
-            colIndex * cellSize - offsetX,
-            -(rowIndex * cellSize) + offsetY,
+            colIndex * cell_size - offsetX,
+            -(rowIndex * cell_size) + offsetY + colIndex * (start * 10),
             0
           ]}
         >
-          <T.PlaneGeometry args={[1, 1]} />
-          <ImageMaterial url={url} side={DoubleSide} transparent />
+          <T.PlaneGeometry args={[size, size]} />
+          <ImageMaterial url={url} side={DoubleSide} transparent radius={0.8} />
         </T.Mesh>
       {/each}
     {/each}

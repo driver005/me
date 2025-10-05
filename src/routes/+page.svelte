@@ -1,11 +1,10 @@
 <script lang="ts">
   import CanvasPortal from "$lib/components/canvas/portal.svelte";
   import DevHelper from "$lib/components/dev/helper.svelte";
-	import DeepSpace from "$lib/components/skybox/deepspace.svelte";
-	import { Project } from "@threlte/theatre";
-	import Intro from "$lib/components/sceens/intro.svelte";
-	import { Grid } from "@threlte/extras";
+	import Sceens from "$lib/components/sceens/default.svelte";
+	import { Grid, PerfMonitor } from "@threlte/extras";
   import camera_1 from "$lib/sequences/camera_1.json"
+	import Deepspace from "$lib/components/skybox/deepspace.svelte";
 
   // Toggle between Studio and Theatre in development
   let helper: "Studio" | "Theatre" = "Theatre";
@@ -19,10 +18,12 @@
 
 <CanvasPortal>
   <DevHelper {helper} >
-      <Project name="Demo" config={{state: camera_1}}>
-        <Intro />
-      </Project>
-      <DeepSpace />
+    <PerfMonitor
+      anchorX={'left'}
+      logsPerSecond={30}
+    />
+      <Sceens />
+      <Deepspace />
       <Grid
         sectionColor="#ff3e00"
         sectionThickness={1}

@@ -7,7 +7,7 @@
 
   // config
   const Start = 10;
-  const End = -30;
+  const End = -37.5;
   let fade_thresholde = 0.1;
   let movement_thresholde = 0.2;
 
@@ -71,7 +71,7 @@
           />
         </T.Mesh>      
         <HTML
-          position={[-20, 0, 0]}
+          position={[-30, 0, 0]}
           transform
           style={`opacity: ${opacity}`}
           oncreate={() => {
