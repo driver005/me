@@ -30,40 +30,32 @@ export const ME_CURVE_TARGET = new THREE.CatmullRomCurve3([
 ]);
 
 
-// LIFE IN
+// LIFE
 
-export const LIFE_IN_CURVE_CAMERA = new THREE.CatmullRomCurve3([
+export const LIFE_CURVE_CAMERA = new THREE.CatmullRomCurve3([
   STARTING_POSITION,
   new THREE.Vector3(0, 50, 20),
+  LIFE_END.clone().add(new THREE.Vector3(0, 2, -4))
 ]);
-
-export const LIFE_IN_CURVE_TARGET = new THREE.CatmullRomCurve3([
+console.log(LIFE_END.clone().add(new THREE.Vector3(0, 2, -4)))
+export const LIFE_CURVE_TARGET = new THREE.CatmullRomCurve3([
   new THREE.Vector3(0, 0, 0),
   new THREE.Vector3(0, 0, 20),
-]);
-
-// LIFE OUT
-
-export const LIFE_OUT_CURVE_CAMERA = new THREE.CatmullRomCurve3([
-  new THREE.Vector3(0, 50, 20),
-  new THREE.Vector3(0, 2, 36),
-]);
-
-export const LIFE_OUT_CURVE_TARGET = new THREE.CatmullRomCurve3([
-  new THREE.Vector3(0, 0, 20),
-  new THREE.Vector3(0, 0, 40),
+  LIFE_END,
 ]);
 
 // PROJECT
 
 export const PROJECT_IN_CURVE_CAMERA = offset_curve(new THREE.CatmullRomCurve3([
   STARTING_POSITION,
-  new THREE.Vector3(20, 50, 40),
+  new THREE.Vector3(0, 30, 40),
+  new THREE.Vector3(20, 50, 80),
 ]), LIFE_END);
 
 export const PROJECT_IN_CURVE_TARGET = offset_curve(new THREE.CatmullRomCurve3([
   new THREE.Vector3(0, 0, 0),
-  new THREE.Vector3(20, 0, 40),
+  new THREE.Vector3(0, 40, 80),
+  new THREE.Vector3(20, 0, 80),
 ]), LIFE_END);
 
 const CAMERA_HEIGHT = 50;
@@ -97,6 +89,15 @@ export const PROJECT_ROTATE_TARGET = offset_curve(
   PROJECT_OFFSET
 );
 
+export const PROJECT_OUT_CURVE_CAMERA = offset_curve(new THREE.CatmullRomCurve3([
+  startCamera,
+  new THREE.Vector3(-20, 50, 30),
+]), PROJECT_OFFSET);
+
+export const PROJECT_OUT_CURVE_TARGET = offset_curve(new THREE.CatmullRomCurve3([
+  startTarget,
+  new THREE.Vector3(-40, 0, 30),
+]), PROJECT_OFFSET);
 
 
 export function move_camera({

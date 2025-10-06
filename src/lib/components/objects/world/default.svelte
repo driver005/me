@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { T } from "@threlte/core";
 	import World from "$lib/components/objects/world/world.svelte";
-
-
+	import { camera_sections_state } from "$lib/stores/camera";
 </script>
 
-<T.Group>
-  <World />
-</T.Group>
+{#if $camera_sections_state.life > 0 && $camera_sections_state.life != 1}
+  <T.Group>
+    <World />
+  </T.Group>
+{/if}

@@ -10,6 +10,6 @@
 <Project name="PERSONAL" config={{state: PERSONAL}}>
   <Common />
   <Intro />
-  <!-- <Life /> -->
+  <Life />
   <Projects />
 </Project>

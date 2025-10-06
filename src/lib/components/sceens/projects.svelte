@@ -9,6 +9,7 @@
   import { writable } from "svelte/store";
 	import { camera_sections_state } from "$lib/stores/camera";
 	import { Tween } from "svelte/motion";
+	import Title from "$lib/components/objects/projects/title.svelte";
 
   const URL = "https://example.com";
   const iframeWidth = writable(0);
@@ -55,7 +56,7 @@
     new Tween(0, { duration: DURATION, delay: DELAY }),
   ])
 
-  const unsubscribePositions = camera_sections_state.subscribe((current) => {
+  const unsubscribeCameraPositions = camera_sections_state.subscribe((current) => {
     if (current.project_in > 0 && current.project_rotate === 0) {
       $dynamic_values[0].set(1);
       console.log("success")
@@ -102,12 +103,13 @@
   });
 
   onDestroy(() => {
-    unsubscribePositions();
+    unsubscribeCameraPositions();
   });
   
 </script>
 
 <Sheet name="Project">
+  <Title />
   {#each static_values as iframe, index}
     {#if $dynamic_values[index].current > 0}
     <T.Mesh

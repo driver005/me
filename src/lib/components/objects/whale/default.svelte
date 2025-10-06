@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { SheetObject } from "@threlte/theatre";
   import Whale from '$lib/components/models/whale.svelte'
-  import { LIFE_CURVE, PROJECT_ONE_CURVE, PROJECT_TWO_CURVE, PROJECT_THREE_CURVE, PROJECT_FOUR_CURVE, PROJECT_OUT_CURVE, PROJECT_IN_CURVE } from './curves'
+  import { LIFE_CURVE, PROJECT_ONE_CURVE, PROJECT_TWO_CURVE, PROJECT_THREE_CURVE, PROJECT_FOUR_CURVE, PROJECT_OUT_CURVE, PROJECT_IN_CURVE, PROJECT_ONE_CURVE_TRANSITION, PROJECT_TWO_CURVE_TRANSITION, PROJECTT_THREE_CURVE_TRANSITION, PROJECTT_FOUR_CURVE_TRANSITION } from './curves'
 	import { Float } from "@threlte/extras";
   import * as THREE from 'three'
 	import { whale_section_type, whale_sections_state, type WHALE_CURVE_TYPE, type WHALE_SECTIONS } from "$lib/stores/whale";
@@ -70,6 +70,30 @@
         move_whale({
           point_whale: PROJECT_IN_CURVE.getPointAt(current.project_in)
         })
+        break;
+
+      case "PROJECT_ROTATE": 
+        if (current.project_rotate > 0 && current.project_rotate <= 0.25) {
+          let rotate = THREE.MathUtils.clamp(current.project_rotate  / 0.25, 0, 1);
+          move_whale({
+            point_whale: PROJECT_ONE_CURVE_TRANSITION.getPointAt(rotate)
+          })
+        } else if (current.project_rotate > 0.25 && current.project_rotate <= 0.5) {
+          let rotate = THREE.MathUtils.clamp((current.project_rotate - 0.25)  / 0.25, 0, 1);
+          move_whale({
+            point_whale: PROJECT_TWO_CURVE_TRANSITION.getPointAt(rotate)
+          })
+        } else if (current.project_rotate > 0.5 && current.project_rotate <= 0.75) {
+          let rotate = THREE.MathUtils.clamp((current.project_rotate - 0.5)  / 0.25, 0, 1);
+          move_whale({
+            point_whale: PROJECTT_THREE_CURVE_TRANSITION.getPointAt(rotate)
+          })
+        } else if (current.project_rotate > 0.75 && current.project_rotate <= 1) {
+          let rotate = THREE.MathUtils.clamp((current.project_rotate - 0.75)  / 0.25, 0, 1);
+          move_whale({
+            point_whale: PROJECTT_FOUR_CURVE_TRANSITION.getPointAt(rotate)
+          })
+        }
         break;
       case "PROJECT_OUT":
         move_whale({

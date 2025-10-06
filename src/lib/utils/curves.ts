@@ -148,7 +148,6 @@ export function create_rounded_corner({
   segmentsPerCorner = 4,
   center = new THREE.Vector3(0, 0, 0),
   rotation = new THREE.Euler(0, 0, 0),
-  end_point = new THREE.Vector3(0, 0, 0),
   flipX = false,
   flipZ = false,
 }: {
@@ -159,7 +158,6 @@ export function create_rounded_corner({
   segmentsPerCorner?: number;
   center?: THREE.Vector3;
   rotation?: THREE.Euler;
-  end_point?: THREE.Vector3;
   flipX?: boolean;
   flipZ?: boolean;
 }) {
@@ -186,8 +184,9 @@ export function create_rounded_corner({
     flipMulZ,
   );
 
-  // Add explicit end point at (0,0,0)
-  local.push(end_point);
+  const flipWidht = flipX ? -width : width;
+  const flipHeight = flipZ ? -height : height;
+  local.push(new THREE.Vector3(flipWidht, 0, flipHeight));
 
   // Apply rotation + translation
   const quat = new THREE.Quaternion().setFromEuler(rotation);
