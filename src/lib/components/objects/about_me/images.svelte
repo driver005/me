@@ -64,7 +64,7 @@
 //   })
 </script>
 
-<T.Group position={groupPosition} rotation={[-THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(90)]}>
+<T.Group  name={"About Me Images"} position={groupPosition} rotation={[-THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(90)]}>
   <Suspense>
     {#each urls_list as row, rowIndex}
       {#each row as url, colIndex}

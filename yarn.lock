@@ -929,6 +929,11 @@
     mitt "^3.0.1"
     yoga-layout "^3.2.1"
 
+"@threlte/rapier@^3.1.5":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@threlte/rapier/-/rapier-3.1.5.tgz#16867acba347022a94833bfd5f56b68a71249aa2"
+  integrity sha512-TTciG0T4wGVVm0tkI34PkpejkjGzbtr5JtGLg+DK8qJEmSQ0308DkRntJKRAE2EYs/msn6XuXonxlkcXqwMNyA==
+
 "@threlte/studio@^0.1.9":
   version "0.1.9"
   resolved "https://registry.yarnpkg.com/@threlte/studio/-/studio-0.1.9.tgz#62a0e6fddc12a9eb18c39ef99fd346bd9812e7f0"

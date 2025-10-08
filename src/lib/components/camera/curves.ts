@@ -1,4 +1,4 @@
-import { LIFE_END, PROJECT_OFFSET, PROJECT_SCEEN_HEIGHT, PROJECT_SCEEN_WIDHT } from "$lib/consts";
+import { LIFE_END, PROJECT_OFFSET, PROJECT_SCEEN_HEIGHT, PROJECT_SCEEN_WIDHT, SKILL_OFFSET } from "$lib/consts";
 import { offset_curve } from "$lib/utils/curves";
 import type { CameraControlsRef } from "@threlte/extras";
 import * as THREE from "three";
@@ -89,15 +89,15 @@ export const PROJECT_ROTATE_TARGET = offset_curve(
   PROJECT_OFFSET
 );
 
-export const PROJECT_OUT_CURVE_CAMERA = offset_curve(new THREE.CatmullRomCurve3([
-  startCamera,
-  new THREE.Vector3(-20, 50, 30),
-]), PROJECT_OFFSET);
+export const PROJECT_OUT_CURVE_CAMERA = new THREE.CatmullRomCurve3([
+  startCamera.clone().add(PROJECT_OFFSET),
+  SKILL_OFFSET.clone().add(new THREE.Vector3(0, 50, 0)),
+]);
 
-export const PROJECT_OUT_CURVE_TARGET = offset_curve(new THREE.CatmullRomCurve3([
-  startTarget,
-  new THREE.Vector3(-40, 0, 30),
-]), PROJECT_OFFSET);
+export const PROJECT_OUT_CURVE_TARGET = new THREE.CatmullRomCurve3([
+  startTarget.clone().add(PROJECT_OFFSET),
+  SKILL_OFFSET,
+]);
 
 
 export function move_camera({

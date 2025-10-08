@@ -5,7 +5,7 @@
 </script>
 
 {#if $camera_sections_state.life > 0 && $camera_sections_state.life != 1}
-  <T.Group>
+  <T.Group name={"My Life"}>
     <World />
   </T.Group>
 {/if}

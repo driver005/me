@@ -32,26 +32,28 @@
 </script>
 
 {#if $opacity.current > 0 && $opacity.current != 1}
-<T.Mesh position={position} rotation={[0, Math.PI, 0]}>
-  <Text3DGeometry
-    text="My Projects"
-    size={2}
-    depth={0.5}
-    bevelEnabled
-    bevelOffset={0}
-    bevelSize={0.15}
-    bevelThickness={0.10}
-    bevelSegments={20} 
-    curveSegments={12}
-    smooth={0.1}
-    />
-    <T.MeshStandardMaterial
-    color="var(--color-primary)"
-    toneMapped={false}
-    metalness={1.0}
-    roughness={0.1}
-    opacity={$opacity.current}
-    transparent={true}
-    />
-</T.Mesh>   
+  <T.Group name={"My Projects"}>
+    <T.Mesh position={position} rotation={[0, Math.PI, 0]}>
+      <Text3DGeometry
+        text="My Projects"
+        size={2}
+        depth={0.5}
+        bevelEnabled
+        bevelOffset={0}
+        bevelSize={0.15}
+        bevelThickness={0.10}
+        bevelSegments={20} 
+        curveSegments={12}
+        smooth={0.1}
+      />
+      <T.MeshStandardMaterial
+        color="var(--color-primary)"
+        toneMapped={false}
+        metalness={1.0}
+        roughness={0.1}
+        opacity={$opacity.current}
+      transparent={true}
+      />
+    </T.Mesh>   
+  </T.Group>
 {/if}

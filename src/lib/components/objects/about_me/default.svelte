@@ -41,53 +41,55 @@
 </script>
 
 <SheetObject key="About Me" props={{ start: 0 }} onchange={({start}) => change(start)}>
-  {#snippet children()}
-  <T.Group position={groupPosition}>
-    <Align rotation={[0, THREE.MathUtils.degToRad(90), 0]}>
-      {#snippet children({ align })}
-        <T.Mesh position={[10, 0, 0]}>
-          <Text3DGeometry
-            text="About ME"
-            size={2}
-            depth={0.5}
-            bevelEnabled
-            bevelOffset={0}
-            bevelSize={0.15}
-            bevelThickness={0.10}
-            bevelSegments={20} 
-            curveSegments={12}
-            smooth={0.1}
-            oncreate={() => {
-              align()
-            }}
-          />
-          <T.MeshStandardMaterial
-            color="var(--color-primary)"
-            toneMapped={false}
-            metalness={1.0}
-            roughness={0.1}
-            opacity={opacity}
-            transparent={true}
-          />
-        </T.Mesh>      
-        <HTML
-          position={[-30, 0, 0]}
-          transform
-          style={`opacity: ${opacity}`}
-          oncreate={() => {
-            align()
-          }}
-        >
-          <div class="bg-indigo-500 rounded-xl shadow-lg p-6">
-            <h1 class="text-white text-3xl font-bold mb-4">Die Über-Mich-Seite im Lebenslauf</h1>
-            <p class="text-white mb-2">Ich bin ein kreativer Entwickler</p>
-            <p class="text-white mb-2">Leidenschaftlich für 3D & interaktive Erfahrungen</p>
-            <p class="text-white">Ich baue immersive Web-Erlebnisse</p>
-          </div>
-        </HTML>
-        {/snippet}
-      </Align>
-    </T.Group>
-    <Images start={transform_images} />
+  <T.Group name={"About Me"}>
+    {#snippet children()}
+      <T.Group name={"About Me Text"} position={groupPosition}>
+        <Align rotation={[0, THREE.MathUtils.degToRad(90), 0]}>
+          {#snippet children({ align })}
+            <T.Mesh position={[10, 0, 0]}>
+              <Text3DGeometry
+                text="About ME"
+                size={2}
+                depth={0.5}
+                bevelEnabled
+                bevelOffset={0}
+                bevelSize={0.15}
+                bevelThickness={0.10}
+                bevelSegments={20} 
+                curveSegments={12}
+                smooth={0.1}
+                oncreate={() => {
+                  align()
+                }}
+              />
+              <T.MeshStandardMaterial
+                color="var(--color-primary)"
+                toneMapped={false}
+                metalness={1.0}
+                roughness={0.1}
+                opacity={opacity}
+                transparent={true}
+              />
+            </T.Mesh>      
+            <HTML
+              position={[-30, 0, 0]}
+              transform
+              style={`opacity: ${opacity}`}
+              oncreate={() => {
+                align()
+              }}
+            >
+              <div class="bg-indigo-500 rounded-xl shadow-lg p-6">
+                <h1 class="text-white text-3xl font-bold mb-4">Die Über-Mich-Seite im Lebenslauf</h1>
+                <p class="text-white mb-2">Ich bin ein kreativer Entwickler</p>
+                <p class="text-white mb-2">Leidenschaftlich für 3D & interaktive Erfahrungen</p>
+                <p class="text-white">Ich baue immersive Web-Erlebnisse</p>
+              </div>
+            </HTML>
+          {/snippet}
+        </Align>
+      </T.Group>
+      <Images start={transform_images} />
     {/snippet}
+  </T.Group>
 </SheetObject>

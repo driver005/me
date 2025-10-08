@@ -8,6 +8,7 @@
 	import { onDestroy } from "svelte";
 	import { writable } from "svelte/store";
 	import { camera_section_type, camera_sections_state, type CAMERA_CURVE_TYPE } from "$lib/stores/camera";
+	import { T } from "@threlte/core";
 
   const whale_position = writable(new THREE.Vector3(0, 0, 0));
 
@@ -137,10 +138,12 @@
   })}
 >
   {#snippet children()}
-    <Float
+    <T.Group name={"Whale"}>
+      <Float
       position={$whale_position.toArray()}
-    >
+      >
       <Whale />
     </Float>
+  </T.Group>
   {/snippet}
 </SheetObject>

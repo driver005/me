@@ -5,6 +5,7 @@
 	import { Grid, PerfMonitor } from "@threlte/extras";
   import camera_1 from "$lib/sequences/camera_1.json"
 	import Deepspace from "$lib/components/skybox/deepspace.svelte";
+   import { World } from '@threlte/rapier'
 
   // Toggle between Studio and Theatre in development
   let helper: "Studio" | "Theatre" = "Theatre";
@@ -17,20 +18,24 @@
 {/if}
 
 <CanvasPortal>
+  <World>
   <DevHelper {helper} >
     <PerfMonitor
       anchorX={'left'}
       logsPerSecond={30}
     />
-      <Sceens />
-      <Deepspace />
-      <Grid
-        sectionColor="#ff3e00"
-        sectionThickness={1}
-        cellColor="#cccccc"
-        gridSize={40}
-      />
-  </DevHelper>
+
+
+  <Sceens />
+  <Deepspace />
+  <Grid
+  sectionColor="#ff3e00"
+  sectionThickness={1}
+  cellColor="#cccccc"
+  gridSize={40}
+  />
+</DevHelper>
+</World>
 </CanvasPortal>
 
 <style>

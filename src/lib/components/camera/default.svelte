@@ -36,11 +36,20 @@
         })
         break;
       case "LIFE":
+    
+        let angel_camera = 0;
+      if(current.life <= 0.5) {
+        angel_camera = THREE.MathUtils.lerp(Math.PI, Math.PI / 2, current.life / 0.5);
+      } else {
+        angel_camera = THREE.MathUtils.lerp(Math.PI / 2, Math.PI, (current.life - 0.5) / 0.5);
+      }
+
+
         move_camera({
           camera_ref, 
           point_camera: LIFE_CURVE_CAMERA.getPointAt(current.life), 
           point_target: LIFE_CURVE_TARGET.getPointAt(current.life),
-          angel_camera: THREE.MathUtils.degToRad(0),
+          angel_camera: angel_camera,
         })
         break;
       case "PROJECT_IN":
