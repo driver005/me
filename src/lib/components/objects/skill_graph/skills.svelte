@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { DO_NOT_ANIMATE, getCategoryColor, getCategoryEmissive, randomInt, type SKILL } from "$lib/utils/graph";
-  import { T, useTask, useThrelte } from "@threlte/core";
-  import { interactivity, Text } from "@threlte/extras";
+  import { DO_NOT_ANIMATE, getCategoryColor, getCategoryEmissive, type SKILL } from "$lib/utils/graph";
+  import { T } from "@threlte/core";
+  import { Text } from "@threlte/extras";
   import { cubicOut } from "svelte/easing";
   import { Tween } from "svelte/motion";
   import { RigidBody, Collider } from "@threlte/rapier";
@@ -10,7 +10,6 @@
 
   let { skills, rigidBodies }: { skills: SKILL[], rigidBodies: Map<string, any> } = $props();
 
-  // Hover animation
   let hovered_skill: string = $state("");
   const pulse_scale = new Tween(1, { duration: 300, easing: cubicOut });
   

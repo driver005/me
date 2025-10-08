@@ -9,7 +9,7 @@
 	import { camera_sections_state } from "$lib/stores/camera";
 	import { Tween } from "svelte/motion";
 	import Title from "$lib/components/objects/projects/title.svelte";
-	import { RoundedPlaneGeometry } from "./html";
+	import { RoundedPlaneGeometry } from "$lib/utils/html";
 
   const URL = "https://example.com";
   const iframeWidth = writable(0);

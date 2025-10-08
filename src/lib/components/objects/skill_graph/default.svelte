@@ -38,26 +38,21 @@
   const { camera } = useThrelte();
   const cursor_world = new THREE.Vector3();
 
-  // Threlte interactivity: update pointer and raycaster
   interactivity({
     compute: (event, state) => {
       if (!camera.current) return;
 
-      // Update normalized pointer
       state.pointer.update((p) => {
         p.x = (event.clientX / window.innerWidth) * 2 - 1;
         p.y = -(event.clientY / window.innerHeight) * 2 + 1;
         return p;
       });
 
-      // Update the raycaster
       state.raycaster.setFromCamera(state.pointer.current, camera.current);
 
-      // Always project pointer onto a horizontal plane (Y = 0)
       const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
       const intersect = new THREE.Vector3();
       if (state.raycaster.ray.intersectPlane(plane, intersect)) {
-        // Update cursor_world every frame
         cursor_world.copy(intersect);
       }
     },
@@ -69,9 +64,7 @@
       if(id === DO_NOT_ANIMATE) return
       const pos = rb.translation();
 
-      // console.log("pos: ", pos)
       const current = new THREE.Vector3(pos.x, pos.y, pos.z);
-      // console.log("current: ", current)
       const target = targetPositions.get(id)!;
 
       // 1. Move toward target

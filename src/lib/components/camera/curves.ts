@@ -91,7 +91,7 @@ export const PROJECT_ROTATE_TARGET = offset_curve(
 
 export const PROJECT_OUT_CURVE_CAMERA = new THREE.CatmullRomCurve3([
   startCamera.clone().add(PROJECT_OFFSET),
-  SKILL_OFFSET.clone().add(new THREE.Vector3(0, 50, 0)),
+  SKILL_OFFSET.clone().add(new THREE.Vector3(0, 20, 0)),
 ]);
 
 export const PROJECT_OUT_CURVE_TARGET = new THREE.CatmullRomCurve3([

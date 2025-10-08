@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Sheet } from "@threlte/theatre";
-	import World from "$lib/components/objects/world/default.svelte";
+	import World from "$lib/components/objects/life/default.svelte";
 </script>
 
 <Sheet name="Life">

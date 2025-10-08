@@ -2,9 +2,9 @@
   import { T } from "@threlte/core";
 	import { Text } from "@threlte/extras";
 	import { Float32BufferAttribute } from "three";
-	import type { SYNERGY, SKILL } from "$lib/utils/graph";
+	import type { SYNERGY } from "$lib/utils/graph";
   import * as THREE from "three";
-	import { SKILL_OFFSET, SKILL_ROTATION_TEXT } from "$lib/consts";
+	import { SKILL_ROTATION_TEXT } from "$lib/consts";
 
   let {
     synergies,
@@ -20,7 +20,6 @@
   }
 
 </script>
-<!-- SYNERGY connections -->
   {#each synergies as synergy}
     {#if get_skill(synergy.from) && get_skill(synergy.to)}
       <T.LineSegments>
@@ -63,7 +62,7 @@
         />
         <T.Group position={[0, 0.7, 0]} rotation={SKILL_ROTATION_TEXT.toArray()}>
           <Text 
-            fontSize={0.18}
+            fontSize={0.2}
             color={synergy.color}
             text={synergy.name}
             anchorX="center"
