@@ -18,13 +18,22 @@
   }
 
   const time_int = time.map((val) => ({
-      from: parseInt(val.from.split(".")[1]),
-      until: parseInt(val.until.split(".")[1])
+      from: parseInt(val.from.includes(".") ? val.from.split(".")[1] : val.from),
+      until: val.until ? parseInt(val.until.includes(".") ? val.until.split(".")[1] : val.until) : null
     })
   )
 
+  const end_year_to_exclude = [
+    END_YEAR,
+    END_YEAR-1,
+    END_YEAR-2,
+  ]
+
   const contains_start_year = time_int.some(val => val.from === START_YEAR)
-  const contains_end_year = time_int.some(val => val.until === END_YEAR)
+  const contains_end_year = time_int.some(val =>
+    end_year_to_exclude.some((year) => year == val.from) ||
+    end_year_to_exclude.some((year) => year == val.until)
+  )
 
 </script>
 
@@ -39,20 +48,22 @@
       </div>
     {/if}
     {#each time as marker, index}
-      <div 
-        class="absolute h-full bg-blue-400 rounded-full" 
-        style={`left: ${getPosition(time_int[index].from)}%; width: ${getPosition(time_int[index].until) - getPosition(time_int[index].from)}%;`}
-      ></div>
+    {#if marker.until}
+        <div 
+          class="absolute h-full bg-blue-400 rounded-full" 
+          style={`left: ${getPosition(time_int[index].from)}%; width: ${getPosition(time_int[index].until!) - getPosition(time_int[index].from)}%;`}
+        ></div>
+        <div class={"absolute top-1/2 -translate-y-1/2"} style={`left: ${getPosition(time_int[index].until!)}%;`}>
+          <div class="w-3 h-3 rounded-full bg-blue-400 ring-4 ring-primary/20"></div>
+          <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm font-bold text-primary whitespace-nowrap">
+            {marker.until}
+          </div>
+        </div>
+      {/if}
       <div class={"absolute top-1/2 -translate-y-1/2"} style={`left: ${getPosition(time_int[index].from)}%;`}>
         <div class="w-3 h-3 rounded-full bg-blue-400 ring-4 ring-primary/20"></div>
         <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm font-bold text-primary whitespace-nowrap">
           {marker.from}
-        </div>
-      </div>
-      <div class={"absolute top-1/2 -translate-y-1/2"} style={`left: ${getPosition(time_int[index].until)}%;`}>
-        <div class="w-3 h-3 rounded-full bg-blue-400 ring-4 ring-primary/20"></div>
-        <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm font-bold text-primary whitespace-nowrap">
-          {marker.until}
         </div>
       </div>
     {/each}
