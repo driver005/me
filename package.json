@@ -51,6 +51,7 @@
 		"@threlte/studio": "^0.1.9",
 		"@threlte/theatre": "^3.0.7",
 		"@types/three": "^0.180.0",
-		"three": "^0.180.0"
+		"three": "^0.180.0",
+		"threlte-uikit": "^1.2.1"
 	}
 }

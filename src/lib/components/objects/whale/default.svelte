@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { SheetObject } from "@threlte/theatre";
   import Whale from '$lib/components/models/whale.svelte'
-  import { LIFE_CURVE, PROJECT_ONE_CURVE, PROJECT_TWO_CURVE, PROJECT_THREE_CURVE, PROJECT_FOUR_CURVE, PROJECT_OUT_CURVE, PROJECT_IN_CURVE, PROJECT_ONE_CURVE_TRANSITION, PROJECT_TWO_CURVE_TRANSITION, PROJECTT_THREE_CURVE_TRANSITION, PROJECTT_FOUR_CURVE_TRANSITION } from './curves'
+  import { LIFE_CURVE, PROJECT_ONE_CURVE, PROJECT_TWO_CURVE, PROJECT_THREE_CURVE, PROJECT_FOUR_CURVE, PROJECT_OUT_CURVE, PROJECT_IN_CURVE, PROJECT_ONE_CURVE_TRANSITION, PROJECT_TWO_CURVE_TRANSITION, PROJECTT_THREE_CURVE_TRANSITION, PROJECTT_FOUR_CURVE_TRANSITION, LIFE_IN_CURVE, LIFE_OUT_CURVE } from './curves'
 	import { Float } from "@threlte/extras";
   import * as THREE from 'three'
 	import { whale_section_type, whale_sections_state, type WHALE_CURVE_TYPE, type WHALE_SECTIONS } from "$lib/stores/whale";
@@ -9,19 +9,45 @@
 	import { writable } from "svelte/store";
 	import { camera_section_type, camera_sections_state, type CAMERA_CURVE_TYPE } from "$lib/stores/camera";
 	import { T } from "@threlte/core";
+	import { START } from "$lib/consts";
 
   const whale_position = writable(new THREE.Vector3(0, 0, 0));
+  const whale_rotation = writable(new THREE.Euler(0, 0, 0));
 
   function change(position: WHALE_SECTIONS) {
     whale_sections_state.set(position)
   }
 
+  function getRotationFromTangent(tangent: THREE.Vector3, up = new THREE.Vector3(0, 1, 0)) {
+    const matrix = new THREE.Matrix4().lookAt(
+      new THREE.Vector3(),
+      tangent.clone().normalize(),
+      up
+    );
+    const euler = new THREE.Euler().setFromRotationMatrix(matrix);
+
+    // 🔄 CORRECTIVE ROTATION: 
+    // If your whale is modeled facing +Z, but should move in tangent direction,
+    // then its "forward" is +Z, but lookAt makes +Z point TOWARD target.
+    // However, if it's moving backward, try rotating 180° around Y:
+    euler.y += Math.PI; // flip direction
+
+    return euler;
+  }
+
   function move_whale({
     point_whale,
+    rotation,
   }: {
     point_whale: THREE.Vector3,
+    rotation?: THREE.Euler,
   }) {
     whale_position.set(point_whale);
+
+    if(rotation) {
+      whale_rotation.set(rotation);
+    }
+    
   }
 
   let active_whale_section: WHALE_CURVE_TYPE = "Null";
@@ -37,27 +63,32 @@
     switch(active_whale_section) {
       case "LIFE":
         move_whale({
-          point_whale: LIFE_CURVE.getPointAt(current.life)
+          point_whale: LIFE_CURVE.getPointAt(current.life),
+          rotation: getRotationFromTangent(LIFE_CURVE.getTangentAt(current.life))
         })
         break;
       case "PROJECT_ONE":
         move_whale({
-          point_whale: PROJECT_ONE_CURVE.getPointAt(current.project_one)
+          point_whale: PROJECT_ONE_CURVE.getPointAt(current.project_one),
+          rotation: getRotationFromTangent(PROJECT_ONE_CURVE.getTangentAt(current.project_one))
         })
         break;
       case "PROJECT_TWO":
         move_whale({
-          point_whale: PROJECT_TWO_CURVE.getPointAt(current.project_two)
+          point_whale: PROJECT_TWO_CURVE.getPointAt(current.project_two),
+          rotation: getRotationFromTangent(PROJECT_TWO_CURVE.getTangentAt(current.project_two))
         })
         break;
       case "PROJECT_THREE":
         move_whale({
-          point_whale: PROJECT_THREE_CURVE.getPointAt(current.project_three)
+          point_whale: PROJECT_THREE_CURVE.getPointAt(current.project_three),
+          rotation: getRotationFromTangent(PROJECT_THREE_CURVE.getTangentAt(current.project_three))
         })
         break; 
       case "PROJECT_FOUR":
         move_whale({
-          point_whale: PROJECT_FOUR_CURVE.getPointAt(current.project_four)
+          point_whale: PROJECT_FOUR_CURVE.getPointAt(current.project_four),
+          rotation: getRotationFromTangent(PROJECT_FOUR_CURVE.getTangentAt(current.project_four))
         })
         break;
       case "Null":
@@ -67,9 +98,29 @@
 
   const unsubscribeCameraPositions = camera_sections_state.subscribe((current) => {
     switch(active_camera_section) {
+      case "START":
+        move_whale({
+          point_whale: START,
+        })
+      case "LIFE":
+        if (current.life > 0 && current.life <= 0.5) {
+          let rotate = THREE.MathUtils.clamp(current.life  / 0.5, 0, 1);
+          move_whale({
+            point_whale: LIFE_IN_CURVE.getPointAt(rotate),
+            rotation: getRotationFromTangent(LIFE_IN_CURVE.getTangentAt(rotate))
+          })
+        } else if (current.life > 0.5 && current.life <= 1) {
+          let rotate = THREE.MathUtils.clamp((current.life - 0.5)  / 0.5, 0, 1);
+          move_whale({
+            point_whale: LIFE_OUT_CURVE.getPointAt(rotate),
+            rotation: getRotationFromTangent(LIFE_OUT_CURVE.getTangentAt(rotate))
+          })
+        }
+        break;
       case "PROJECT_IN":
         move_whale({
-          point_whale: PROJECT_IN_CURVE.getPointAt(current.project_in)
+          point_whale: PROJECT_IN_CURVE.getPointAt(current.project_in),
+            rotation: getRotationFromTangent(LIFE_CURVE.getTangentAt(current.project_in))
         })
         break;
 
@@ -98,7 +149,8 @@
         break;
       case "PROJECT_OUT":
         move_whale({
-          point_whale: PROJECT_OUT_CURVE.getPointAt(current.project_out)
+          point_whale: PROJECT_OUT_CURVE.getPointAt(current.project_out), 
+          rotation: getRotationFromTangent(PROJECT_OUT_CURVE.getTangentAt(current.project_out))
         })
         break;
       case "Null":
@@ -141,6 +193,7 @@
     <T.Group name={"Whale"}>
       <Float
       position={$whale_position.toArray()}
+      rotation={$whale_rotation.toArray()}
       >
       <Whale />
     </Float>

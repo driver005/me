@@ -22,6 +22,7 @@
   <DevHelper {helper} >
     <PerfMonitor
       anchorX={'left'}
+      anchorY={"bottom"}
       logsPerSecond={30}
     />
 

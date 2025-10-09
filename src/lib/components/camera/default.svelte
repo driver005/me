@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { T } from "@threlte/core";
+  import { T, useThrelte } from "@threlte/core";
   import { CameraControls, type CameraControlsRef } from "@threlte/extras";
   import { SheetObject } from "@threlte/theatre";  
 	import { ME_CURVE_CAMERA, ME_CURVE_TARGET, move_camera, PROJECT_IN_CURVE_TARGET, PROJECT_IN_CURVE_CAMERA, STARTING_CURVE_CAMERA, PROJECT_ROTATE_CURVE_CAMERA, PROJECT_ROTATE_TARGET, PROJECT_OUT_CURVE_CAMERA, PROJECT_OUT_CURVE_TARGET, LIFE_CURVE_CAMERA, LIFE_CURVE_TARGET } from "./curves";
@@ -8,6 +8,8 @@
   import * as THREE from "three";
 
   export let camera_ref: CameraControlsRef | undefined = undefined;
+
+  const { size } = useThrelte();
   
   function change(position: CAMERA_SECTIONS) {
     camera_sections_state.set(position)
@@ -120,6 +122,7 @@
     <T.PerspectiveCamera makeDefault fov={50}>
       <CameraControls
         bind:ref={camera_ref}
+        aspect={$size.width / $size.height}
       />
     </T.PerspectiveCamera>
   {/snippet}

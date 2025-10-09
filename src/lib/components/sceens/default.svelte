@@ -6,6 +6,10 @@
 	import Projects from "./projects.svelte";
   import PERSONAL from "$lib/sequences/PERSONAL.json"
 	import Skills from "$lib/components/objects/skill_graph/default.svelte";
+	import { useThrelte } from "@threlte/core";
+	import { onMount } from "svelte";
+
+  const { size } = useThrelte();
 </script>
 
 <Project name="PERSONAL" config={{state: PERSONAL}}>

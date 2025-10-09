@@ -2,29 +2,51 @@
 	import { SheetObject } from "@threlte/theatre";
 	import Planet1 from "$lib/components/models/Planet_1.svelte";
 	import { Float, HTML } from "@threlte/extras";
-	import { T } from "@threlte/core";
+	import { T, useThrelte } from "@threlte/core";
 	import { RoundedPlaneGeometry } from "$lib/utils/html";
 	import Timeline from "./timeline.svelte";
 	import type { CONTENT } from "$lib/types/life";
 	import Carousel from "./carousel.svelte";
   import { onMount } from 'svelte';
+	import { writable } from "svelte/store";
+  import * as THREE from "three";
 
-  let iframeEl: HTMLIFrameElement | undefined = $state();
+  const width = writable(0);
+  const height = writable(0);
 
-  // scroll position
-  const scrollToY = 200;
-
-  function scrollIframe() {
-    const iframeWin = iframeEl?.parentElement;
-    if (iframeWin) {
-      console.log("test")
-      iframeWin.scrollTo({ top: scrollToY, behavior: 'smooth' });
-    }
-  }
+  const LIFE_SCEEN_WIDHT = 10
+  const LIFE_SCEEN_HIGHT = 10
 
   onMount(() => {
-    iframeEl?.addEventListener('load', scrollIframe);
+    const { renderer } = useThrelte();
+
+    const updatePixelSize = () => {
+      const fov = 50; 
+      const distance = 50; // distance from camera to object
+
+      // Get current renderer height (in drawing buffer pixels)
+      const size = new THREE.Vector2();
+      renderer.getSize(size);
+      const rendererHeight = size.y;
+
+      // Calculate visible height at given distance
+      const visibleHeight = 2 * distance * Math.tan(THREE.MathUtils.degToRad(fov / 2));
+
+      // Pixels per world unit
+      const pixelsPerUnit = rendererHeight / visibleHeight;
+
+      console.log('1 Three.js units ≈', pixelsPerUnit, 'pixels at distance', distance);
+
+      const scale = 1.9;
+
+      width.set((LIFE_SCEEN_WIDHT * scale) * pixelsPerUnit);
+      height.set((LIFE_SCEEN_HIGHT * scale) *  pixelsPerUnit);
+    };
+
+    updatePixelSize();
+    window.addEventListener("resize", updatePixelSize);
   });
+
 
   let {
     content
@@ -37,14 +59,37 @@
 <SheetObject key="World">
   {#snippet children()}
     {#each content as segment, index}
-      <T.Group position={[0, 0, 15*index+1]} rotation={[-Math.PI /2, 0,Math.PI /2 ]}>
-        <Planet1 />
+      <T.Group position={[0, 0, 15*(index+1)]} rotation={[-Math.PI /2, 0,Math.PI /2 ]}>
+        <T.Group name="planet" scale={[0.5, 0.5, 0.5]}>
+          <Planet1 />
+        </T.Group>
+        <T.LineSegments>
+          <T.BufferGeometry 
+            attributes={{
+              position: new THREE.Float32BufferAttribute(
+                new Float32Array([
+                  0, (index % 2 === 0 ? 1.5 : -1.5), 0,
+                  0, (index % 2 === 0 ? 5 : -5), 0 ,
+                ]),
+                3
+              )
+            }}
+          />
+          <T.LineBasicMaterial 
+            color={"#bdbdbd"} 
+            transparent 
+            opacity={1}
+            linewidth={3}
+          />
+        </T.LineSegments>
         <HTML
           transform
           occlude
-          position={[(segment.children ? 6 : 0), (index % 2 === 0 ? 15 : -15), 0]}
+          position={[0, (index % 2 === 0 ? 10 : -10), 0]}
         >
-          {@render internal(segment, index)}
+          <div style={segment.children ? `width: ${$width}px;` : `width: ${$width}px; height: ${$height}px;`}>
+            {@render internal(segment, index)}
+          </div>
         </HTML>
       </T.Group>
     {/each}
@@ -52,7 +97,7 @@
 </SheetObject>
 
 {#snippet internal(segment: CONTENT, index: number)}
-  <div class={`flex flex-col gap-2 bg-white p-2 ${segment.children ? "w-1/2" : ""}`}>
+  <div class="flex flex-col gap-2 bg-white p-2">
     {#if segment.image}
       <div class="relative flex w-full justify-center group">
         <img
@@ -111,7 +156,7 @@
       <Timeline time={segment.time} />
     {/if}
     {#if segment.children}
-      <div class="border rounded-full2 border-gray-300 mb-2"></div>
+      <div class="border rounded-full border-gray-300 mb-2"></div>
       <Carousel>
         {#each segment.children as child, index}
         <div class="w-full shrink-0 h-full">

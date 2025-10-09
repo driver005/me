@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PROJECT_OFFSET } from "$lib/consts";
 	import { camera_sections_state } from "$lib/stores/camera";
 	import { T } from "@threlte/core";
 	import { Text3DGeometry } from "@threlte/extras";
@@ -6,8 +7,8 @@
 	import { Tween } from "svelte/motion";
 	import { writable } from "svelte/store";
 
-  const Start = 150;
-  const End = 50;
+  const Start = PROJECT_OFFSET.z + 50;
+  const End = PROJECT_OFFSET.z - 50;
 
   let position: [number, number, number] = $state([0, 40, Start]);
 

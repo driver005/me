@@ -1,4 +1,4 @@
-import { LIFE_END, PROJECT_OFFSET, PROJECT_SCEEN_HEIGHT, PROJECT_SCEEN_WIDHT, SKILL_OFFSET } from "$lib/consts";
+import { LIFE_END, PROJECT_OFFSET, PROJECT_SCREEN_HEIGHT, PROJECT_SCREEN_WIDTH, SKILL_OFFSET } from "$lib/consts";
 import { offset_curve } from "$lib/utils/curves";
 import type { CameraControlsRef } from "@threlte/extras";
 import * as THREE from "three";
@@ -34,13 +34,12 @@ export const ME_CURVE_TARGET = new THREE.CatmullRomCurve3([
 
 export const LIFE_CURVE_CAMERA = new THREE.CatmullRomCurve3([
   STARTING_POSITION,
-  new THREE.Vector3(0, 50, 20),
+  new THREE.Vector3(0, 40, 30),
   LIFE_END.clone().add(new THREE.Vector3(0, 2, -4))
 ]);
-console.log(LIFE_END.clone().add(new THREE.Vector3(0, 2, -4)))
 export const LIFE_CURVE_TARGET = new THREE.CatmullRomCurve3([
   new THREE.Vector3(0, 0, 0),
-  new THREE.Vector3(0, 0, 20),
+  new THREE.Vector3(0, 0, 30),
   LIFE_END,
 ]);
 
@@ -59,8 +58,8 @@ export const PROJECT_IN_CURVE_TARGET = offset_curve(new THREE.CatmullRomCurve3([
 ]), LIFE_END);
 
 const CAMERA_HEIGHT = 50;
-const CENTER_WIDHT = PROJECT_SCEEN_WIDHT / 2;
-const CENTER_HEIGHT = PROJECT_SCEEN_HEIGHT / 2;
+const CENTER_WIDHT = PROJECT_SCREEN_WIDTH / 2;
+const CENTER_HEIGHT = PROJECT_SCREEN_HEIGHT / 2;
 const FACTOR = 20;
 // Maintain your start position
 const startCamera = new THREE.Vector3(CENTER_HEIGHT, CAMERA_HEIGHT, CENTER_WIDHT);

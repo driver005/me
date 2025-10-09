@@ -27,6 +27,7 @@
     END_YEAR,
     END_YEAR-1,
     END_YEAR-2,
+    END_YEAR-3,
   ]
 
   const contains_start_year = time_int.some(val => val.from === START_YEAR)

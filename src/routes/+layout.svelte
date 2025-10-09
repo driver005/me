@@ -37,4 +37,8 @@
     width: 100%;
     height: 100%;
   }
+
+  canvas {
+    pointer-events: none;
+  }
 </style>

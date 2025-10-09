@@ -43,7 +43,7 @@
   <div
     bind:this={container}
     class="flex transition-transform duration-500 ease-in-out"
-    style="transform: translateX(-{current * 100}%); w-1/2"
+    style="transform: translateX(-{current * 100}%);"
   >
     {@render children()}
   </div>

@@ -51,10 +51,9 @@
         {
           name: "teclab",
           href: "https://www.sfz-tuebingen.org/",
-          iframe: {
-            link: "https://www.sfz-tuebingen.org/",
-            widht: "400px",
-            height: "300px",
+          image: {
+            link: "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nprrlitGjP0LKInI_xY_nC2Ys9y7rO9nkonnQAUr0GTBZUOyhujPud1H8ZVjiJVpyz17QyBsLJ_7lz3rA4HM6qAh4fEzGFpvRm3y9UpFoVkxlQyB02G8AZjZbOd90-g9TZ3tYcs=s680-w680-h510-rw",
+            widht: "350px",
           },
           time: [
               {
@@ -67,7 +66,7 @@
           href: "https://kmz.kreis-tuebingen.de/Startseite.html",
           image: {
             link: "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nprrlitGjP0LKInI_xY_nC2Ys9y7rO9nkonnQAUr0GTBZUOyhujPud1H8ZVjiJVpyz17QyBsLJ_7lz3rA4HM6qAh4fEzGFpvRm3y9UpFoVkxlQyB02G8AZjZbOd90-g9TZ3tYcs=s680-w680-h510-rw",
-            widht: "400px",
+            widht: "350px",
           },
           time: [
             {
