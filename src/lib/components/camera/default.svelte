@@ -3,9 +3,11 @@
   import { CameraControls, type CameraControlsRef } from "@threlte/extras";
   import { SheetObject } from "@threlte/theatre";  
 	import { ME_CURVE_CAMERA, ME_CURVE_TARGET, move_camera, PROJECT_IN_CURVE_TARGET, PROJECT_IN_CURVE_CAMERA, STARTING_CURVE_CAMERA, PROJECT_ROTATE_CURVE_CAMERA, PROJECT_ROTATE_TARGET, PROJECT_OUT_CURVE_CAMERA, PROJECT_OUT_CURVE_TARGET, LIFE_CURVE_CAMERA, LIFE_CURVE_TARGET } from "./curves";
-  import { camera_section_type, camera_sections_state, type CAMERA_CURVE_TYPE, type CAMERA_SECTIONS } from "$lib/stores/camera"
+  import { camera_section_type, camera_sections_state} from "$lib/stores/camera"
+  import type { CAMERA_CURVE_TYPE, CAMERA_SECTIONS } from "$lib/types/camera"
 	import { onDestroy } from "svelte";
   import * as THREE from "three";
+	import { camera_souround, target_souround } from "$lib/utils/curves";
 
   export let camera_ref: CameraControlsRef | undefined = undefined;
 
@@ -39,19 +41,26 @@
         break;
       case "LIFE":
     
-        let angel_camera = 0;
-      if(current.life <= 0.5) {
-        angel_camera = THREE.MathUtils.lerp(Math.PI, Math.PI / 2, current.life / 0.5);
-      } else {
-        angel_camera = THREE.MathUtils.lerp(Math.PI / 2, Math.PI, (current.life - 0.5) / 0.5);
-      }
+      let angel_camera = 0;
+      // if(current.life <= 0.5) {
+      //   angel_camera = THREE.MathUtils.lerp(Math.PI, Math.PI / 2, current.life / 0.5);
+      // } else {
+      //   angel_camera = THREE.MathUtils.lerp(Math.PI / 2, Math.PI, (current.life - 0.5) / 0.5);
+      // }
 
+
+      //   move_camera({
+      //     camera_ref, 
+      //     point_camera: LIFE_CURVE_CAMERA.getPointAt(current.life), 
+      //     point_target: LIFE_CURVE_TARGET.getPointAt(current.life),
+      //     angel_camera: angel_camera,
+      //   })
+      //   break;
 
         move_camera({
           camera_ref, 
-          point_camera: LIFE_CURVE_CAMERA.getPointAt(current.life), 
-          point_target: LIFE_CURVE_TARGET.getPointAt(current.life),
-          angel_camera: angel_camera,
+          point_camera: camera_souround(20, 5).getPointAt(current.life), 
+          point_target: target_souround(5).getPointAt(current.life)
         })
         break;
       case "PROJECT_IN":

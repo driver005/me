@@ -1,15 +1,5 @@
+import type { CAMERA_CURVE_TYPE, CAMERA_SECTIONS } from '$lib/types/camera';
 import { writable, derived } from 'svelte/store';
-
-
-export type CAMERA_CURVE_TYPE = "START" | "ME" | "LIFE" | "PROJECT_IN" | "PROJECT_ROTATE" | "PROJECT_OUT" | "Null";
-export type CAMERA_SECTIONS = {
-  start: number,
-  me: number,
-  life: number,
-  project_in: number,
-  project_rotate: number,
-  project_out: number
-};
 
 export const camera_sections_state = writable<CAMERA_SECTIONS>({
   start: 0,

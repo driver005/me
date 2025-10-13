@@ -6,5 +6,5 @@
 
 <Sheet name="Common">
   <Camera />
-  <Whale />
+  <!-- <Whale /> -->
 </Sheet>

@@ -14,8 +14,8 @@
 
 <Project name="PERSONAL" config={{state: PERSONAL}}>
   <Common />
-  <Intro />
   <Life />
+  <!-- <Intro />
   <Projects />
-  <Skills />
+  <Skills /> -->
 </Project>

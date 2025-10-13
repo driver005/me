@@ -4,10 +4,12 @@
   import { LIFE_CURVE, PROJECT_ONE_CURVE, PROJECT_TWO_CURVE, PROJECT_THREE_CURVE, PROJECT_FOUR_CURVE, PROJECT_OUT_CURVE, PROJECT_IN_CURVE, PROJECT_ONE_CURVE_TRANSITION, PROJECT_TWO_CURVE_TRANSITION, PROJECTT_THREE_CURVE_TRANSITION, PROJECTT_FOUR_CURVE_TRANSITION, LIFE_IN_CURVE, LIFE_OUT_CURVE } from './curves'
 	import { Float } from "@threlte/extras";
   import * as THREE from 'three'
-	import { whale_section_type, whale_sections_state, type WHALE_CURVE_TYPE, type WHALE_SECTIONS } from "$lib/stores/whale";
+	import { whale_section_type, whale_sections_state } from "$lib/stores/whale";
+  import type { WHALE_CURVE_TYPE, WHALE_SECTIONS } from "$lib/types/whale"
 	import { onDestroy } from "svelte";
 	import { writable } from "svelte/store";
-	import { camera_section_type, camera_sections_state, type CAMERA_CURVE_TYPE } from "$lib/stores/camera";
+	import { camera_section_type, camera_sections_state } from "$lib/stores/camera";
+  import type { CAMERA_CURVE_TYPE } from "$lib/types/camera"
 	import { T } from "@threlte/core";
 	import { START } from "$lib/consts";
 

@@ -1,51 +1,18 @@
 <script lang="ts">
 	import { SheetObject } from "@threlte/theatre";
-	import Planet1 from "$lib/components/models/Planet_1.svelte";
-	import { Float, HTML } from "@threlte/extras";
 	import { T, useThrelte } from "@threlte/core";
-	import { RoundedPlaneGeometry } from "$lib/utils/html";
 	import Timeline from "./timeline.svelte";
-	import type { CONTENT } from "$lib/types/life";
+	import type { CONTENT, CONTENT_TIME } from "$lib/types/life";
 	import Carousel from "./carousel.svelte";
-  import { onMount } from 'svelte';
-	import { writable } from "svelte/store";
   import * as THREE from "three";
+  import fragment_shader from '$lib/shader/image/fragment_shader.glsl?raw'
+  import vertex_shader from '$lib/shader/image/vertex_shader.glsl?raw'
+	import { camera_sections_state } from "$lib/stores/camera";
+	import { onDestroy } from "svelte";
+	import { header_content } from "$lib/stores/html";
+	import { Text } from "@threlte/extras";
 
-  const width = writable(0);
-  const height = writable(0);
-
-  const LIFE_SCEEN_WIDHT = 10
-  const LIFE_SCEEN_HIGHT = 10
-
-  onMount(() => {
-    const { renderer } = useThrelte();
-
-    const updatePixelSize = () => {
-      const fov = 50; 
-      const distance = 50; // distance from camera to object
-
-      // Get current renderer height (in drawing buffer pixels)
-      const size = new THREE.Vector2();
-      renderer.getSize(size);
-      const rendererHeight = size.y;
-
-      // Calculate visible height at given distance
-      const visibleHeight = 2 * distance * Math.tan(THREE.MathUtils.degToRad(fov / 2));
-
-      // Pixels per world unit
-      const pixelsPerUnit = rendererHeight / visibleHeight;
-
-      console.log('1 Three.js units ≈', pixelsPerUnit, 'pixels at distance', distance);
-
-      const scale = 1.9;
-
-      width.set((LIFE_SCEEN_WIDHT * scale) * pixelsPerUnit);
-      height.set((LIFE_SCEEN_HIGHT * scale) *  pixelsPerUnit);
-    };
-
-    updatePixelSize();
-    window.addEventListener("resize", updatePixelSize);
-  });
+  const SIZE = 3
 
 
   let {
@@ -54,11 +21,74 @@
     content: CONTENT[]
   } = $props()
 
+  const sections = 1 / (content.length + 1);
+
+  const unsubscribeCameraPositions = camera_sections_state.subscribe((current) => {
+    if(current.life >= (1-sections/2) || current.life <= sections/2) {
+      header_content.set({
+        info: "",
+        render: false
+      })
+
+      return;
+    }
+    content.forEach((val, index) => {
+      const pos = (sections*index)+sections/2;
+      if (current.life > pos && current.life <= pos+sections) {
+        header_content.set({
+          info: val.type,
+          text: val.text,
+          time: val.time,
+          render: true
+        })
+      }
+    })
+  })
+
+  onDestroy(() => {
+    unsubscribeCameraPositions()
+  })
 </script>
+
+
 
 <SheetObject key="World">
   {#snippet children()}
-    {#each content as segment, index}
+
+  <T.Mesh position={[0, 0, 0]}>
+    <T.BoxGeometry args={[10, 20, 10]} />
+    <T.MeshBasicMaterial color="#0a0a0a" />
+  </T.Mesh>
+  {#each content as segment}
+    <T.Mesh 
+      position={segment.position.toArray()} 
+      rotation={segment.rotation.toArray()} 
+    >
+      <Text
+        position={[
+          -(SIZE - 0.5)/2,
+          -(SIZE - 1.6)/2,
+          0.2
+        ]}
+        text={segment.name.text}
+        fontSize={0.15}
+        color={segment.name.color}
+        textAlign="center"
+      />
+      <T.PlaneGeometry args={[SIZE, SIZE-1]} />
+      <T.ShaderMaterial
+        fragmentShader={fragment_shader}
+        vertexShader={vertex_shader}
+        transparent={true}
+        uniforms={{
+          uTexture: { value: new THREE.TextureLoader().load(segment.image) },
+          uOffset: { value: new THREE.Vector2(0.0, 0.0) },
+          uAlpha: { value: 1.0 }
+        }}
+      />
+    </T.Mesh>
+  {/each}
+    <!-- {#each content as segment, index}
       <T.Group position={[0, 0, 15*(index+1)]} rotation={[-Math.PI /2, 0,Math.PI /2 ]}>
         <T.Group name="planet" scale={[0.5, 0.5, 0.5]}>
           <Planet1 />
@@ -92,7 +122,7 @@
           </div>
         </HTML>
       </T.Group>
-    {/each}
+    {/each} -->
   {/snippet}
 </SheetObject>
 
@@ -101,10 +131,9 @@
     {#if segment.image}
       <div class="relative flex w-full justify-center group">
         <img
-          alt={segment.name}
-          title={segment.name}
-          src={segment.image.link}
-          width={segment.image.widht}
+          alt={segment.name.text}
+          title={segment.name.text}
+          src={segment.image}
           class="block rounded-lg"
         />
         {#if segment.href}

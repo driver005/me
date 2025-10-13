@@ -18,7 +18,8 @@
   let { children }: { children: Snippet } = $props()
 </script>
 
-<div style="width:100vw; height:100vh; background:#0c0c14;">
+<div style="width:100vw; height:400vh; background:#0c0c14">
+<div style="width:100vw; height:100vh; background:#0c0c14; position: sticky; top: 0%; left: 0%;">
   <Canvas>
     <World autoStart>
 
@@ -44,4 +45,5 @@
       </Studio>
     </World>
   </Canvas>
+</div>
 </div>

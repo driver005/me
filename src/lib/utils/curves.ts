@@ -5,6 +5,59 @@ export function offset_curve(curve: THREE.CatmullRomCurve3, offset: THREE.Vector
   return new THREE.CatmullRomCurve3(offsetPoints);
 }
 
+export function image_souround(radius: number, height: number): { position: THREE.Vector3, rotation: THREE.Euler }[] {
+  const radius_difference = radius * 0.2;
+  return [
+    {
+      position: new THREE.Vector3(radius - (radius_difference * 0.25), height * 0.25, 0), // Ponit 2: right(0.25)
+      rotation: new THREE.Euler(0, Math.PI / 2, 0)
+    },
+    {
+      position: new THREE.Vector3(0, height * 0.5, -(radius - (radius_difference * 0.5))), // Ponit 3: bottom(0.5)
+      rotation: new THREE.Euler(-Math.PI, 0, -Math.PI)
+    },
+    {
+      position: new THREE.Vector3(-(radius - (radius_difference * 0.75)), height * 0.75, 0), // Ponit 2: left(0.75)
+      rotation: new THREE.Euler(0, -Math.PI / 2, 0)
+    },
+    {
+      position: new THREE.Vector3(0, height, radius - radius_difference), // Ponit 2: bottom(1)
+      rotation: new THREE.Euler(0, 0, 0)
+    },
+  ]
+}
+
+export function camera_souround(radius: number, height: number): THREE.CatmullRomCurve3 {
+  const radius_difference = radius * 0.2;
+  return new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0, radius), // Ponit 1: bottom(radius: 1, height: 0) 
+    new THREE.Vector3(radius - (radius_difference * 0.25), height * 0.25, 0), // Ponit 2: right(0.25)
+    new THREE.Vector3(0, height * 0.5, -(radius - (radius_difference * 0.5))), // Ponit 3: bottom(0.5)
+    new THREE.Vector3(-(radius - (radius_difference * 0.75)), height * 0.75, 0), // Ponit 4: left(0.75)
+    new THREE.Vector3(0, height, radius - radius_difference), // Ponit 1: bottom(1)
+    new THREE.Vector3(radius - (radius_difference * 0.25), height * 1.25, 0), // Ponit 2: right(1.25)
+    new THREE.Vector3(0, height * 1.5, -(radius - (radius_difference * 0.5))), // Ponit 3: bottom(1.5)
+    new THREE.Vector3(-(radius - (radius_difference * 0.75)), height * 1.75, 0), // Ponit 4: left(1.75)
+    new THREE.Vector3(0, height * 2, radius - radius_difference), // Ponit 1: bottom(1)
+    new THREE.Vector3(radius - (radius_difference * 0.25), height * 2.5, 0), // Ponit 2: right(1.5)
+  ])
+}
+
+export function target_souround(height: number): THREE.CatmullRomCurve3 {
+  return new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0, 0), // Ponit 1: bottom(radius: 1, height: 0) 
+    new THREE.Vector3(0, height * 0.25, 0), // Ponit 2: right(0.25)
+    new THREE.Vector3(0, height * 0.5, 0), // Ponit 3: bottom(0.5)
+    new THREE.Vector3(0, height * 0.75, 0), // Ponit 2: left(0.75)
+    new THREE.Vector3(0, height, 0), // Ponit 2: bottom(1)
+    new THREE.Vector3(0, height * 1.25, 0), // Ponit 2: right(0.25)
+    new THREE.Vector3(0, height * 1.5, 0), // Ponit 3: bottom(0.5)
+    new THREE.Vector3(0, height * 1.75, 0), // Ponit 2: left(0.75)
+    new THREE.Vector3(0, height * 2, 0), // Ponit 2: bottom(1)
+    new THREE.Vector3(0, height * 2.5, 0), // Ponit 2: bottom(1)
+  ])
+}
+
 
 // Helper to generate quarter-circle arc
 function addCornerArc(
