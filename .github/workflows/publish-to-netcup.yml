@@ -45,6 +45,22 @@ jobs:
           unzip mautic.zip -d mautic_files
           rm mautic.zip
 
+      - name: 🟢 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, mysql, gd, simplexml, zip
+          tools: composer:v2
+
+      - name: 📦 Install Production Dependencies
+        working-directory: ./mautic_files
+        run: |
+          # Use --no-dev for a lean production build
+          composer install --no-dev --optimize-autoloader --no-interaction
+          
+          # Mautic 7 specifically needs these directories to exist
+          mkdir -p var/cache var/logs var/tmp
+
       - name: 🟢 Setup Node.js & Build Assets
         uses: actions/setup-node@v4
         with:
@@ -63,6 +79,7 @@ jobs:
           # Note: This requires PHP on the runner
           # If PHP is not on the runner, the 'npm run build' is often enough 
           # but 'composer generate-assets' is the gold standard.
+          composer generate-assets
           
           # Remove node_modules to keep the rsync transfer fast and small
           rm -rf node_modules
