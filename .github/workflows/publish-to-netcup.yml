@@ -70,5 +70,5 @@ jobs:
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
                     ./mautic_files/ \
-                    --rsync-path="${{ vars.REMOTE_DIR }}" \
+                    --rsync-path="${{ vars.REMOTE_DIR }}rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
