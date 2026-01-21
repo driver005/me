@@ -44,6 +44,21 @@ jobs:
           mkdir mautic_files
           unzip mautic.zip -d mautic_files
           rm mautic.zip
+
+      - name: 🟢 Setup Node.js & Build Assets
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: mautic_files/package-lock.json
+
+      - name: 🏗 Install NPM & Generate Assets
+        working-directory: ./mautic_files
+        run: |
+          npm ci --prefer-offline --no-audit
+          npm run build
+          # Remove node_modules after build to keep the upload small
+          rm -rf node_modules
       
       - name: 🧹 Clear target directory on Netcup
         env:
