@@ -60,7 +60,7 @@ jobs:
           sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
           
           # 3. Set executable permissions on the remote binary
-          sshpass -e ssh -o StrictHostKeyChecking=no  ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod 755 ${{ vars.REMOTE_DIR }}/rsync_static"
+          sshpass -e ssh -o StrictHostKeyChecking=no  ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod 755 ${{ vars.REMOTE_DIR }}rsync_static"
 
 
       - name:  📤 Deploy to Netcup via Rsync (Password Auth)
