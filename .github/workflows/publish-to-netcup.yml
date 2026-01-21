@@ -66,23 +66,66 @@ jobs:
           # Remove node_modules to keep the rsync transfer fast and small
           rm -rf node_modules
       
+      - name: 🔍 Check for Remote Binaries
+        id: check_remote
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          # Check if rsync and node already exist on Netcup
+          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ] && [ -d ~/opt/nodejs ]"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🏗 Build Static Rsync (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        run: |
+          sudo apt-get update && sudo apt install -y gcc gawk autoconf automake libssl-dev
+          RSYNC_TAR_URL=$(curl -s https://api.github.com/repos/RsyncProject/rsync/releases/latest | grep "browser_download_url.*tar.gz" | cut -d '"' -f 4 | head -n 1)
+          curl -L $RSYNC_TAR_URL -o rsync-src.tar.gz
+          tar -xzf rsync-src.tar.gz && cd rsync-*/
+          ./configure LDFLAGS="-static" && make -j$(nproc)
+          cp rsync ../rsync_static && cd ..
+
+      - name: 📥 Fetch Node.js LTS (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        run: |
+          LTS_VERSION=$(curl -s https://nodejs.org/dist/index.json | jq -r '.[] | select(.lts != false) | .version' | head -n 1)
+          curl -LO "https://nodejs.org/dist/${LTS_VERSION}/node-${LTS_VERSION}-linux-x64.tar.xz"
+          mkdir -p node_binary
+          tar -xvf "node-${LTS_VERSION}-linux-x64.tar.xz" -C node_binary --strip-components=1
+
+      - name: 📤 Push Binaries to ~/opt
+        if: steps.check_remote.outputs.exists == 'false'
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ~/opt/nodejs"
+          
+          # Use scp for the initial rsync binary bridge
+          sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/rsync_static
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod +x ~/opt/rsync_static"
+          
+          # Now use the new rsync to push Node
+          rsync -avz --delete ./node_binary/ --rsync-path="~/opt/rsync_static" ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/nodejs/
+
+      - name: ⚙️ Update Bash PATH
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
+            if ! grep -q 'opt/nodejs/bin' ~/.bashrc; then
+              echo 'export PATH=\"\$HOME/opt/nodejs/bin:\$HOME/opt/rsync_static:\$PATH\"' >> ~/.bashrc
+            fi
+          "
+
       - name: 🧹 Clear target directory on Netcup
         env:
           SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
           # 1. Ensure directory exists and is empty
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ${{ vars.REMOTE_DIR }} && rm -rf ${{ vars.REMOTE_DIR }}*"
-
-      - name: 🚀 Automate Rsync Setup & Sync
-        env:
-          SSHPASS: ${{ secrets.SSH_PASS }} 
-        run: |          
-          # 2. Push the binary to Netcup (using scp as a one-time bridge)
-          sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
-          
-          # 3. Set executable permissions on the remote binary
-          sshpass -e ssh -o StrictHostKeyChecking=no  ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod 755 ${{ vars.REMOTE_DIR }}rsync_static"
-
 
       - name:  📤 Deploy to Netcup via Rsync (Password Auth)
         env:
@@ -91,42 +134,5 @@ jobs:
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
                     ./mautic_files/ \
-                    --rsync-path="${{ vars.REMOTE_DIR }}rsync_static" \
+                    --rsync-path="~/opt/rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
-
-      - name: 📥 Fetch Latest Node.js LTS Binary
-        run: |
-          # Query the Node.js API for the latest LTS version
-          LTS_VERSION=$(curl -s https://nodejs.org/dist/index.json | jq -r '.[] | select(.lts != false) | .version' | head -n 1)
-          echo "LTS_VERSION=$LTS_VERSION" >> $GITHUB_ENV
-          
-          # Download the Linux x64 binary
-          curl -LO "https://nodejs.org/dist/${LTS_VERSION}/node-${LTS_VERSION}-linux-x64.tar.xz"
-          mkdir -p node_binary
-          tar -xvf "node-${LTS_VERSION}-linux-x64.tar.xz" -C node_binary --strip-components=1
-
-      - name: 📤 Upload Node.js to Netcup
-        env:
-          SSHPASS: ${{ secrets.SSH_PASS }}
-        run: |
-          # Create the remote directory and sync the binary
-          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ~/opt/nodejs"
-          
-          rsync -avz --delete \
-            -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
-            ./node_binary/ \
-            --rsync-path="~/rsync_static" \
-            ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/nodejs/
-
-      - name: ⚙️ Set Bash Environment Variables
-        env:
-          SSHPASS: ${{ secrets.SSH_PASS }}
-        run: |
-          # Append the PATH to .bashrc only if it's not already there
-          SET_PATH_CMD='export PATH="$HOME/opt/nodejs/bin:$PATH"'
-          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
-            if ! grep -q 'opt/nodejs/bin' ~/.bashrc; then
-              echo '$SET_PATH_CMD' >> ~/.bashrc
-              echo 'Node.js added to PATH'
-            fi
-          "
