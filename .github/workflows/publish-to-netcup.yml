@@ -31,11 +31,11 @@ jobs:
           SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
         run: |
           # 1. Ensure directory exists and is empty
-          sshpass -e ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ env.REMOTE_DIR }} && rm -rf ${{ env.REMOTE_DIR }}*"
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ vars.REMOTE_DIR }} && rm -rf ${{ vars.REMOTE_DIR }}*"
 
       - name: 📤 Deploy to Netcup via Rsync (Password Auth)
         env:
           SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
         run: |
           # The -e flag tells rsync to use sshpass for the ssh connection
-          rsync -avz -e "sshpass -e ssh -o StrictHostKeyChecking=no" ./mautic_files/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}
+          rsync -avz -e "sshpass -e ssh -o StrictHostKeyChecking=no" ./mautic_files/ ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
