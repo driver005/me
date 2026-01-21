@@ -20,20 +20,6 @@ jobs:
           sudo apt-get update
           sudo apt install -y gcc g++ gawk autoconf automake python3-cmarkgfm acl libacl1-dev attr libattr1-dev libxxhash-dev libzstd-dev liblz4-dev libssl-dev sshpass rsync
 
-      - name: 🏗 Build Latest Rsync from Source
-        run: |
-          # 1. Get latest release version from RsyncProject
-          RSYNC_TAR_URL=$(curl -s https://api.github.com/repos/RsyncProject/rsync/releases/latest | grep "browser_download_url.*tar.gz" | cut -d '"' -f 4 | head -n 1)
-          curl -L $RSYNC_TAR_URL -o rsync-src.tar.gz
-          
-          # 2. Extract and Compile statically
-          tar -xzf rsync-src.tar.gz
-          cd rsync-*/
-          ./configure LDFLAGS="-static"
-          make -j$(nproc)
-          cp rsync ../rsync_static
-          cd ..
-
       - name: Download Latest Mautic Production Build
         run: |
            git clone https://github.com/mautic/mautic.git mautic_files
