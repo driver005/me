@@ -1,20 +1,21 @@
 name: Download Mautic and Deploy to Netcup
 
 on:
-  workflow_dispatch: # Allows you to trigger this manually
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      REMOTE_DIR: /httpdocs/mautic/ # Adjust this path to your Netcup folder
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Download Latest Mautic Production Build
         run: |
-          # This command fetches the download URL for the latest .zip release asset
           LATEST_ZIP_URL=$(curl -s https://api.github.com/repos/mautic/mautic/releases/latest | grep "browser_download_url.*zip" | cut -d '"' -f 4 | head -n 1)
-          echo "Downloading from $LATEST_ZIP_URL"
           curl -L $LATEST_ZIP_URL -o mautic.zip
 
       - name: Unzip Mautic
@@ -23,18 +24,14 @@ jobs:
           unzip mautic.zip -d mautic_files
           rm mautic.zip
 
-      # === Set up SSH ===
-      - name: 🔐 Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: 🛠 Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: 🧹 Clear target directory on Manitu
+      - name: 🧹 Clear target directory on Netcup
         run: |
-          echo "==> Cleaning $REMOTE_DIR..."
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "rm -rf $REMOTE_DIR*"
+          sshpass -p "${{ secrets.SSH_PASS }}" ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "rm -rf ${{ env.REMOTE_DIR }}*"
 
-      - name: 📤 Deploy to Manitu via SCP
+      - name: 📤 Deploy to Netcup via Rsync (Password Auth)
         run: |
-          echo "==> Copying files to $REMOTE_DIR..."
-          rsync -avz ./mautic_files/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$REMOTE_DIR
+          # The -e flag tells rsync to use sshpass for the ssh connection
+          sshpass -p "${{ secrets.SSH_PASS }}" rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./mautic_files/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_DIR }}
