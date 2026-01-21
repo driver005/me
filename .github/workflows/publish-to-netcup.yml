@@ -15,6 +15,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: 🛠 Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc g++ make autoconf automake python3-pip libssl-dev sshpass rsync
+
+      - name: 🏗 Build Latest Rsync from Source
+        run: |
+          # 1. Get latest release version from RsyncProject
+          RSYNC_TAR_URL=$(curl -s https://api.github.com/repos/RsyncProject/rsync/releases/latest | grep "browser_download_url.*tar.gz" | cut -d '"' -f 4 | head -n 1)
+          curl -L $RSYNC_TAR_URL -o rsync-src.tar.gz
+          
+          # 2. Extract and Compile statically
+          tar -xzf rsync-src.tar.gz
+          cd rsync-*/
+          ./configure LDFLAGS="-static"
+          make -j$(nproc)
+          cp rsync ../rsync_static
+          cd ..
+
       - name: Download Latest Mautic Production Build
         run: |
           LATEST_ZIP_URL=$(curl -s https://api.github.com/repos/mautic/mautic/releases/latest | grep "browser_download_url.*zip" | cut -d '"' -f 4 | head -n 1)
@@ -25,10 +44,7 @@ jobs:
           mkdir mautic_files
           unzip mautic.zip -d mautic_files
           rm mautic.zip
-
-      - name: 🛠 Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y rsync sshpass
-
+      
       - name: 🧹 Clear target directory on Netcup
         env:
           SSHPASS: ${{ secrets.SSH_PASS }}
@@ -39,18 +55,12 @@ jobs:
       - name: 🚀 Automate Rsync Setup & Sync
         env:
           SSHPASS: ${{ secrets.SSH_PASS }} 
-        run: |
-          # Get latest Static Rsync binary URL (amd64/x86_64)
-          RSYNC_URL=$(curl -s https://api.github.com/repos/galeone/rsync-static/releases/latest | grep "browser_download_url.*x86_64" | cut -d '"' -f 4 | head -n 1)
-          
-          # 1. Download the static binary locally
-          curl -L $RSYNC_URL -o rsync_local
-          
+        run: |          
           # 2. Push the binary to Netcup (using scp as a one-time bridge)
-          sshpass -e scp -o StrictHostKeyChecking=no rsync_local ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+          sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
           
           # 3. Set executable permissions on the remote binary
-          sshpass -e ssh -o StrictHostKeyChecking=no  ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod 755 ${{ vars.REMOTE_DIR }}"
+          sshpass -e ssh -o StrictHostKeyChecking=no  ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod 755 ${{ vars.REMOTE_DIR }}/rsync_static"
 
 
       - name:  📤 Deploy to Netcup via Rsync (Password Auth)
@@ -60,4 +70,5 @@ jobs:
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
                     ./mautic_files/ \
+                    --rsync-path="${{ vars.REMOTE_DIR }}" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
