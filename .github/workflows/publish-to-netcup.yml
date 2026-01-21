@@ -29,15 +29,31 @@ jobs:
       - name: 🛠 Install sshpass
         run: sudo apt-get update && sudo apt-get install -y rsync sshpass
 
+      - name: 🚀 Automate Rsync Setup & Sync
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }} 
+        run: |
+          # 1. Download the static binary locally
+          curl -L https://github.com/galeone/rsync-static/raw/master/bin/x86_64/rsync-3.2.7 -o rsync_local
+          
+          # 2. Push the binary to Netcup (using scp as a one-time bridge)
+          sshpass -e scp -o StrictHostKeyChecking=no rsync_local ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}/rsync
+          
+          # 3. Set executable permissions on the remote binary
+          sshpass -e ssh -o StrictHostKeyChecking=no  ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod 755 ${{ vars.REMOTE_DIR }}/rsync"
+
       - name: 🧹 Clear target directory on Netcup
         env:
-          SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
+          SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
           # 1. Ensure directory exists and is empty
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ${{ vars.REMOTE_DIR }} && rm -rf ${{ vars.REMOTE_DIR }}*"
 
       - name:  📤 Deploy to Netcup via Rsync (Password Auth)
         env:
-          SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
+          SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
-          rsync -avz --delete -e "sshpass -e ssh -o StrictHostKeyChecking=no" ./mautic_files/* ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+          rsync -avz --delete \
+                    -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+                    ./mautic_files/ \
+                    ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
