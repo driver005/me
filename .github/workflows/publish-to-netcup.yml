@@ -27,7 +27,7 @@ jobs:
           rm mautic.zip
 
       - name: 🛠 Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+        run: sudo apt-get update && sudo apt-get install -y rsync sshpass
 
       - name: 🧹 Clear target directory on Netcup
         env:
@@ -40,4 +40,4 @@ jobs:
         env:
           SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
         run: |
-          sshpass -e scp -o StrictHostKeyChecking=no -r ./mautic_files/* ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+          sshpass -e rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./mautic_files/* ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
