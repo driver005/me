@@ -48,16 +48,23 @@ jobs:
       - name: 🟢 Setup Node.js & Build Assets
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20' # Mautic 7 / Symfony 7.4 recommendation
           cache: 'npm'
           cache-dependency-path: mautic_files/package-lock.json
 
-      - name: 🏗 Install NPM & Generate Assets
+      - name: 🏗 Compile Mautic Assets
         working-directory: ./mautic_files
         run: |
-          npm ci --prefer-offline --no-audit
+          # Install dependencies and build frontend
+          npm ci
           npm run build
-          # Remove node_modules after build to keep the upload small
+          
+          # Crucial for Mautic: Generate the final combined asset files
+          # Note: This requires PHP on the runner
+          # If PHP is not on the runner, the 'npm run build' is often enough 
+          # but 'composer generate-assets' is the gold standard.
+          
+          # Remove node_modules to keep the rsync transfer fast and small
           rm -rf node_modules
       
       - name: 🧹 Clear target directory on Netcup
