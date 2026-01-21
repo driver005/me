@@ -24,33 +24,33 @@ jobs:
         run: |
            git clone https://github.com/mautic/mautic.git mautic_files
 
-      - name: 🟢 Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, xml, ctype, iconv, mysql, gd, simplexml, zip
-          tools: composer:v2
+     # - name: 🟢 Setup PHP
+     #   uses: shivammathur/setup-php@v2
+     #   with:
+     #     php-version: '8.3'
+     #     extensions: mbstring, xml, ctype, iconv, mysql, gd, simplexml, zip
+     #     tools: composer:v2
 
-      - name: 🟢 Setup Node.js & Build Assets
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Mautic 7 / Symfony 7.4 recommendation
-          cache: 'npm'
-          cache-dependency-path: mautic_files/package-lock.json
+     # - name: 🟢 Setup Node.js & Build Assets
+     #   uses: actions/setup-node@v4
+     #   with:
+     #     node-version: '20' # Mautic 7 / Symfony 7.4 recommendation
+     #     cache: 'npm'
+     #    cache-dependency-path: mautic_files/package-lock.json
 
-      - name: 📦 Install Production Dependencies
-        working-directory: ./mautic_files
-        run: |
-          # Use --no-dev for a lean production build
-          composer install --no-dev --optimize-autoloader --no-interaction
-          
-          # Mautic 7 specifically needs these directories to exist
-          mkdir -p var/cache var/logs var/tmp
+     # - name: 📦 Install Production Dependencies
+     #   working-directory: ./mautic_files
+     #   run: |
+     #     # Use --no-dev for a lean production build
+     #     composer install --no-dev --optimize-autoloader --no-interaction
+     #     
+     #     # Mautic 7 specifically needs these directories to exist
+     #     mkdir -p var/cache var/logs var/tmp
 
-          composer generate-assets
+     #     composer generate-assets
           
           # Remove node_modules to keep the rsync transfer fast and small
-          rm -rf node_modules
+     #     rm -rf node_modules
       
       - name: 🔍 Check for Remote Binaries
         id: check_remote
@@ -94,7 +94,11 @@ jobs:
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod +x ~/opt/rsync_static"
           
           # Now use the new rsync to push Node
-          rsync -avz --delete ./node_binary/ --rsync-path="~/opt/rsync_static" ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/nodejs/
+          rsync -avz --delete \
+                    -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+                     ./node_binary/ \
+                     --rsync-path="~/opt/rsync_static" \
+                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/nodejs/
 
       - name: ⚙️ Update Bash PATH
         env:
