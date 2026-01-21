@@ -45,6 +45,13 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, mysql, gd, simplexml, zip
           tools: composer:v2
 
+      - name: 🟢 Setup Node.js & Build Assets
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Mautic 7 / Symfony 7.4 recommendation
+          cache: 'npm'
+          cache-dependency-path: mautic_files/package-lock.json
+
       - name: 📦 Install Production Dependencies
         working-directory: ./mautic_files
         run: |
@@ -54,24 +61,6 @@ jobs:
           # Mautic 7 specifically needs these directories to exist
           mkdir -p var/cache var/logs var/tmp
 
-      - name: 🟢 Setup Node.js & Build Assets
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Mautic 7 / Symfony 7.4 recommendation
-          cache: 'npm'
-          cache-dependency-path: mautic_files/package-lock.json
-
-      - name: 🏗 Compile Mautic Assets
-        working-directory: ./mautic_files
-        run: |
-          # Install dependencies and build frontend
-          npm ci
-          npm run build
-          
-          # Crucial for Mautic: Generate the final combined asset files
-          # Note: This requires PHP on the runner
-          # If PHP is not on the runner, the 'npm run build' is often enough 
-          # but 'composer generate-assets' is the gold standard.
           composer generate-assets
           
           # Remove node_modules to keep the rsync transfer fast and small
