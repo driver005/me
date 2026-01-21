@@ -36,9 +36,14 @@ jobs:
           # 1. Ensure directory exists and is empty
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ${{ vars.REMOTE_DIR }} && rm -rf ${{ vars.REMOTE_DIR }}*"
 
-      - name: 📤 Deploy to Netcup via Rsync (Password Auth)
+      - name:  📤 Deploy to Netcup via Rsync (Password Auth)
+        uses: burnett01/rsync-deployments@v8
         env:
           SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
-        run: |
-          # The -e flag tells rsync to use sshpass for the ssh connection
-          rsync -avz -e "sshpass -e ssh -o StrictHostKeyChecking=no" ./mautic_files/ ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+        with:
+          # We add --rsync-path to tell the action where your uploaded rsync file is
+          switches: -avzr --delete -e "sshpass -e ssh -o StrictHostKeyChecking=no"
+          path: ./mautic_files/
+          remote_path: ${{ vars.REMOTE_DIR }}
+          remote_host: ${{ vars.SSH_HOST }}
+          remote_user: ${{ vars.SSH_USER }}
