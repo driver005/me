@@ -93,3 +93,40 @@ jobs:
                     ./mautic_files/ \
                     --rsync-path="${{ vars.REMOTE_DIR }}rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+
+      - name: 📥 Fetch Latest Node.js LTS Binary
+        run: |
+          # Query the Node.js API for the latest LTS version
+          LTS_VERSION=$(curl -s https://nodejs.org/dist/index.json | jq -r '.[] | select(.lts != false) | .version' | head -n 1)
+          echo "LTS_VERSION=$LTS_VERSION" >> $GITHUB_ENV
+          
+          # Download the Linux x64 binary
+          curl -LO "https://nodejs.org/dist/${LTS_VERSION}/node-${LTS_VERSION}-linux-x64.tar.xz"
+          mkdir -p node_binary
+          tar -xvf "node-${LTS_VERSION}-linux-x64.tar.xz" -C node_binary --strip-components=1
+
+      - name: 📤 Upload Node.js to Netcup
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          # Create the remote directory and sync the binary
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ~/opt/nodejs"
+          
+          rsync -avz --delete \
+            -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+            ./node_binary/ \
+            --rsync-path="~/rsync_static" \
+            ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/nodejs/
+
+      - name: ⚙️ Set Bash Environment Variables
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          # Append the PATH to .bashrc only if it's not already there
+          SET_PATH_CMD='export PATH="$HOME/opt/nodejs/bin:$PATH"'
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
+            if ! grep -q 'opt/nodejs/bin' ~/.bashrc; then
+              echo '$SET_PATH_CMD' >> ~/.bashrc
+              echo 'Node.js added to PATH'
+            fi
+          "
