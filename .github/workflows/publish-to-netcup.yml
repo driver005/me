@@ -2,6 +2,9 @@ name: Download Mautic and Deploy to Netcup
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main 
 
 jobs:
   deploy:
@@ -44,3 +47,4 @@ jobs:
           remote_path: ${{ vars.REMOTE_DIR }}
           remote_host: ${{ vars.SSH_HOST }}
           remote_user: ${{ vars.SSH_USER }}
+          debug: true
