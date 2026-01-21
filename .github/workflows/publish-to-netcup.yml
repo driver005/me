@@ -12,8 +12,8 @@ jobs:
     environment: netcup
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      #- name: Checkout Repository
+      #  uses: actions/checkout@v4
 
       - name: 🛠 Install Build Dependencies
         run: |
