@@ -40,4 +40,4 @@ jobs:
         env:
           SSHPASS: ${{ secrets.SSH_PASS }} # Pass password via env variable for security
         run: |
-          sshpass -e rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./mautic_files/* ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+          rsync -avz --delete -e "sshpass -e ssh -o StrictHostKeyChecking=no" ./mautic_files/* ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
