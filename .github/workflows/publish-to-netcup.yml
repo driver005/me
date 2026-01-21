@@ -36,14 +36,7 @@ jobs:
 
       - name: Download Latest Mautic Production Build
         run: |
-          LATEST_ZIP_URL=$(curl -s https://api.github.com/repos/mautic/mautic/releases/latest | grep "browser_download_url.*zip" | cut -d '"' -f 4 | head -n 1)
-          curl -L $LATEST_ZIP_URL -o mautic.zip
-
-      - name: Unzip Mautic
-        run: |
-          mkdir mautic_files
-          unzip mautic.zip -d mautic_files
-          rm mautic.zip
+           git clone https://github.com/mautic/mautic.git mautic_files
 
       - name: 🟢 Setup PHP
         uses: shivammathur/setup-php@v2
