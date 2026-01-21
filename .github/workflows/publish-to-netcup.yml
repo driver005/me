@@ -18,7 +18,7 @@ jobs:
       - name: 🛠 Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc g++ make autoconf automake python3-pip libssl-dev sshpass rsync
+          sudo apt install -y gcc g++ gawk autoconf automake python3-cmarkgfm acl libacl1-dev attr libattr1-dev libxxhash-dev libzstd-dev liblz4-dev libssl-dev sshpass rsync
 
       - name: 🏗 Build Latest Rsync from Source
         run: |
