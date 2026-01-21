@@ -6,8 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      REMOTE_DIR: /httpdocs/mautic/ # Adjust this path to your Netcup folder
+    environment: netcup
 
     steps:
       - name: Checkout Repository
