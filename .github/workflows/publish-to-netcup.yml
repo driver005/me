@@ -134,6 +134,6 @@ jobs:
             
             php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
             php composer-setup.php
-            COMPOSER_MEMORY_LIMIT=-1 php composer.phar install          
+            COMPOSER_MEMORY_LIMIT=-1 php -d memory_limit=512M composer.phar install          
             php -r \"unlink('composer-setup.php');\"
           "
