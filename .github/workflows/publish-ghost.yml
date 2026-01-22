@@ -39,23 +39,6 @@ jobs:
           cache: "yarn"
           cache-dependency-path: ghost_files/yarn.lock
 
-      - name: 📦 Install Production Dependencies
-        working-directory: ./ghost_files
-        run: |
-          corepack enable
-          corepack prepare yarn@stable --activate
-          npm install -g nx
-          yarn install --no-immutable
-          yarn build
-
-      - name: 📥 Fetch Node.js v22 for Remote
-        run: |
-          # Fetching specific Node 22 Linux x64 binary
-          NODE_V22_URL="https://nodejs.org/dist/latest-v22.x/$(curl -s https://nodejs.org/dist/latest-v22.x/ | grep -o 'node-v22.[0-9.]*-linux-x64.tar.xz' | head -n 1)"
-          curl -LO "$NODE_V22_URL"
-          mkdir -p ghost_files/nodejs_bin
-          tar -xvf node-v22.*-linux-x64.tar.xz -C ghost_files/nodejs_bin --strip-components=1
-
       - name: 📝 Generate Config & .htaccess
         working-directory: ./ghost_files
         run: |
@@ -95,10 +78,23 @@ jobs:
           RewriteRule ^(.*)$ http://localhost:2368/\$1 [P,L]
           EOF
 
-      - name: 📦 Migrate
+      - name: 📦 Install Production Dependencies
         working-directory: ./ghost_files
         run: |
-          NODE_ENV=production yarn knex-migrator migrate
+          corepack enable
+          corepack prepare yarn@stable --activate
+          npm install -g nx
+          yarn install --no-immutable
+          yarn knex-migrator migrate
+          yarn build
+
+      - name: 📥 Fetch Node.js v22 for Remote
+        run: |
+          # Fetching specific Node 22 Linux x64 binary
+          NODE_V22_URL="https://nodejs.org/dist/latest-v22.x/$(curl -s https://nodejs.org/dist/latest-v22.x/ | grep -o 'node-v22.[0-9.]*-linux-x64.tar.xz' | head -n 1)"
+          curl -LO "$NODE_V22_URL"
+          mkdir -p ghost_files/nodejs_bin
+          tar -xvf node-v22.*-linux-x64.tar.xz -C ghost_files/nodejs_bin --strip-components=1
 
       - name: 🔍 Check for Remote Binaries
         id: check_remote
