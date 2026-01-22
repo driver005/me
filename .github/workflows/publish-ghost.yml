@@ -1,0 +1,154 @@
+name: Download Ghost and Deploy to Netcup
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: netcup
+
+    steps:
+      - name: 🛠 Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install -y gcc g++ gawk autoconf automake sshpass rsync
+
+      - name: 👻 Download Latest Ghost Release
+        run: |
+          # Fetch the latest release zip from GitHub to avoid building the client from scratch
+          LATEST_GHOST=$(curl -s https://api.github.com/repos/TryGhost/Ghost/releases/latest | jq -r '.zipball_url')
+          curl -L $LATEST_GHOST -o ghost.zip
+          unzip ghost.zip -d ghost_files
+          # Move files up one level because unzip creates a nested folder
+          mv ghost_files/TryGhost-Ghost-*/* ghost_files/
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: ghost_files/package-lock.json
+
+      - name: 📦 Install Production Dependencies
+        working-directory: ./ghost_files
+        run: |
+          # Install only production dependencies
+          npm install --production
+          npm build
+
+      - name: 📝 Generate config.production.json
+        working-directory: ./ghost_files
+        run: |
+          cat <<EOF > config.production.json
+          {
+            "url": "${{ vars.GHOST_URL }}",
+            "server": {
+              "port": 2368,
+              "host": "127.0.0.1"
+            },
+            "database": {
+              "client": "mysql",
+              "connection": {
+                "host": "${{ vars.DB_HOST }}",
+                "user": "${{ vars.DB_USER }}",
+                "password": "${{ secrets.DB_PASS }}",
+                "database": "${{ vars.DB_NAME }}"
+              }
+            },
+            "mail": {
+              "transport": "Direct"
+            },
+            "logging": {
+              "transports": ["file", "stdout"]
+            },
+            "process": "local",
+            "paths": {
+              "contentPath": "content/"
+            }
+          }
+          EOF
+
+      - name: 📝 Generate .htaccess for Reverse Proxy
+        working-directory: ./ghost_files
+        run: |
+          cat <<EOF > .htaccess
+          RewriteEngine On
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^(.*)$ http://localhost:2368/\$1 [P,L]
+          EOF
+
+      - name: 🔍 Check for Remote Binaries
+        id: check_remote
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ] && [ -d ~/opt/nodejs ]"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🏗 Build Static Rsync (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        run: |
+          RSYNC_TAR_URL=$(curl -s https://api.github.com/repos/RsyncProject/rsync/releases/latest | grep "browser_download_url.*tar.gz" | cut -d '"' -f 4 | head -n 1)
+          curl -L $RSYNC_TAR_URL -o rsync-src.tar.gz
+          tar -xzf rsync-src.tar.gz && cd rsync-*/
+          ./configure LDFLAGS="-static" && make -j$(nproc)
+          cp rsync ../rsync_static && cd ..
+
+      - name: 📥 Fetch Node.js LTS (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        run: |
+          LTS_VERSION=$(curl -s https://nodejs.org/dist/index.json | jq -r '.[] | select(.lts != false) | .version' | head -n 1)
+          curl -LO "https://nodejs.org/dist/${LTS_VERSION}/node-${LTS_VERSION}-linux-x64.tar.xz"
+          mkdir -p node_binary
+          tar -xvf "node-${LTS_VERSION}-linux-x64.tar.xz" -C node_binary --strip-components=1
+
+      - name: 📤 Push Binaries and Set Path
+        if: steps.check_remote.outputs.exists == 'false'
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ~/opt/nodejs"
+          sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/rsync_static
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod +x ~/opt/rsync_static"
+          rsync -avz -e "sshpass -e ssh -o StrictHostKeyChecking=no" ./node_binary/ --rsync-path="~/opt/rsync_static" ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/nodejs/
+
+      - name: 📤 Deploy Ghost to Netcup
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          # Exclude core content folders if you don't want to overwrite images/themes on server
+          rsync -avz --delete \
+                    -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+                    --exclude 'config.production.json' \
+                    ./ghost_files/ \
+                    --rsync-path="~/opt/rsync_static" \
+                    ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_GHOST_DIR }}
+
+      - name: ⚙️ Restart Ghost via PM2
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
+            set -e
+
+            export PATH=\"\$HOME/opt/nodejs/bin:\$PATH\"
+            
+            cd ${{ vars.REMOTE_GHOST_DIR }}
+            
+            # Install PM2 if not present
+            npm install -g pm2
+            
+            # Run migrations (Crucial without Ghost-CLI)
+            NODE_ENV=production npx knex-migrator migrate
+            
+            # Restart or Start the app
+            pm2 restart ghost || pm2 start index.js --name ghost --env production
+          "
