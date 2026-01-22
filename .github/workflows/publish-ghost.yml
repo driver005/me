@@ -28,7 +28,7 @@ jobs:
           # The '*' handles the dynamic hash in 'TryGhost-Ghost-XXXXXXX'
           mv raw_ghost/TryGhost-Ghost-*/ghost/* ghost_files/
 
-          ls
+          ls ghost_files/
           # Clean up
           rm -rf raw_ghost ghost.zip
 
