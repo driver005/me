@@ -82,7 +82,7 @@ jobs:
         working-directory: ./ghost_files
         run: |
           npm install -g nx
-          yarn install --no-immutable
+          yarn install
           yarn knex-migrator init
           yarn knex-migrator migrate
           yarn build
@@ -147,8 +147,6 @@ jobs:
             
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
-            npm install -g pm2
-
-            # Restart or Start the app
-            pm2 restart ghost || pm2 start index.js --name ghost --env production
+            # node .github/scripts/dev.js dev --portal
+            npm run dev --portal
           "
