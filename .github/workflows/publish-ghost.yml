@@ -81,10 +81,9 @@ jobs:
       - name: 📦 Install Production Dependencies
         working-directory: ./ghost_files
         run: |
-          corepack enable
-          corepack prepare yarn@stable --activate
           npm install -g nx
           yarn install --no-immutable
+          yarn knex-migrator init
           yarn knex-migrator migrate
           yarn build
 
