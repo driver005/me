@@ -127,3 +127,15 @@ jobs:
                     ./mautic_files/ \
                     --rsync-path="~/opt/rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+
+      - name: ⚙️ Build mautic
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
+            cd ${{ vars.REMOTE_DIR }}
+            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+            php composer-setup.php
+            php composer.phar install
+            php -r "unlink('composer-setup.php');"
+          "
