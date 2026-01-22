@@ -12,9 +12,6 @@ jobs:
     environment: netcup
 
     steps:
-      #- name: Checkout Repository
-      #  uses: actions/checkout@v4
-
       - name: 🛠 Install Build Dependencies
         run: |
           sudo apt-get update
@@ -123,9 +120,6 @@ jobs:
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
             set -e
-
-            rm -rf ~/var/cache/*
-            rm -rf ~/.composer/cache/*
             
             cd ${{ vars.REMOTE_DIR }}
           
