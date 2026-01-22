@@ -133,8 +133,12 @@ jobs:
           SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
+            set -e
             cd ${{ vars.REMOTE_DIR }}
-            export PATH=\"$HOME/opt/nodejs/bin:$HOME/opt:$PATH\"
+          
+            # Use absolute path
+            export PATH=\"~/opt/nodejs/bin:\$PATH\"
+          
             php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
             php composer-setup.php
             php composer.phar install
