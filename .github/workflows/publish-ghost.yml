@@ -15,7 +15,7 @@ jobs:
       - name: 🛠 Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt install -y gcc g++ gawk autoconf automake sshpass rsync
+          sudo apt install -y sshpass rsync
 
       - name: 👻 Download Latest Ghost Release
         run: |
@@ -132,7 +132,6 @@ jobs:
           # Exclude core content folders if you don't want to overwrite images/themes on server
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
-                    --exclude 'config.production.json' \
                     ./ghost_files/ \
                     --rsync-path="~/opt/rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_GHOST_DIR }}
