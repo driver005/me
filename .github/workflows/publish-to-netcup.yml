@@ -106,7 +106,8 @@ jobs:
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
             if ! grep -q 'opt/nodejs/bin' ~/.bashrc; then
-              echo 'export PATH=\"\$HOME/opt/nodejs/bin:\$HOME/opt/rsync_static:\$PATH\"' >> ~/.bashrc
+              echo 'export PATH=\"\$HOME/opt/nodejs/bin:\$HOME/opt:\$PATH\"' >> ~/.bashrc
+              echo "PATH updated successfully"
             fi
           "
 
