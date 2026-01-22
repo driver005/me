@@ -22,11 +22,11 @@ jobs:
           # Fetch the latest release zip from GitHub to avoid building the client from scratch
           LATEST_GHOST=$(curl -s https://api.github.com/repos/TryGhost/Ghost/releases/latest | jq -r '.zipball_url')
           curl -L $LATEST_GHOST -o ghost.zip
-
+          unzip ghost.zip -d raw_ghost
           # Move files from nested directory to a clean 'ghost_files' folder
           mkdir ghost_files
           # The '*' handles the dynamic hash in 'TryGhost-Ghost-XXXXXXX'
-          mv TryGhost-Ghost-*/ghost/* ghost_files/
+          mv raw_ghost/TryGhost-Ghost-*/ghost/* ghost_files/
 
           # Clean up
           rm -rf raw_ghost ghost.zip
