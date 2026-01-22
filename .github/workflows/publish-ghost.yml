@@ -82,7 +82,7 @@ jobs:
         working-directory: ./ghost_files
         run: |
           npm install -g nx
-          yarn install --no-immutable
+          yarn install
           yarn knex-migrator init
           yarn knex-migrator migrate
           yarn build
