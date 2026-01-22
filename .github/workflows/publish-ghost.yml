@@ -20,7 +20,7 @@ jobs:
       - name: 👻 Download Latest Ghost Release
         run: |
           # Fetch the latest release zip from GitHub to avoid building the client from scratch
-          git clone https://github/TryGhost/Ghost.git ghost_files
+          git clone https://github.com/TryGhost/Ghost.git ghost_files
           # LATEST_GHOST=$(curl -s https://api.github.com/repos/TryGhost/Ghost/releases/latest | jq -r '.zipball_url')
           # curl -L $LATEST_GHOST -o ghost.zip
           # unzip ghost.zip -d raw_ghost
