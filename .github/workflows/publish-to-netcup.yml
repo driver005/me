@@ -110,14 +110,7 @@ jobs:
               echo "PATH updated successfully"
             fi
           "
-
-      - name: 🧹 Clear target directory on Netcup
-        env:
-          SSHPASS: ${{ secrets.SSH_PASS }}
-        run: |
-          # 1. Ensure directory exists and is empty
-          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ${{ vars.REMOTE_DIR }} && rm -rf ${{ vars.REMOTE_DIR }}*"
-
+          
       - name:  📤 Deploy to Netcup via Rsync (Password Auth)
         env:
           SSHPASS: ${{ secrets.SSH_PASS }}
