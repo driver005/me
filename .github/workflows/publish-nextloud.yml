@@ -26,7 +26,7 @@ jobs:
           SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
           # Check if rsync and node already exist on Netcup
-          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ]; then
+          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ]"; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
