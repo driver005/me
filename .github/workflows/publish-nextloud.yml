@@ -1,0 +1,81 @@
+name: Download Nextcloud and Deploy to Netcup
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: netcup
+
+    steps:
+      - name: 🛠 Install Build Dependencies
+        run: |
+          sudo apt-get update
+
+      - name: Download Latest Mautic Production Build
+        run: |
+          curl -L https://download.nextcloud.com/server/installer/setup-nextcloud.php
+
+      - name: 🔍 Check for Remote Binaries
+        id: check_remote
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          # Check if rsync and node already exist on Netcup
+          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🏗 Build Static Rsync (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        run: |
+          sudo apt-get update && sudo apt install -y gcc gawk autoconf automake libssl-dev
+          RSYNC_TAR_URL=$(curl -s https://api.github.com/repos/RsyncProject/rsync/releases/latest | grep "browser_download_url.*tar.gz" | cut -d '"' -f 4 | head -n 1)
+          curl -L $RSYNC_TAR_URL -o rsync-src.tar.gz
+          tar -xzf rsync-src.tar.gz && cd rsync-*/
+          ./configure LDFLAGS="-static" && make -j$(nproc)
+          cp rsync ../rsync_static && cd ..
+
+      - name: 📤 Push Binaries to ~/opt
+        if: steps.check_remote.outputs.exists == 'false'
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+
+          # Use scp for the initial rsync binary bridge
+          sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/rsync_static
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod +x ~/opt/rsync_static"
+
+      - name: 📤 Deploy to Netcup via Rsync (Password Auth)
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          rsync -avz --delete \
+                    -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+                    ./setup-nextcloud.php \
+                    --rsync-path="~/opt/rsync_static" \
+                    ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_NEXTCLOUD_DIR }}
+
+      # - name: ⚙️ Build mautic
+      #   env:
+      #     SSHPASS: ${{ secrets.SSH_PASS }}
+      #   run: |
+      #     sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
+      #       set -e
+      #
+      #       cd ${{ vars.REMOTE_DIR }}
+      #
+      #       # Use absolute path
+      #       export PATH=\"\$HOME/opt/nodejs/bin:\$PATH\"
+      #
+      #       php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
+      #       php composer-setup.php
+      #       php composer.phar install --no-dev --optimize-autoloader --no-interaction
+      #       php -r \"unlink('composer-setup.php');\"
+      #     "
