@@ -39,14 +39,14 @@ jobs:
           cache: "yarn"
           cache-dependency-path: ghost_files/yarn.lock
 
-      # - name: 📦 Install Production Dependencies
-      #   working-directory: ./ghost_files
-      #   run: |
-      #     corepack enable
-      #     npm install -g nx
-      #     # Install only production dependencies
-      #     yarn install
-      #     yarn build
+      - name: 📦 Install Production Dependencies
+        working-directory: ./ghost_files
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+          npm install -g nx
+          yarn install
+          yarn build
 
       - name: 📥 Fetch Node.js v22 for Remote
         run: |
@@ -154,7 +154,6 @@ jobs:
             npm install -g nx pm2
 
             yarn install 
-            yarn build
 
             # Run migrations (Crucial without Ghost-CLI)
             NODE_ENV=production ./nodejs_bin/bin/yarn knex-migrator migrate 
