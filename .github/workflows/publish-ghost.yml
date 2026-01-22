@@ -48,7 +48,15 @@ jobs:
           yarn install 
           yarn build
 
-      - name: 📝 Generate config.production.json
+      - name: 📥 Fetch Node.js v22 for Remote
+        run: |
+          # Fetching specific Node 22 Linux x64 binary
+          NODE_V22_URL="https://nodejs.org/dist/latest-v22.x/$(curl -s https://nodejs.org/dist/latest-v22.x/ | grep -o 'node-v22.[0-9.]*-linux-x64.tar.xz' | head -n 1)"
+          curl -LO "$NODE_V22_URL"
+          mkdir -p ghost_files/nodejs_bin
+          tar -xvf node-v22.*-linux-x64.tar.xz -C ghost_files/nodejs_bin --strip-components=1
+
+      - name: 📝 Generate Config & .htaccess
         working-directory: ./ghost_files
         run: |
           cat <<EOF > config.production.json
@@ -80,9 +88,6 @@ jobs:
           }
           EOF
 
-      - name: 📝 Generate .htaccess for Reverse Proxy
-        working-directory: ./ghost_files
-        run: |
           cat <<EOF > .htaccess
           RewriteEngine On
           RewriteCond %{REQUEST_FILENAME} !-f
@@ -95,7 +100,7 @@ jobs:
         env:
           SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
-          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ] && [ -d ~/opt/nodejs ]"; then
+          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ]"; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -109,14 +114,6 @@ jobs:
           tar -xzf rsync-src.tar.gz && cd rsync-*/
           ./configure LDFLAGS="-static" && make -j$(nproc)
           cp rsync ../rsync_static && cd ..
-
-      - name: 📥 Fetch Node.js LTS (Conditional)
-        if: steps.check_remote.outputs.exists == 'false'
-        run: |
-          LTS_VERSION=$(curl -s https://nodejs.org/dist/index.json | jq -r '.[] | select(.lts != false) | .version' | head -n 1)
-          curl -LO "https://nodejs.org/dist/${LTS_VERSION}/node-${LTS_VERSION}-linux-x64.tar.xz"
-          mkdir -p node_binary
-          tar -xvf "node-${LTS_VERSION}-linux-x64.tar.xz" -C node_binary --strip-components=1
 
       - name: 📤 Push Binaries and Set Path
         if: steps.check_remote.outputs.exists == 'false'
@@ -147,7 +144,7 @@ jobs:
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
             set -e
 
-            export PATH=\"\$HOME/opt/nodejs/bin:\$PATH\"
+            export PATH=\"${{ vars.REMOTE_GHOST_DIR }}/nodejs_bin/bin:\$PATH\"
             
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
@@ -155,7 +152,7 @@ jobs:
             npm install -g pm2
             
             # Run migrations (Crucial without Ghost-CLI)
-            NODE_ENV=production npx knex-migrator migrate
+            NODE_ENV=production npx knex-migrator migrate --mgpath core/
             
             # Restart or Start the app
             pm2 restart ghost || pm2 start index.js --name ghost --env production
