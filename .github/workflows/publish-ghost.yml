@@ -153,7 +153,7 @@ jobs:
             
             npm install -g nx pm2
 
-            # yarn install 
+            yarn install --no-immutable
 
             # Run migrations (Crucial without Ghost-CLI)
             NODE_ENV=production ./nodejs_bin/bin/yarn knex-migrator migrate 
