@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -21,30 +21,29 @@ jobs:
         run: |
           git clone https://github.com/mautic/mautic.git mautic_files
 
-    
       - name: 🟢 Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: "8.3"
           extensions: mbstring, xml, ctype, iconv, mysql, gd, simplexml, zip
           tools: composer:v2
 
       - name: 🟢 Setup Node.js & Build Assets
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Mautic 7 / Symfony 7.4 recommendation
-          cache: 'npm'
+          node-version: "20" # Mautic 7 / Symfony 7.4 recommendation
+          cache: "npm"
           cache-dependency-path: mautic_files/package-lock.json
 
       - name: 📦 Install Production Dependencies
         working-directory: ./mautic_files
-        run: | 
+        run: |
           mkdir -p var/cache var/logs var/tmp
           # Use --no-dev for a lean production build
           composer install --no-dev --optimize-autoloader --no-interaction
 
           rm -rf node_modules
-      
+
       - name: 🔍 Check for Remote Binaries
         id: check_remote
         env:
@@ -81,11 +80,11 @@ jobs:
           SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ~/opt/nodejs"
-          
+
           # Use scp for the initial rsync binary bridge
           sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/rsync_static
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod +x ~/opt/rsync_static"
-          
+
           # Now use the new rsync to push Node
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
@@ -103,8 +102,8 @@ jobs:
               echo "PATH updated successfully"
             fi
           "
-          
-      - name:  📤 Deploy to Netcup via Rsync (Password Auth)
+
+      - name: 📤 Deploy to Netcup via Rsync (Password Auth)
         env:
           SSHPASS: ${{ secrets.SSH_PASS }}
         run: |
@@ -112,7 +111,7 @@ jobs:
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
                     ./mautic_files/ \
                     --rsync-path="~/opt/rsync_static" \
-                    ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_DIR }}
+                    ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_MAUTIC_DIR }}
 
       - name: ⚙️ Build mautic
         env:
@@ -121,8 +120,8 @@ jobs:
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
             set -e
             
-            cd ${{ vars.REMOTE_DIR }}
-          
+            cd ${{ vars.REMOTE_MAUTIC_DIR }}
+
             # Use absolute path
             export PATH=\"\$HOME/opt/nodejs/bin:\$PATH\"
             
