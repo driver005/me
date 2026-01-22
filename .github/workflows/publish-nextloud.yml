@@ -18,7 +18,7 @@ jobs:
 
       - name: Download Latest Mautic Production Build
         run: |
-          curl -L https://download.nextcloud.com/server/installer/setup-nextcloud.php
+          curl -L https://download.nextcloud.com/server/installer/setup-nextcloud.php -o setup-nextcloud.php
 
       - name: 🔍 Check for Remote Binaries
         id: check_remote
