@@ -130,13 +130,10 @@ jobs:
             cd ${{ vars.REMOTE_DIR }}
           
             # Use absolute path
-            export PATH=\"~/opt/nodejs/bin:\$PATH\"
-
+            export PATH=\"\$HOME/opt/nodejs/bin:\$PATH\"
             
             php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
             php composer-setup.php
-            
-            bash -c 'php composer.phar install'
-          
+            php composer.phar install          
             php -r \"unlink('composer-setup.php');\"
           "
