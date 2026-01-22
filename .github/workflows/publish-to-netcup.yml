@@ -45,7 +45,6 @@ jobs:
           mkdir -p var/cache var/logs var/tmp
           # Use --no-dev for a lean production build
           composer install --no-dev --optimize-autoloader --no-interaction
-          composer generate-assets
 
           rm -rf node_modules
       
