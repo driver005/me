@@ -148,11 +148,13 @@ jobs:
             
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
-            # Install PM2 if not present
-            npm install -g pm2 yarn
+            corepack enable
+            corepack prepare yarn@stable --activate
             
             # Run migrations (Crucial without Ghost-CLI)
             NODE_ENV=production ./nodejs_bin/bin/yarn knex-migrator migrate 
+            
+            npm install -g pm2
             
             # Restart or Start the app
             pm2 restart ghost || pm2 start index.js --name ghost --env production
