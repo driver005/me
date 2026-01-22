@@ -45,7 +45,7 @@ jobs:
           corepack enable
           npm install -g nx
           # Install only production dependencies
-          yarn install --production
+          yarn install 
           yarn build
 
       - name: 📝 Generate config.production.json
