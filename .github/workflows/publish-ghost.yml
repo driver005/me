@@ -26,7 +26,7 @@ jobs:
           # Move files from nested directory to a clean 'ghost_files' folder
           mkdir ghost_files
           # The '*' handles the dynamic hash in 'TryGhost-Ghost-XXXXXXX'
-          mv raw_ghost/TryGhost-Ghost-*/ghost/* ghost_files/
+          mv TryGhost-Ghost-*/ghost/* ghost_files/
 
           # Clean up
           rm -rf raw_ghost ghost.zip
