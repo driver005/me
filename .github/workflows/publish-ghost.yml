@@ -152,7 +152,7 @@ jobs:
             npm install -g pm2
             
             # Run migrations (Crucial without Ghost-CLI)
-            NODE_ENV=production npx knex-migrator migrate --mgpath core/
+            NODE_ENV=production npx knex-migrator migrate --mgpath ./ghost/core/
             
             # Restart or Start the app
             pm2 restart ghost || pm2 start index.js --name ghost --env production
