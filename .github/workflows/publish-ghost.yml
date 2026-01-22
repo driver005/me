@@ -36,12 +36,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: ghost_files/package-lock.json
 
       - name: 📦 Install Production Dependencies
         working-directory: ./ghost_files
         run: |
+          rm -f yarn.lock
           # Install only production dependencies
           npm install --production
           npm build
