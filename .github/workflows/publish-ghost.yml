@@ -133,7 +133,6 @@ jobs:
           # Exclude core content folders if you don't want to overwrite images/themes on server
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
-                    --include='.github/' \
                     ./ghost_files/ \
                     --rsync-path="~/opt/rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_GHOST_DIR }}
@@ -147,8 +146,11 @@ jobs:
 
             export PATH=\"${{ vars.REMOTE_GHOST_DIR }}/nodejs_bin/bin:\$PATH\"
             
+            corepack enable
+            corepack prepare yarn@stable --activate  
+
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
             # node .github/scripts/dev.js dev --portal
-            npm run dev --portal
+            yarn run dev --portal
           "
