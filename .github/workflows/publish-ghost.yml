@@ -42,6 +42,7 @@ jobs:
       - name: 📦 Install Production Dependencies
         working-directory: ./ghost_files
         run: |
+          corepack enable
           # Install only production dependencies
           yarn install --production
           yarn build
