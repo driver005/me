@@ -133,6 +133,7 @@ jobs:
           # Exclude core content folders if you don't want to overwrite images/themes on server
           rsync -avz --delete \
                     -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+                    --include='.github/' \
                     ./ghost_files/ \
                     --rsync-path="~/opt/rsync_static" \
                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_GHOST_DIR }}
