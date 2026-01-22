@@ -131,9 +131,12 @@ jobs:
           
             # Use absolute path
             export PATH=\"~/opt/nodejs/bin:\$PATH\"
-          
+
+            
             php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
             php composer-setup.php
-            php composer.phar install
+            
+            bash -c 'php composer.phar install'
+          
             php -r \"unlink('composer-setup.php');\"
           "
