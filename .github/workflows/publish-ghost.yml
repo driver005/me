@@ -43,6 +43,7 @@ jobs:
         working-directory: ./ghost_files
         run: |
           corepack enable
+          npm install -g nx
           # Install only production dependencies
           yarn install --production
           yarn build
