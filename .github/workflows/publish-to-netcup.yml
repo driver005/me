@@ -42,16 +42,10 @@ jobs:
       - name: 📦 Install Production Dependencies
         working-directory: ./mautic_files
         run: | 
-             mkdir -p var/cache var/logs var/tmp
-     #     composer generate-assets
-     #     # Use --no-dev for a lean production build
-     #     composer install --no-dev --optimize-autoloader --no-interaction
-     #     
-     #     # Mautic 7 specifically needs these directories to exist
-     
-          
-          # Remove node_modules to keep the rsync transfer fast and small
-     #     rm -rf node_modules
+          mkdir -p var/cache var/logs var/tmp
+          # Use --no-dev for a lean production build
+          # composer install --no-dev --optimize-autoloader --no-interaction
+          # composer generate-assets
       
       - name: 🔍 Check for Remote Binaries
         id: check_remote
