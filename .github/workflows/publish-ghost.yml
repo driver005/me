@@ -145,13 +145,12 @@ jobs:
             set -e
 
             export PATH=\"${{ vars.REMOTE_GHOST_DIR }}/nodejs_bin/bin:\$PATH\"
-
+            export NODE_OPTIONS="--max-old-space-size=1024"
             corepack enable
             # corepack prepare yarn@stable --activate  
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
-            # yarn install --mode=skip-build --no-immutable
-            yarn install --no-immutable --jobs 1
+            yarn install --mode=skip-build --no-immutable
 
             # node .github/scripts/dev.js dev --portal
             yarn run dev --portal
