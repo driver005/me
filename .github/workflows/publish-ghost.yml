@@ -147,7 +147,8 @@ jobs:
             export PATH=\"${{ vars.REMOTE_GHOST_DIR }}/nodejs_bin/bin:\$PATH\"
             
             corepack enable
-            corepack prepare yarn@stable --activate  
+            # corepack prepare yarn@stable --activate  
+            yarn install --mode=skip-build --no-immutable
 
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
