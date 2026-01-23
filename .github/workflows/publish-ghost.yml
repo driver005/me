@@ -151,6 +151,7 @@ jobs:
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
             # yarn install --mode=skip-build --no-immutable
+            yarn install --no-immutable --jobs 1
 
             # node .github/scripts/dev.js dev --portal
             yarn run dev --portal
