@@ -150,7 +150,7 @@ jobs:
             # corepack prepare yarn@stable --activate  
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
-            yarn install --mode=skip-build --no-immutable
+            # yarn install --mode=skip-build --no-immutable
 
             # node .github/scripts/dev.js dev --portal
             yarn run dev --portal
