@@ -96,6 +96,13 @@ jobs:
       #           mkdir -p ghost_files/nodejs_bin
       #           tar -xvf node-v22.*-linux-x64.tar.xz -C ghost_files/nodejs_bin --strip-components=1
       #
+
+      - name: Fetch git for Remote
+        run: |
+          GIT_URL="https://github.com/stefanzweifel/git-static-binaries/releases/latest/download/git-2.43.0-amd64.tar.gz"
+          mkdir -p ./binaries/git
+          curl -L $GIT_URL | tar -xz -C ghost_file/git
+
       #       - name: 🔍 Check for Remote Binaries
       #         id: check_remote
       #         env:
@@ -137,6 +144,7 @@ jobs:
       #                     --rsync-path="~/opt/rsync_static" \
       #                     ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_GHOST_DIR }}
       #
+
       - name: ⚙️ Restart Ghost via PM2
         env:
           SSHPASS: ${{ secrets.SSH_PASS }}
@@ -144,9 +152,13 @@ jobs:
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "
             set -e
 
-            export PATH=\"${{ vars.REMOTE_GHOST_DIR }}/nodejs_bin/bin:\$PATH\"
+            # Set the binary paths
+            export NODE_BIN=\"${{ vars.REMOTE_GHOST_DIR }}/binaries/node/bin\"
+            export GIT_BIN=\"${{ vars.REMOTE_GHOST_DIR }}/binaries/git\"
+            export PATH=\"\$NODE_BIN:\$GIT_BIN:\$PATH\"
             export NODE_OPTIONS="--max-old-space-size=1024"
-            corepack enable
+            
+          corepack enable
             # corepack prepare yarn@stable --activate  
             cd ${{ vars.REMOTE_GHOST_DIR }}
             
