@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@config "../../tailwind.config.ts"; /* Add this line to your app.css */
+
+@layer base {
+  /* Target the root and every single element */
+  :root, body, * {
+      scrollbar-width: none !important; /* Firefox */
+      -ms-overflow-style: none !important; /* IE/Edge */
+  }
+
+  :root::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  *::-webkit-scrollbar {
+      display: none !important; /* Chrome, Safari, Opera */
+      width: 0 !important;
+      height: 0 !important;
+  }
+}

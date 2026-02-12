@@ -15,10 +15,10 @@ const configuration = {
   targetDir: resolve(join("src", "lib", "components", "models")),
   overwrite: true,
   root: "/models/",
-  types: true,
+  types: false,
   keepnames: true,
-  meta: false,
-  shadows: false,
+  meta: true,
+  shadows: true,
   printwidth: 120,
   precision: 2,
   draco: "./",
@@ -29,7 +29,7 @@ const configuration = {
     enabled: true,
     resolution: 1024,
     simplify: {
-      enabled: false,
+      enabled: true,
       weld: 0.0001,
       ratio: 0.75,
       error: 0.001
