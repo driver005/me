@@ -12,6 +12,7 @@ jobs:
       - name: 🛠 Install Build Dependencies
         run: |
           sudo apt-get update
+          sudo apt install -y gcc g++ gawk autoconf automake python3-cmarkgfm acl libacl1-dev attr libattr1-dev libxxhash-dev libzstd-dev liblz4-dev libssl-dev sshpass rsync
 
       - name: Download Latest Mautic Production Build
         run: |
