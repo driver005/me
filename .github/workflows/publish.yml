@@ -26,6 +26,10 @@ jobs:
 
       - name: 🏗 Build SvelteKit App (Static)
         run: yarn build
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
 
       - name: 🔍 Check for Remote Rsync Binary
         id: check_remote
