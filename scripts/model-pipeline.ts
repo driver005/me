@@ -12,7 +12,7 @@ import { exit } from "node:process"
  */
 const configuration = {
   sourceDir: resolve(join("static", "models")),
-  targetDir: resolve(join("src", "lib", "components", "models")),
+  targetDir: resolve(join("src", "lib", "models")),
   overwrite: true,
   root: "/models/",
   types: false,

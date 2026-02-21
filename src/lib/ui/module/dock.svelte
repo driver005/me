@@ -17,7 +17,7 @@
 	export let direction: DockProps['direction'] = 'middle';
 
 	const dockVariants = cva(
-		'mx-auto w-max mt-8 p-2 flex gap-2 rounded-2xl border supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 backdrop-blur-md'
+		'w-max p-2 flex gap-2 rounded-2xl border supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 backdrop-blur-md'
 	);
 
 	let dockElement: HTMLDivElement;
@@ -38,12 +38,18 @@
 </script>
 
 <Motion let:motion>
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		use:motion
 		bind:this={dockElement}
-		on:mousemove={(e) => handleMouseMove(e)}
-		on:mouseleave={handleMouseLeave}
+		onmousemove={(e) => handleMouseMove(e)}
+		onmouseleave={handleMouseLeave}
+		onclick={(e) => e.stopPropagation()}
+		onkeydown={(e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.stopPropagation();
+			}
+		}}
 		class={dockClass}
 	>
 		<slot {mouseX} {magnification} {distance}>

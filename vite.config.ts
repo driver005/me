@@ -20,5 +20,8 @@ export default defineConfig({
 		})
 	],
 	optimizeDeps: { esbuildOptions: { target: 'esnext' } },
-	build: { target: 'esnext' }
+	build: { target: 'esnext' },
+	ssr: {
+		noExternal: ['three', 'postprocessing'],
+	}
 });

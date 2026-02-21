@@ -1,8 +1,0 @@
-<script lang="ts">
-	import { Sheet } from "@threlte/theatre";
-	import World from "$lib/three/objects/life/default.svelte";
-</script>
-
-<Sheet name="Life">
-  <World />
-</Sheet>

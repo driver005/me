@@ -16,4 +16,8 @@
       width: 0 !important;
       height: 0 !important;
   }
+
+  .dark {
+    --background: hsl(222 47% 11%) !important; /* Dark background */
+  }
 }

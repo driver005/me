@@ -10,6 +10,7 @@
 
 	let className: string | undefined = '';
 	export { className as class };
+	export let onclick: () => void = () => {};
 
 	let iconElement: HTMLDivElement;
 
@@ -33,7 +34,14 @@
 </script>
 
 <Motion style={{ height: width }} let:motion>
-	<div use:motion bind:this={iconElement} class={iconClass}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		use:motion
+		bind:this={iconElement}
+		{onclick}
+		onkeydown={(e) => e.key === 'Enter' && onclick()}
+		class={iconClass}
+	>
 		<slot></slot>
 	</div>
 </Motion>

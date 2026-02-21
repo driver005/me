@@ -1,9 +1,26 @@
-import type { ComponentType } from 'svelte';
+import type { ComponentType, SvelteComponent } from 'svelte';
+
+export interface NAVITEM {
+  label: string;
+  icon: ComponentType<SvelteComponent<any>> | any;
+  value: string;
+  color: string;
+}
+
+export interface CONTACTITEM {
+  label: string;
+  icon: ComponentType<SvelteComponent<any>> | any;
+  href: string;
+  color: string;
+}
+
+export interface DOCK {
+  navbar: NAVITEM[];
+  contact: CONTACTITEM[];
+}
 
 export type PROFILE = {
   name: string,
-  title: string,
-  description: string,
   tagline: string,
   story: string,
   status: string,
@@ -17,33 +34,26 @@ export interface MILESTONE {
   title: string;
   content: string;
   image: string;
-  icon: ComponentType; // Or 'any' if not using Svelte/Lucide icons specifically
+  icon: ComponentType<SvelteComponent<any>> | any;
 }
 
 export interface SKILL {
   name: string;
-  message: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+  message: string;
   img: string;
   border: string;
   color: string;
 }
 
 
-export interface PROJECT_ITEM {
+export interface PROJECT {
   title: string;
   description: string;
   tags: string[];
   href: string;
-  iframe_url: string;
+  iframe_url?: string;
 }
 
-export interface PROFILE_PAGE_DATA {
-  profile: PROFILE;
-  milestones: MILESTONE[];
-  sellingPoints: string[];
-  skills: SKILL[];
-  projects: PROJECT_ITEM[];
-}
 
 export interface ARTIST {
   name: string;
@@ -63,7 +73,16 @@ export interface SONG {
   image?: string;
 }
 
-export interface FAVORITES_PAGE_DATA {
+export interface MUSIC_LIBRARY {
   artists: ARTIST[];
   songs: SONG[];
+}
+
+export interface DATA {
+  profile: PROFILE;
+  milestones: MILESTONE[];
+  sellingPoints: string[];
+  skills: SKILL[];
+  projects: PROJECT[];
+  dock: DOCK;
 }

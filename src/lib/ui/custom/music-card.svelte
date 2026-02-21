@@ -5,9 +5,14 @@
 </script>
 
 <div
-	class="group relative cursor-pointer overflow-hidden rounded-4xl border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
+	class="group relative cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
 >
-	<a href={song.href} class="h-full w-full cursor-pointer">
+	<a
+		href={song.href}
+		target="_blank"
+		rel="noopener noreferrer"
+		class="h-full w-full cursor-pointer"
+	>
 		{#if song.image}
 			<div class="absolute top-0 left-0 aspect-4/3">
 				<img
@@ -35,7 +40,7 @@
 			</div>
 		{/if}
 		<span
-			class="pointer-events-none absolute -right-2 -bottom-4 z-10 text-7xl font-black text-slate-100 italic transition-all duration-700 group-hover:-translate-x-3.75 group-hover:-translate-y-2.5 group-hover:text-indigo-500/10 lg:text-8xl"
+			class="pointer-events-none absolute -right-2 -bottom-4 z-10 text-7xl font-black text-slate-100 italic transition-all duration-700 group-hover:-translate-x-3.75 group-hover:-translate-y-2.5 group-hover:text-indigo-500/30 lg:text-8xl dark:group-hover:text-indigo-500/70"
 		>
 			{number < 9 ? `0${number + 1}` : number + 1}
 		</span>
@@ -51,13 +56,13 @@
 
 			<div class="mt-4">
 				<h3
-					class="truncate text-xl leading-tight font-black text-black transition-all duration-500 group-hover:text-indigo-950 lg:text-3xl"
+					class="truncate text-xl leading-tight font-black text-black transition-all duration-500 group-hover:text-indigo-950 lg:text-3xl dark:text-slate-300"
 				>
 					{song.title ? song.title : song.artist}
 				</h3>
 				{#if song.title}
 					<p
-						class="mt-1 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase transition-colors duration-500 group-hover:text-rose-600/80 lg:text-[11px]"
+						class="mt-1 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase transition-colors duration-500 group-hover:text-rose-600/80 lg:text-[11px] dark:text-slate-400"
 					>
 						{song.artist}
 					</p>

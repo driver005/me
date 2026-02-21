@@ -1,4 +1,165 @@
 {
-	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+  "headline": "👋 Hi,  I'm Adrian",
+  "tagline": "I am {age} years old and currently searching for work.",
+  "member": "member since",
+  "catchline": "MY_HOME",
+  "enter": "Enter",
+  "loading": "Loading...",
+  "email": "contact@a42n.com",
+  "story": {
+    "title": "My Story",
+    "description": "I started my journey in software development when I was a teenager, tinkering with HTML and CSS to create simple websites. As I delved deeper into programming, I discovered a love for JavaScript and building interactive applications."
+  },
+  "status": {
+    "title": "Status",
+    "description": "Freelancing & learning C++"
+  },
+  "location": {
+    "tile": "Location",
+    "description": "Based in Tübingen, Germany"
+  },
+  "resume": {
+    "title": "Resume",
+    "update": "Last updated: {date}",
+    "button": "Download PDF"
+  },
+  "letter": {
+    "title": "Why me?",
+    "button": "Pitch Letter",
+    "pitch": "Design-to-Code Specialist|High Performance Focus|Accessibility First"
+  },
+  "image": "https://2.gravatar.com/avatar/3b4bfc82944bfb357ab19bc8644258f379caeac7256498f8c6cd81004cf0d544",
+  "milestones": {
+    "primary": "Grundschule am Hechinger Eck",
+    "secondary": "Wildermuth Gymnasium",
+    "internship": "Various Internships"
+  },
+  "dock": {
+    "navbar": {
+      "home": "Home",
+      "journey": "Journey",
+      "projects": "Projects",
+      "skills": "Skills"
+    },
+    "contact": {
+      "github": "Github",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "blog": "Blog",
+      "instagram": "Instagram",
+      "email": "Email"
+    }
+  },
+  "project_labels": {
+    "projects": "Projects",
+    "link": "Link"
+  },
+  "project_titles": {
+    "teclab": "the offical website of the teclab"
+  },
+  "music_mobile": {
+    "top_lable": "live feed",
+    "title": "Favorite Music / Artists",
+    "description": "essential only",
+    "music": "selected",
+    "update": "updated",
+    "vault": "enter vault",
+    "update_time": "Today"
+  },
+  "music": {
+    "title": "Music",
+    "subtitle": "Recently Played",
+    "subtitle_list": "All time favorites",
+    "artist": "Artist",
+    "song": "Song",
+    "playlist": "Playlist",
+    "description": "artists, songs, albums, and playlists"
+  },
+  "skills": {
+    "title": "Skill Architecture",
+    "subtitle": "A curated selection of my core and additional skills",
+    "core": "Core",
+    "other": "Additional",
+    "button": "View Skills"
+  },
+  "help": {
+    "title": "Need Help?",
+    "catchline": "Quick guide to survival.",
+    "header_nav": "Navigation",
+    "header_key": "Shortcuts",
+    "description": "Click the Sidebar Icons to navigate. Double-click any card to edit its contents directly.",
+    "nav": {
+      "home": "Click the PC'S MONITOR, MILK or JUICE to get a glimpse into my life",
+      "wheel": "MOUSE WHEEL down to clear smoke",
+      "music": "Click the CASSESTTE, AUX or SPEAKER to find out more about my music taste.",
+      "skills": "Click my LAPTOP or POTION to lern about my skills and experience.",
+      "mouse": "Press the LEFT mouse button to move the camera and the RIGHT button to interact with objects and open project links.",
+      "close": "Click outside the dialog to close it and return to the main interface."
+    },
+    "key": {
+      "help": "Help",
+      "home": "Home",
+      "music": "Music",
+      "skills": "Skills",
+      "close": "Close"
+    }
+  },
+  "lang": {
+    "title": "Select Language",
+    "description": "Choose your preferred language for the interface.",
+    "active": "Selected",
+    "button": "Language"
+  },
+  "webgl": {
+    "title": "3d not supported",
+    "description": "Your browser or device has hardware acceleration disabled.",
+    "link": "Lern how to enable it.",
+    "button": "Continue Anyway →"
+  },
+  "error": {
+    "title": "Not found",
+    "description": "Oops! Something went wrong while loading the page. Please try again later.",
+    "link": "Go Back Home"
+  },
+  "dust": {
+    "insult": "What are you looking at?",
+    "help": "Please stop.",
+    "button": "Fine, I'll stop."
+  },
+  "slides": {
+    "title": "Please read this carefully.",
+    "description": "Please hire me so I can buy myself Gucci slides!",
+    "button": "I'm counting on you!"
+  },
+  "gallery": {
+    "title": "Asset Index",
+    "description": "Direct links to project source files.",
+    "links": {
+      "teclab": "teclab source files",
+      "assets": "Some assets are from this tutorial, which I highly recommend",
+      "slides": "Gucci slides",
+      "space": "Space speaker / cassette / juice / milk / potion",
+      "printer": "3D printer model",
+      "ams": "AMS 3D model",
+      "animated": "Animated ui components"
+    },
+    "category": {
+      "file": "File",
+      "photo": "Photo",
+      "model": "3D Model"
+    }
+  },
+  "friendlymode": {
+    "title_friendly": "Safty first?",
+    "title_rougue": "Go rogue?",
+    "name": "SAFE mode",
+    "disabled": "Slide to restore",
+    "enabled": "Slide to disable",
+    "release": "RELEASE NOW!",
+    "slide": "Slide to confirm"
+  },
+  "tip": {
+    "first": "Left Mouse to Rotate",
+    "second": "Right Mouse to Click"
+  }
 }

@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { Project } from '@threlte/theatre';
-	import Common from '$lib/three/sceens/common.svelte';
-	import Intro from '$lib/three/sceens/intro.svelte';
-	import Life from '$lib/three/sceens/life.svelte';
-	import Projects from './projects.svelte';
 	import PERSONAL from '$lib/sequences/PERSONAL.json';
-	import Skills from '$lib/three/objects/skill_graph/default.svelte';
-	import { T, useThrelte } from '@threlte/core';
-	import { onMount } from 'svelte';
-	import Home from '$lib/three/models/home.svelte';
 	import Room from '$lib/three/sceens/room.svelte';
-	const { size } = useThrelte();
+	import Camera from '$lib/three/camera/room.svelte';
+	import SkyBox from '$lib/three/skybox/default.svelte';
+	import Ligths from '$lib/three/ligths/default.svelte';
+	import PostProcessing from '$lib/three/postprocessing/default.svelte';
+	import Extras from '$lib/three/extra/default.svelte';
 </script>
 
 <Project name="PERSONAL" config={{ state: PERSONAL }}>
+	<SkyBox />
+	<Camera />
+	<Extras />
+	<PostProcessing />
+	<Ligths />
 	<Room />
 </Project>

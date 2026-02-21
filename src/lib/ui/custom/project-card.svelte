@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { PROJECT_ITEM } from '$lib/types/ui';
+	import type { PROJECT } from '$lib/types/ui';
 
-	let { project, number }: { project: PROJECT_ITEM; number: number } = $props();
+	let { project, number }: { project: PROJECT; number: number } = $props();
 </script>
 
 <div
-	class="group relative isolate cursor-pointer overflow-hidden rounded-4xl border-2 border-black bg-white p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
+	class="group relative isolate cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
 >
 	<a href={project.href} class="h-full w-full cursor-pointer">
 		{#if project.iframe_url}
-			<div class="absolute inset-0 isolate h-full w-full overflow-hidden rounded-4xl">
+			<div class="absolute inset-0 isolate h-full w-full overflow-hidden">
 				<div class="animate-infinite-scroll relative z-0 h-[500%] w-full">
 					<iframe
 						src={project.iframe_url}
@@ -19,7 +19,7 @@
 					></iframe>
 				</div>
 				<div
-					class="pointer-events-none absolute inset-0 z-10 rounded-4xl border border-white/20 bg-white/20 backdrop-blur-[2px]"
+					class="pointer-events-none absolute inset-0 z-10 border border-white/20 bg-white/20 backdrop-blur-[2px]"
 				></div>
 			</div>
 		{:else}
@@ -46,10 +46,10 @@
 		</span>
 
 		<div class="relative z-20 flex h-full min-h-35 flex-col lg:min-h-40">
-			<div class="mb-auto">
+			<div class="mb-auto flex flex-wrap gap-2">
 				{#each project.tags as tag}
 					<span
-						class="inline-block rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 text-[8px] font-black tracking-widest text-slate-400 uppercase transition-all duration-500 group-hover:border-transparent group-hover:bg-indigo-500 group-hover:text-white group-hover:shadow-md lg:text-[9px]"
+						class="inline-block rounded-lg border-2 border-slate-200 bg-white/80 px-2.5 py-1 text-[8px] font-black tracking-widest text-slate-400 uppercase transition-all duration-500 group-hover:border-transparent group-hover:bg-indigo-500 group-hover:text-white group-hover:shadow-md lg:text-[9px]"
 					>
 						{tag}
 					</span>

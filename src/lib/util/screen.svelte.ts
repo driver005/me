@@ -1,26 +1,39 @@
 import { browser } from '$app/environment';
 
 export function useBreakpoint(width: string) {
-	// 1. Initialize state (default to false for SSR)
 	let matches = $state(false);
 
-	// 2. Only run the listener in the browser
 	$effect(() => {
 		if (!browser) return;
 
 		const media = window.matchMedia(`(min-width: ${width})`);
 		
-		// Set initial state
+		// 1. Set initial state
 		matches = media.matches;
 
-		// Update state on change
-		const listener = (e: MediaQueryListEvent) => (matches = e.matches);
-		media.addEventListener('change', listener);
+		let timer: ReturnType<typeof setTimeout>;
 
-		return () => media.removeEventListener('change', listener);
+		const handleResize = () => {
+			// Clear the timer while the user is still dragging/resizing
+			clearTimeout(timer);
+
+			// 2. Only update state once resizing has "stilled" for 150ms
+			// This effectively detects the "end" of the resize action
+			timer = setTimeout(() => {
+				if (matches !== media.matches) {
+					matches = media.matches;
+				}
+			}, 150);
+		};
+
+		window.addEventListener('resize', handleResize);
+
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			clearTimeout(timer);
+		};
 	});
 
-	// 3. Return an object with a getter to maintain reactivity
 	return {
 		get value() { return matches; }
 	};

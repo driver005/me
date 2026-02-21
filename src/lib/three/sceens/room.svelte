@@ -1,37 +1,50 @@
 <script lang="ts">
 	import { Project } from '@threlte/theatre';
-	import Room from '$lib/three/models/home.svelte';
+	import Room from '$lib/models/home.svelte';
 	import * as THREE from 'three';
 	import { T, injectPlugin } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
-	import { onMount } from 'svelte';
-	import Camera from '$lib/three/camera/room.svelte';
-	import { goto } from '$app/navigation';
+	import { getContext, onMount, onDestroy } from 'svelte';
+	import { Home, Skills, Music, Dust, Slides } from '$lib/ui/dialog';
+	import { create_video_texture } from '$lib/util/video.svelte';
+	import { socialLinks } from '$lib/data';
 
-	// Reuseable Materials
-	const glassMaterial = new THREE.MeshPhysicalMaterial({
-		transmission: 1,
-		opacity: 1,
-		color: 0xfbfbfb,
-		metalness: 0,
-		roughness: 0,
-		ior: 3,
-		thickness: 0.01,
-		specularIntensity: 1,
-		// envMap: environmentMap,
-		envMapIntensity: 1,
-		depthWrite: false,
-		specularColor: 0xfbfbfb
-	});
+	let life_tab = $state(false);
+	let skill_tab = $state(false);
+	let music_tab = $state(false);
+	let dust_tab = $state(false);
+	let slides_tab = $state(false);
+	let dust_opened = $state(1);
 
-	const socialLinks = {
-		github: 'https://github.com/andrewwoan/sooahkimsfolio',
-		youtube: 'https://youtu.be/AB6sulUMRGE',
-		twitter: 'https://www.twitter.com/',
-		instagram: 'https://www.twitter.com/'
-	};
+	const helper = getContext<{ value: boolean }>('helper');
+	const friendly = getContext<{ value: boolean }>('friendly');
 
 	let room_ref = $state<any>();
+	let now = $state(new Date());
+	let hourHand = $state<THREE.Mesh | null>(null);
+	let minuteHand = $state<THREE.Mesh | null>(null);
+
+	$effect(() => {
+		const interval = setInterval(() => {
+			now = new Date();
+		}, 60000); // 60 seconds
+		return () => clearInterval(interval);
+	});
+
+	$effect(() => {
+		if (!hourHand || !minuteHand) return;
+
+		const hours = now.getHours() % 12;
+		const minutes = now.getMinutes();
+		const seconds = now.getSeconds();
+
+		const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
+
+		const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
+
+		minuteHand.rotation.y = -minuteAngle;
+		hourHand.rotation.y = -hourAngle;
+	});
 
 	$effect(() => {
 		if (!room_ref) return;
@@ -46,40 +59,117 @@
 
 	interactivity();
 
+	function change_obj(obj: any) {
+		if (obj.children && obj.children.length !== 0) {
+			for (const child of obj.children) {
+				change_obj(child);
+			}
+		}
+
+		if (obj.isMesh && obj.material) {
+			const name = obj.material.name.toLowerCase();
+
+			$effect(() => {
+				if (name.includes('joint')) {
+					obj.visible = !friendly.value;
+				}
+			});
+
+			if (name.includes('glass')) {
+				obj.material = new THREE.MeshPhysicalMaterial({
+					transmission: 1,
+					opacity: 1,
+					color: 0xfbfbfb,
+					metalness: 0,
+					roughness: 0,
+					ior: 3,
+					thickness: 0.01,
+					specularIntensity: 1,
+					envMapIntensity: 1,
+					depthWrite: false,
+					specularColor: 0xfbfbfb
+				});
+			}
+
+			if (name.includes('water')) {
+				obj.material = new THREE.MeshBasicMaterial({
+					color: 0x558bc8,
+					transparent: true,
+					opacity: 0.4,
+					depthWrite: false
+				});
+			}
+
+			if (name.includes('tv')) {
+				obj.material = new THREE.MeshBasicMaterial({
+					map: create_video_texture('/textures/video/Screen.mp4'),
+					transparent: true,
+					opacity: 0.9
+				});
+				obj.material.name = 'tv';
+			}
+
+			if (name.includes('hour')) {
+				hourHand = obj;
+			}
+			if (name.includes('minute')) {
+				minuteHand = obj;
+			}
+		}
+	}
+
+	function dispose_node(node: any) {
+		if (!node) return;
+
+		// 1. Recursive call for all children
+		if (node.children) {
+			for (const child of node.children) {
+				dispose_node(child);
+			}
+		}
+
+		// 2. Dispose Geometry
+		if (node.geometry) {
+			node.geometry.dispose();
+		}
+
+		// 3. Dispose Material(s)
+		if (node.material) {
+			const materials = Array.isArray(node.material) ? node.material : [node.material];
+
+			for (const mat of materials) {
+				// Clean up all textures assigned to the material
+				for (const key of Object.keys(mat)) {
+					const value = mat[key];
+					if (value && typeof value === 'object' && value.isTexture) {
+						value.dispose();
+					}
+				}
+				mat.dispose();
+			}
+		}
+	}
+
 	injectPlugin('room', (args) => {
 		onMount(() => {
-			if (args.ref instanceof THREE.Mesh && args.ref.material) {
-				const name = args.ref.material.name.toLowerCase();
-
-				if (name.includes('glass')) {
-					args.ref.material = glassMaterial;
-				}
+			if (args.ref.children) {
+				args.ref.children.forEach((child: any) => change_obj(child));
 			}
+		});
+
+		onDestroy(() => {
+			dispose_node(args.ref);
 		});
 	});
 
-	function handlePointerDown(e: any) {
+	function handlePointerUp(e: any) {
 		e.stopPropagation();
+
+		if (e.nativeEvent.button !== 2) return;
+
 		for (const obj of e.intersections ?? []) {
 			if (obj != null) {
-				let hit = obj.object;
-				console.log(hit.name);
-				if (hit.name.includes('SpaceSpeaker')) {
-					goto('/speaker');
-				}
-				if (hit.name.includes('SpacePotion')) {
-					goto('/potion');
-				}
-				if (hit.name.includes('SpaceMilk')) {
-					goto('/milk');
-				}
-				if (hit.name.includes('SpaceJuice')) {
-					goto('/juice');
-				}
-				if (hit.name.includes('SpaceCasset')) {
-					goto('/casset');
-				}
-				let name = hit.material.name.toLowerCase();
+				let name = obj.object.name.toLowerCase();
 				const linkKey = Object.keys(socialLinks).find((key) => name.includes(key));
 				if (linkKey) {
 					const newWindow = window.open(socialLinks[linkKey], '_blank', 'noopener,noreferrer');
@@ -91,11 +181,86 @@
 			}
 		}
 	}
+
+	function handlePointerDown(e: any) {
+		e.stopPropagation();
+
+		if (e.nativeEvent.button !== 2) return;
+
+		for (const obj of e.intersections ?? []) {
+			if (obj != null) {
+				let hit = obj.object;
+				let name = hit.material.name.toLowerCase();
+
+				if (hit.name.includes('SpaceSpeaker')) {
+					music_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (hit.name.includes('SpacePotion')) {
+					skill_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (hit.name.includes('SpaceMilk')) {
+					life_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (hit.name.includes('SpaceJuice')) {
+					life_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (hit.name.includes('SpaceCasset')) {
+					music_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (name.includes('tv')) {
+					life_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (name.includes('laptop')) {
+					skill_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (name.includes('aux')) {
+					music_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (name.includes('dust')) {
+					dust_tab = true;
+					helper.value = false;
+					break;
+				}
+				if (name.includes('gucci')) {
+					slides_tab = true;
+					helper.value = false;
+					break;
+				}
+				break;
+			}
+		}
+	}
 </script>
 
+<Home bind:open={life_tab} />
+<Skills bind:open={skill_tab} />
+<Music bind:open={music_tab} />
+<Dust bind:open={dust_tab} bind:open_count={dust_opened} />
+<Slides bind:open={slides_tab} />
+
 <Project name="ROOM">
-	<Camera />
-	<T.Group name="Room" onpointerup={(e: any) => handlePointerDown(e)}>
+	<T.Group
+		name="Room"
+		onpointerup={(e: any) => handlePointerUp(e)}
+		onpointerdown={(e: any) => handlePointerDown(e)}
+		dispose={false}
+	>
 		<Room bind:this={room_ref}>
 			{#snippet error({ error }: { error: Error })}
 				<div class="error-ui">{error.message}</div>
