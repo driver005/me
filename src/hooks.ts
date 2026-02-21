@@ -1,3 +1,5 @@
-import { deLocalizeUrl } from '$lib/paraglide/runtime';
+// deno-lint-ignore no-sloppy-imports
+import { deLocalizeUrl } from "$lib/paraglide/runtime";
+import type { Reroute } from "@sveltejs/kit";
 
-export const reroute = (request) => deLocalizeUrl(request.url).pathname;
+export const reroute: Reroute = ({ url }) => deLocalizeUrl(url).pathname;

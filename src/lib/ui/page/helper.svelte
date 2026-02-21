@@ -20,7 +20,6 @@
 {#if helper.value}
 	<div class="absolute top-4 right-4 z-200 flex gap-4">
 		<FriendlyMode />
-		<Gallery />
 		<Helper />
 		<ThemeSwitcher />
 		<Button
@@ -30,6 +29,7 @@
 		>
 			<UserSearchIcon class="h-6 w-6 text-black" />
 		</Button>
+		<Gallery />
 		<Lang />
 	</div>
 {/if}

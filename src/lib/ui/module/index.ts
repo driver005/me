@@ -9,13 +9,13 @@ import GridBeam from "./grid-beam.svelte";
 import MagigCard from "./magig-card.svelte";
 
 export {
-  Features,
-  Marquee,
   BentoCard,
   BentoGrid,
-  Orbit,
-  DockIcon,
   Dock,
+  DockIcon,
+  Features,
   GridBeam,
-  MagigCard
-}
+  MagigCard,
+  Marquee,
+  Orbit,
+};

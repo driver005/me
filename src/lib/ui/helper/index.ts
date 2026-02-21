@@ -4,4 +4,4 @@ import BorderBeam from "./borderbeam.svelte";
 import ThemeSwitcher from "./theme-switcher.svelte";
 import Tip from "./tip.svelte";
 
-export { WrapperHome, Wrapper, BorderBeam, ThemeSwitcher, Tip };
+export { BorderBeam, ThemeSwitcher, Tip, Wrapper, WrapperHome };

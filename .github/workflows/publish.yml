@@ -1,0 +1,70 @@
+name: Deploy SvelteKit to Netcup (Static)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: netcup
+
+    steps:
+      - name: 🛎 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: 📦 Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🏗 Build SvelteKit App (Static)
+        run: yarn build
+        # Produces static files in ./build (requires @sveltejs/adapter-static)
+
+      - name: 🔍 Check for Remote Rsync Binary
+        id: check_remote
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          if sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "[ -f ~/opt/rsync_static ]"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🏗 Build Static Rsync (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        run: |
+          sudo apt-get update && sudo apt install -y gcc gawk autoconf automake libssl-dev
+          RSYNC_TAR_URL=$(curl -s https://api.github.com/repos/RsyncProject/rsync/releases/latest \
+            | grep "browser_download_url.*tar.gz" | cut -d '"' -f 4 | head -n 1)
+          curl -L $RSYNC_TAR_URL -o rsync-src.tar.gz
+          tar -xzf rsync-src.tar.gz && cd rsync-*/
+          ./configure LDFLAGS="-static" && make -j$(nproc)
+          cp rsync ../rsync_static && cd ..
+
+      - name: 📤 Push Rsync Binary to ~/opt (Conditional)
+        if: steps.check_remote.outputs.exists == 'false'
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "mkdir -p ~/opt"
+          sshpass -e scp -o StrictHostKeyChecking=no rsync_static ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/opt/rsync_static
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "chmod +x ~/opt/rsync_static"
+
+      - name: 📤 Deploy Static Files to Netcup via Rsync
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          rsync -avz --delete \
+            -e "sshpass -e ssh -o StrictHostKeyChecking=no" \
+            ./build/ \
+            --rsync-path="~/opt/rsync_static" \
+            ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_APP_DIR }}

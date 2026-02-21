@@ -1,25 +1,25 @@
-import { VideoTexture, SRGBColorSpace } from 'three';
-import { onDestroy } from 'svelte';
+import { SRGBColorSpace, VideoTexture } from "three";
+import { onDestroy } from "svelte";
 
 /**
  * Creates a video element and a corresponding Three.js texture.
  * @param {string} url - Path to your video file
  */
-export function create_video_texture(url) {
-  const video = document.createElement('video');
+export function create_video_texture(url: string, flipY = false): VideoTexture {
+  const video = document.createElement("video");
   video.src = url;
   video.loop = true;
   video.muted = true;
   video.playsInline = true;
   video.autoplay = true;
-  video.crossOrigin = 'anonymous';
-  video.play().catch(err => console.warn("Video autoplay blocked:", err));
+  video.crossOrigin = "anonymous";
+  video.play().catch((err) => console.warn("Video autoplay blocked:", err));
 
   const texture = new VideoTexture(video);
-  
+
   texture.colorSpace = SRGBColorSpace;
-  texture.flipY = false;
- 
+  texture.flipY = flipY;
+
   // Cleanup to prevent memory leaks
   onDestroy(() => {
     video.pause();

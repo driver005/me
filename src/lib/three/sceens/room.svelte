@@ -7,7 +7,7 @@
 	import { getContext, onMount, onDestroy } from 'svelte';
 	import { Home, Skills, Music, Dust, Slides } from '$lib/ui/dialog';
 	import { create_video_texture } from '$lib/util/video.svelte';
-	import { socialLinks } from '$lib/data';
+	import { social_links } from '$lib/data';
 
 	let life_tab = $state(false);
 	let skill_tab = $state(false);
@@ -23,6 +23,8 @@
 	let now = $state(new Date());
 	let hourHand = $state<THREE.Mesh | null>(null);
 	let minuteHand = $state<THREE.Mesh | null>(null);
+
+	const loader = new THREE.TextureLoader();
 
 	$effect(() => {
 		const interval = setInterval(() => {
@@ -102,11 +104,20 @@
 
 			if (name.includes('tv')) {
 				obj.material = new THREE.MeshBasicMaterial({
-					map: create_video_texture('/textures/video/Screen.mp4'),
+					map: create_video_texture('/textures/video/screen.mp4'),
+					name: 'tv',
 					transparent: true,
 					opacity: 0.9
 				});
-				obj.material.name = 'tv';
+			}
+
+			if (name.includes('auxdisplay')) {
+				obj.material = new THREE.MeshBasicMaterial({
+					map: create_video_texture('/textures/video/music_player.mp4'),
+					name: 'aux',
+					transparent: true,
+					opacity: 0.9
+				});
 			}
 
 			if (name.includes('hour')) {
@@ -170,9 +181,9 @@
 		for (const obj of e.intersections ?? []) {
 			if (obj != null) {
 				let name = obj.object.name.toLowerCase();
-				const linkKey = Object.keys(socialLinks).find((key) => name.includes(key));
+				const linkKey = Object.keys(social_links).find((key) => name.includes(key));
 				if (linkKey) {
-					const newWindow = window.open(socialLinks[linkKey], '_blank', 'noopener,noreferrer');
+					const newWindow = window.open(social_links[linkKey], '_blank', 'noopener,noreferrer');
 					if (newWindow) {
 						newWindow.opener = null;
 					}

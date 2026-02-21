@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Project } from '@threlte/theatre';
-	import PERSONAL from '$lib/sequences/PERSONAL.json';
 	import Room from '$lib/three/sceens/room.svelte';
 	import Camera from '$lib/three/camera/room.svelte';
 	import SkyBox from '$lib/three/skybox/default.svelte';
@@ -9,7 +8,7 @@
 	import Extras from '$lib/three/extra/default.svelte';
 </script>
 
-<Project name="PERSONAL" config={{ state: PERSONAL }}>
+<Project name="PERSONAL">
 	<SkyBox />
 	<Camera />
 	<Extras />

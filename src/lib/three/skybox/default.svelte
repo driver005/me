@@ -20,7 +20,7 @@
 	});
 
 	const { load } = useLoader(TextureLoader);
-	const map = load('/textures/nebula.jpg', {
+	const map = load('/textures/enviorment/nebula.jpg', {
 		transform(texture) {
 			texture.mapping = EquirectangularReflectionMapping;
 			return texture;

@@ -14,4 +14,20 @@ import MusicMobile from "./music-mobile.svelte";
 import Avatar from "./avatar.svelte";
 import HeroCard from "./hero-card.svelte";
 
-export { SkillCard, Project, Journey, Skill, Circle, Story, MusicCard, MusicArtist, Spotify, ProjectCard, Dock, ContactCard, MusicMobile, Avatar, HeroCard };
+export {
+  Avatar,
+  Circle,
+  ContactCard,
+  Dock,
+  HeroCard,
+  Journey,
+  MusicArtist,
+  MusicCard,
+  MusicMobile,
+  Project,
+  ProjectCard,
+  Skill,
+  SkillCard,
+  Spotify,
+  Story,
+};

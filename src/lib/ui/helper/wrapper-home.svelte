@@ -21,7 +21,7 @@
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
 	<Dialog.Content
 		onclick={() => handleOpenChange(false)}
-		class="flex flex-row justify-center gap-0 border-none bg-transparent p-0 shadow-none md:min-h-[65vh] md:w-[90vw] md:max-w-none lg:w-[70vw] lg:max-w-none xl:w-[67.5vw]"
+		class="flex flex-row justify-center gap-0 border-none bg-transparent p-0 shadow-none md:min-h-[77.5vh] md:w-[90vw] md:max-w-none lg:w-[70vw] lg:max-w-none xl:w-[67.5vw]"
 		showCloseButton={false}
 	>
 		<div class="hidden w-full items-center justify-center md:flex">

@@ -2,7 +2,9 @@
 	import { T, useTask } from '@threlte/core';
 	import { useTexture } from '@threlte/extras';
 	import * as THREE from 'three';
+	// @ts-ignore
 	import smokeVertexShader from '$lib/shaders/smoke/vertex.glsl';
+	// @ts-ignore
 	import smokeFragmentShader from '$lib/shaders/smoke/fragment.glsl';
 
 	const perlinStore = useTexture('/textures/shaders/perlin.png', {

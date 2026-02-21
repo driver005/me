@@ -4,4 +4,4 @@ import Music from "./music.svelte";
 import Skills from "./skills.svelte";
 import Loader from "./loader.svelte";
 
-export { Helper, Home, Music, Skills, Loader };
+export { Helper, Home, Loader, Music, Skills };

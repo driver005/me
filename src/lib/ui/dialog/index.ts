@@ -8,4 +8,14 @@ import Dust from "./dust.svelte";
 import Gallery from "./gallery.svelte";
 import FriendlyMode from "./friendly-mode.svelte";
 
-export { Helper, Home, Music, Skills, Lang, Slides, Dust, Gallery, FriendlyMode };
+export {
+  Dust,
+  FriendlyMode,
+  Gallery,
+  Helper,
+  Home,
+  Lang,
+  Music,
+  Skills,
+  Slides,
+};

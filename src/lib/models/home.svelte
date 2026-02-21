@@ -1061,91 +1061,77 @@ Command: npx @threlte/gltf@3.0.0-next.11 /home/default/node/me/static/models/hom
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_33.geometry}
-          material={gltf.materials.LavendelHead}
+          material={gltf.materials.FabricWeaved}
         />
         <T.Mesh
           name="Home_34"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_34.geometry}
-          material={gltf.materials.LavendelPetal}
+          material={gltf.materials.MePicture}
         />
         <T.Mesh
           name="Home_35"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_35.geometry}
-          material={gltf.materials.FabricWeaved}
+          material={gltf.materials.LightBase}
         />
         <T.Mesh
           name="Home_36"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_36.geometry}
-          material={gltf.materials.MePicture}
+          material={gltf.materials.StringLigth}
         />
         <T.Mesh
           name="Home_37"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_37.geometry}
-          material={gltf.materials.LightBase}
+          material={gltf.materials.BaseBlack}
         />
         <T.Mesh
           name="Home_38"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_38.geometry}
-          material={gltf.materials.StringLigth}
+          material={gltf.materials.FabricWeavedDark}
         />
         <T.Mesh
           name="Home_39"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_39.geometry}
-          material={gltf.materials.BaseBlack}
+          material={gltf.materials.SmallPicture}
         />
         <T.Mesh
           name="Home_40"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_40.geometry}
-          material={gltf.materials.FabricWeavedDark}
+          material={gltf.materials.Cactus}
         />
         <T.Mesh
           name="Home_41"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_41.geometry}
-          material={gltf.materials.SmallPicture}
+          material={gltf.materials.AuxWoodLast}
         />
         <T.Mesh
           name="Home_42"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_42.geometry}
-          material={gltf.materials.Cactus}
+          material={gltf.materials.RubberBumpy}
         />
         <T.Mesh
           name="Home_43"
           castShadow
           receiveShadow
           geometry={gltf.nodes.Home_43.geometry}
-          material={gltf.materials.AuxWoodLast}
-        />
-        <T.Mesh
-          name="Home_44"
-          castShadow
-          receiveShadow
-          geometry={gltf.nodes.Home_44.geometry}
-          material={gltf.materials.RubberBumpy}
-        />
-        <T.Mesh
-          name="Home_45"
-          castShadow
-          receiveShadow
-          geometry={gltf.nodes.Home_45.geometry}
-          material={gltf.materials.Aux}
+          material={gltf.materials.AuxDisplay}
         />
       </T.Group>
       <T.Group

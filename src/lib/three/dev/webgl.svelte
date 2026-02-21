@@ -36,7 +36,12 @@
 		</p>
 
 		<div class="mt-8 flex flex-col gap-4">
-			<a href="https://get.webgl.org/" target="_blank" class="font-bold underline">
+			<a
+				href="https://get.webgl.org/"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="font-bold underline"
+			>
 				{m['webgl.link']()}
 			</a>
 

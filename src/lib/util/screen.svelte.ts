@@ -1,40 +1,42 @@
-import { browser } from '$app/environment';
+import { browser } from "$app/environment";
 
 export function useBreakpoint(width: string) {
-	let matches = $state(false);
+  let matches = $state(false);
 
-	$effect(() => {
-		if (!browser) return;
+  $effect(() => {
+    if (!browser) return;
 
-		const media = window.matchMedia(`(min-width: ${width})`);
-		
-		// 1. Set initial state
-		matches = media.matches;
+    const media = globalThis.matchMedia(`(min-width: ${width})`);
 
-		let timer: ReturnType<typeof setTimeout>;
+    // 1. Set initial state
+    matches = media.matches;
 
-		const handleResize = () => {
-			// Clear the timer while the user is still dragging/resizing
-			clearTimeout(timer);
+    let timer: ReturnType<typeof setTimeout>;
 
-			// 2. Only update state once resizing has "stilled" for 150ms
-			// This effectively detects the "end" of the resize action
-			timer = setTimeout(() => {
-				if (matches !== media.matches) {
-					matches = media.matches;
-				}
-			}, 150);
-		};
+    const handleResize = () => {
+      // Clear the timer while the user is still dragging/resizing
+      clearTimeout(timer);
 
-		window.addEventListener('resize', handleResize);
+      // 2. Only update state once resizing has "stilled" for 150ms
+      // This effectively detects the "end" of the resize action
+      timer = setTimeout(() => {
+        if (matches !== media.matches) {
+          matches = media.matches;
+        }
+      }, 150);
+    };
 
-		return () => {
-			window.removeEventListener('resize', handleResize);
-			clearTimeout(timer);
-		};
-	});
+    globalThis.addEventListener("resize", handleResize);
 
-	return {
-		get value() { return matches; }
-	};
+    return () => {
+      globalThis.removeEventListener("resize", handleResize);
+      clearTimeout(timer);
+    };
+  });
+
+  return {
+    get value() {
+      return matches;
+    },
+  };
 }

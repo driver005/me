@@ -3,9 +3,12 @@
 	import { ExternalLink, Landmark } from 'lucide-svelte';
 	import { Button } from '$lib/ui/cn/button';
 	import { m } from '$lib/paraglide/messages.js';
-	import { mediaAssets } from '$lib/data';
+	import { media_assets } from '$lib/data';
+	import { shuffle_array } from '$lib/utils';
 
 	let open = $state(false);
+
+	shuffle_array(media_assets);
 </script>
 
 <Dialog.Root bind:open>
@@ -30,9 +33,11 @@
 		</div>
 
 		<div class="flex max-h-[60vh] flex-col gap-3 overflow-y-auto p-6">
-			{#each mediaAssets as item}
+			{#each media_assets as item}
 				<a
 					href={item.url}
+					target="_blank"
+					rel="noopener noreferrer"
 					class="group flex items-center justify-between rounded-xl border-4 border-black p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] {item.color}"
 				>
 					<div class="flex items-center gap-4 text-black">

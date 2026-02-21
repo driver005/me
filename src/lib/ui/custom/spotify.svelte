@@ -13,6 +13,7 @@
 		<a
 			href={track.songUrl}
 			target="_blank"
+			rel="noopener noreferrer"
 			class="flex items-center gap-4 rounded-xl border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 		>
 			<img src={track.albumImageUrl} alt={track.title} class="h-12 w-12" />
