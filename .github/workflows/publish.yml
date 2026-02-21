@@ -26,7 +26,6 @@ jobs:
 
       - name: 🏗 Build SvelteKit App (Static)
         run: yarn build
-        # Produces static files in ./build (requires @sveltejs/adapter-static)
 
       - name: 🔍 Check for Remote Rsync Binary
         id: check_remote
