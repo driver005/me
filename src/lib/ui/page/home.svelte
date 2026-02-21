@@ -59,7 +59,7 @@
 	</Tabs.List>
 
 	<div class="w-full flex-1 px-4">
-		<Tabs.Content value="home" class="m-0 space-y-6 pb-4">
+		<Tabs.Content value="home" class="m-0 space-y-6 pb-2">
 			<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 				<Card.Root
 					class="group relative h-full overflow-hidden rounded-2xl border-none p-1 transition-all duration-500"
