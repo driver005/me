@@ -24,8 +24,6 @@
 	let hourHand = $state<THREE.Mesh | null>(null);
 	let minuteHand = $state<THREE.Mesh | null>(null);
 
-	const loader = new THREE.TextureLoader();
-
 	$effect(() => {
 		const interval = setInterval(() => {
 			now = new Date();

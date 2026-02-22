@@ -4,12 +4,12 @@
 	import CanvasPortalTarget from '$lib/three/canvas/target.svelte';
 	import { Canvas } from '@threlte/core';
 	import { setContext, type Snippet } from 'svelte';
-	import { WebGPURenderer } from 'three/webgpu';
 	import { useBreakpoint } from '$lib/util/screen.svelte';
 	import Webgl from '$lib/three/dev/webgl.svelte';
 	import { page } from '$app/state';
 	import { Loader } from '$lib/ui/page';
 	import { ModeWatcher, mode } from 'mode-watcher';
+	import { WebGLRenderer } from 'three';
 
 	let manual_override = $state(false);
 	let helper = $state(true);
@@ -55,6 +55,10 @@
 		}
 	});
 
+	function createRenderer(canvas: any) {
+		return new WebGLRenderer({ canvas, antialias: true });
+	}
+
 	let { children }: { children: Snippet } = $props();
 </script>
 
@@ -64,17 +68,9 @@
 	<Webgl>
 		<Loader />
 		<div class="h-screen bg-black">
-			{#if import.meta.env.MODE === 'development'}
-				<Canvas><CanvasPortalTarget /></Canvas>
-			{:else}
-				<Canvas
-					createRenderer={(canvas) => {
-						return new WebGPURenderer({ canvas, antialias: true, forceWebGL: false });
-					}}
-				>
-					<CanvasPortalTarget />
-				</Canvas>
-			{/if}
+			<Canvas {createRenderer}>
+				<CanvasPortalTarget />
+			</Canvas>
 		</div>
 	</Webgl>
 {/if}
