@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Project } from '@threlte/theatre';
 	import Room from '$lib/models/home.svelte';
 	import * as THREE from 'three';
 	import { T, injectPlugin } from '@threlte/core';
@@ -263,23 +262,21 @@
 <Dust bind:open={dust_tab} bind:open_count={dust_opened} />
 <Slides bind:open={slides_tab} />
 
-<Project name="ROOM">
-	<T.Group
-		name="Room"
-		onpointerup={(e: any) => handlePointerUp(e)}
-		onpointerdown={(e: any) => handlePointerDown(e)}
-		dispose={false}
-	>
-		<Room bind:this={room_ref}>
-			{#snippet error({ error }: { error: Error })}
-				<div class="error-ui">{error.message}</div>
-			{/snippet}
+<T.Group
+	name="Room"
+	onpointerup={(e: any) => handlePointerUp(e)}
+	onpointerdown={(e: any) => handlePointerDown(e)}
+	dispose={false}
+>
+	<Room bind:this={room_ref}>
+		{#snippet error({ error }: { error: Error })}
+			<div class="error-ui">{error.message}</div>
+		{/snippet}
 
-			{#snippet fallback()}
-				<p>Loading model...</p>
-			{/snippet}
+		{#snippet fallback()}
+			<p>Loading model...</p>
+		{/snippet}
 
-			{#snippet children()}{/snippet}
-		</Room>
-	</T.Group>
-</Project>
+		{#snippet children()}{/snippet}
+	</Room>
+</T.Group>
