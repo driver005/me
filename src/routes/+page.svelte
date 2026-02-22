@@ -34,11 +34,15 @@
 		{/if}
 		<CanvasPortal>
 			<World>
-				<DevHelper {helper}>
-					<PerfMonitor anchorX={'left'} anchorY={'bottom'} logsPerSecond={30} />
+				{#if import.meta.env.MODE === 'development'}
+					<DevHelper {helper}>
+						<PerfMonitor anchorX={'left'} anchorY={'bottom'} logsPerSecond={30} />
+						<Sceens />
+						<Grid sectionColor="#ff3e00" sectionThickness={1} cellColor="#cccccc" gridSize={40} />
+					</DevHelper>
+				{:else}
 					<Sceens />
-					<Grid sectionColor="#ff3e00" sectionThickness={1} cellColor="#cccccc" gridSize={40} />
-				</DevHelper>
+				{/if}
 			</World>
 		</CanvasPortal>
 	{:else}
