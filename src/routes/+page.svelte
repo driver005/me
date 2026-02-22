@@ -40,7 +40,7 @@
 			type: 'website',
 			images: [
 				{
-					url: `${m.url()}/images/preview.jpg`,
+					url: `${m.url()}/images/preview_home.jpg`,
 					width: 800,
 					height: 600,
 					alt: m['seo.og_image_alt']()
@@ -53,7 +53,7 @@
 			site: m['seo.twitter_handle'](),
 			title: m['seo.home.title'](),
 			description: m['seo.home.description'](),
-			image: `${m.url()}/images/preview.jpg`
+			image: `${m.url()}/images/preview_home.jpg`
 		}}
 	/>
 </svelte:head>
