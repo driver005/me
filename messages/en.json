@@ -67,9 +67,7 @@
     "update_time": "Today"
   },
   "music": {
-    "title": "Music",
-    "subtitle": "Recently Played",
-    "subtitle_list": "All time favorites",
+    "title": "All time favorite music",
     "artist": "Artist",
     "song": "Song",
     "playlist": "Playlist",
