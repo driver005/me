@@ -6,6 +6,7 @@
   "enter": "Enter",
   "loading": "Loading...",
   "email": "contact@a42n.com",
+  "url": "https://www.a42n.com",
   "story": {
     "title": "My Story",
     "description": "I started my journey in software development when I was a teenager, tinkering with HTML and CSS to create simple websites. As I delved deeper into programming, I discovered a love for JavaScript and building interactive applications."
@@ -140,7 +141,9 @@
       "sofa": "Parametric sofa genrator",
       "printer": "3D printer model",
       "ams": "AMS 3D model",
-      "animated": "Animated ui components"
+      "animated": "Animated ui components",
+      "house": "Beach house",
+      "meme": "Meme photo"
     },
     "category": {
       "file": "File",
@@ -160,5 +163,23 @@
   "tip": {
     "first": "Left Mouse to Rotate",
     "second": "Right Mouse to Click"
+  },
+  "seo": {
+    "home": {
+      "title": "Adrian's Personal Portfolio",
+      "description": "Explore Adrian's unique personal portfolio, showcasing his journey, projects, skills, and favorite music in an interactive 3D experience."
+    },
+    "music": {
+      "title": "Adrian's Music | Personal Portfolio",
+      "description": "Discover the music that inspires Adrian, featuring his favorite tracks and artists in an interactive experience."
+    },
+    "skills": {
+      "title": "Adrian's Skills | Personal Portfolio",
+      "description": "Explore Adrian's technical skills and expertise as a software developer, from frontend to backend and everything in between."
+    },
+    "keywords": "Adrian, personal portfolio, software developer, projects, skills, music, interactive 3D",
+    "author": "Adrian",
+    "og_image_alt": "Adrian's Portfolio Preview",
+    "twitter_handle": "@real4drian"
   }
 }

@@ -8,6 +8,8 @@
 	import { Home } from '$lib/ui/page';
 	import { browser } from '@threlte/core';
 	import { getContext, onMount } from 'svelte';
+	import { m } from '$lib/paraglide/messages';
+	import SvelteSeo from 'svelte-seo';
 
 	let isMounted = $state(false);
 	let active = $state('home');
@@ -24,6 +26,37 @@
 
 	const manual_override = getContext<{ value: boolean }>('manual_override');
 </script>
+
+<svelte:head>
+	<SvelteSeo
+		title={m['seo.home.title']()}
+		description={m['seo.home.description']()}
+		keywords={m['seo.keywords']()}
+		canonical={m.url()}
+		openGraph={{
+			title: m['seo.home.title'](),
+			description: m['seo.home.description'](),
+			url: m.url(),
+			type: 'website',
+			images: [
+				{
+					url: `${m.url()}/images/preview.jpg`,
+					width: 800,
+					height: 600,
+					alt: m['seo.og_image_alt']()
+				}
+			],
+			site_name: m['seo.author']()
+		}}
+		twitter={{
+			card: 'summary_large_image',
+			site: m['seo.twitter_handle'](),
+			title: m['seo.home.title'](),
+			description: m['seo.home.description'](),
+			image: `${m.url()}/images/preview.jpg`
+		}}
+	/>
+</svelte:head>
 
 {#if isMounted}
 	{#if isDesktop.value && manual_override.value === false}

@@ -638,6 +638,20 @@ export const media_assets = [
     icon: File,
     color: "bg-violet-400",
   },
+  {
+    name: m["gallery.links.house"](),
+    category: m["gallery.category.file"](),
+    url: "https://de.pinterest.com/pin/2533343537727438/",
+    icon: File,
+    color: "bg-red-400",
+  },
+  {
+    name: m["gallery.links.meme"](),
+    category: m["gallery.category.file"](),
+    url: "https://de.pinterest.com/pin/799389002653432801/",
+    icon: File,
+    color: "bg-red-400",
+  },
 ];
 
 export const shortcuts = [
