@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MusicCard } from '$lib/ui/custom';
 	import { music } from '$lib/data';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { shuffle_array } from '$lib/utils';
 	shuffle_array(music);
 </script>

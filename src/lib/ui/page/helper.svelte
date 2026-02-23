@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { UserSearchIcon } from '@lucide/svelte';
 	import { Button } from '$lib/ui/cn/button';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { Helper, Lang, Gallery, FriendlyMode } from '$lib/ui/dialog';
 	import { ThemeSwitcher, Tip } from '$lib/ui/helper';
 	import { getContext } from 'svelte';

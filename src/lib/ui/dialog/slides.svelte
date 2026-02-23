@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/ui/cn/button';
 	import * as Dialog from '$lib/ui/cn/dialog';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { AspectRatio } from '$lib/ui/cn/aspect-ratio';
 	import { getContext } from 'svelte';
 

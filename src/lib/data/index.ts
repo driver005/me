@@ -32,23 +32,27 @@ import type { DOCK, PROJECT, SKILL } from "$lib/types/ui.ts";
 
 export const journey = [
   {
-    name: m["milestones.primary"](),
+    name: m["milestones.primary.title"](),
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Grundschule_Hechinger_Eck_06.jpg/500px-Grundschule_Hechinger_Eck_06.jpg",
     text:
-      `<a href="https://hechingereck.de/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">Primary school</a>`,
+      `<a href="https://hechingereck.de/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">${
+        m["milestones.primary.school"]()
+      }</a>`,
     time: "09.2012 - 07.2016",
   },
   {
-    name: m["milestones.secondary"](),
+    name: m["milestones.secondary.title"](),
     image:
       "https://upload.wikimedia.org/wikipedia/commons/1/1c/Wildermuth-Gymnasium_T%C3%BCbingen_Juli_2022.jpg",
     text:
-      `<a href="https://www.wildermuth-gymnasium.de/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">Secondary school</a><li><a href="https://de.wikipedia.org/wiki/Abitur_in_Baden-W%C3%BCrttemberg" target="_blank" class="hover:underline underline-offset-4 decoration-black transition-all">Abitur 2024/2025</a></li>`,
+      `<a href="https://www.wildermuth-gymnasium.de/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">${
+        m["milestones.secondary.school"]()
+      }</a><li><a href="https://de.wikipedia.org/wiki/Abitur_in_Baden-W%C3%BCrttemberg" target="_blank" class="hover:underline underline-offset-4 decoration-black transition-all">Abitur 2024/2025</a></li>`,
     time: "09.2016 - 07.2025",
   },
   {
-    name: m["milestones.internship"](),
+    name: m["milestones.internship.title"](),
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Grundschule_Hechinger_Eck_06.jpg/500px-Grundschule_Hechinger_Eck_06.jpg",
     text:
@@ -145,7 +149,7 @@ export const dock: DOCK = {
 export const skills: SKILL[] = [
   {
     name: "SvelteKit",
-    message: m["skills.core"](),
+    message: m["skills.other"](),
     img: "https://avatar.vercel.sh/sveltekit",
     border: "border-orange-500",
     color: "text-orange-500",
@@ -180,14 +184,14 @@ export const skills: SKILL[] = [
   },
   {
     name: "C++",
-    message: m["skills.other"](),
+    message: m["skills.core"](),
     img: "https://avatar.vercel.sh/cpp",
     border: "border-blue-600",
     color: "text-blue-600",
   },
   {
     name: "Java",
-    message: m["skills.other"](),
+    message: m["skills.core"](),
     img: "https://avatar.vercel.sh/java",
     border: "border-red-500",
     color: "text-red-500",
@@ -201,7 +205,7 @@ export const skills: SKILL[] = [
   },
   {
     name: "React",
-    message: m["skills.core"](),
+    message: m["skills.other"](),
     img: "https://avatar.vercel.sh/react",
     border: "border-sky-500",
     color: "text-sky-500",
@@ -257,7 +261,7 @@ export const skills: SKILL[] = [
   },
   {
     name: "Vercel",
-    message: m["skills.core"](),
+    message: m["skills.other"](),
     img: "https://avatar.vercel.sh/vercel",
     border: "border-slate-400",
     color: "text-slate-400",
@@ -575,7 +579,6 @@ export const music = [
 
 export const languages = [
   { id: "en", label: "English", flag: "🇬🇧" },
-  { id: "fr", label: "Français", flag: "🇫🇷" },
   { id: "de", label: "Deutsch", flag: "🇩🇪" },
 ];
 

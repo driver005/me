@@ -2,7 +2,7 @@
 	import * as Dialog from '$lib/ui/cn/dialog';
 	import { Button } from '$lib/ui/cn/button';
 	import { CircleQuestionMark, MousePointer2, Keyboard } from 'lucide-svelte';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { shortcuts } from '$lib/data';
 
 	let open = $state(false);

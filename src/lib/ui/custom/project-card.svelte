@@ -7,7 +7,12 @@
 <div
 	class="group relative isolate cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
 >
-	<a href={project.href} class="h-full w-full cursor-pointer">
+	<a
+		href={project.href}
+		target="_blank"
+		rel="noopener noreferrer"
+		class="h-full w-full cursor-pointer"
+	>
 		{#if project.iframe_url}
 			<div class="absolute inset-0 isolate h-full w-full overflow-hidden">
 				<div class="animate-infinite-scroll relative z-0 h-[500%] w-full">

@@ -13,11 +13,12 @@
 		ContactCard,
 		MusicMobile
 	} from '$lib/ui/custom';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { dock } from '$lib/data';
 	import { calculate_age } from '$lib/util/age.svelte';
 	import { Lang } from '$lib/ui/dialog';
 	import ThemeSwitcher from '../helper/theme-switcher.svelte';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let {
 		active = $bindable(),
@@ -26,6 +27,16 @@
 
 	const age = calculate_age('2005-12');
 	const pitches = $derived(m['letter.pitch']().split('|'));
+
+	function handleClick(name: string) {
+		if (name === 'letter') {
+			const file = getLocale() === 'en' ? 'pitch.pdf' : 'motivations-schreiben.pdf';
+			window.open(`/docs/${file}`, '_blank', 'noopener,noreferrer');
+		} else if (name === 'resume') {
+			const file = getLocale() === 'en' ? 'resume.pdf' : 'lebenslauf.pdf';
+			window.open(`/docs/${file}`, '_blank', 'noopener,noreferrer');
+		}
+	}
 </script>
 
 <header class="mb-6 pr-8 md:pr-4">
@@ -96,6 +107,7 @@
 							{/each}
 						</ul>
 						<Button
+							onclick={() => handleClick('letter')}
 							class="h-10 w-full gap-2 rounded-xl border-4 border-black bg-indigo-400 font-black text-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-indigo-300 active:translate-x-px active:translate-y-px active:shadow-none dark:hover:bg-indigo-500"
 						>
 							<Download size={16} />
@@ -127,6 +139,7 @@
 					</div>
 
 					<Button
+						onclick={() => handleClick('resume')}
 						class="h-10 w-full gap-2 rounded-xl border-4 border-black bg-pink-400 font-black text-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-pink-300 active:translate-x-px active:translate-y-px active:shadow-none dark:hover:bg-pink-500"
 					>
 						<Download size={16} />

@@ -7,7 +7,10 @@
 
 <div class="flex w-full flex-wrap justify-center gap-6 px-6 py-8 {!manual_override && 'md:hidden'}">
 	{#each dock.contact as item, i}
-		<div
+		<a
+			href={item.href}
+			target="_blank"
+			rel="noopener noreferrer"
 			class="relative transition-transform active:scale-90"
 			style="transform: rotate({i % 2 === 0 ? -4 : 4}deg);"
 		>
@@ -31,6 +34,6 @@
 					{item.label || 'Go'}
 				</div>
 			</Button>
-		</div>
+		</a>
 	{/each}
 </div>

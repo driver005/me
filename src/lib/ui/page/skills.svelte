@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CodeXml, Star, Zap } from 'lucide-svelte';
 	import { skill_tree } from '$lib/data';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 </script>
 
 <div class="flex shrink-0 items-center justify-between border-b bg-background p-5 md:px-10">

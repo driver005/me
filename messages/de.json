@@ -1,4 +1,193 @@
 {
-	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from de!"
+	"headline": "👋 Hi, ich bin Adrian",
+	"tagline": "Ich bin {age} Jahre alt und aktuell auf der Suche nach neuen Herausforderungen.",
+	"member": "Mitglied seit",
+	"catchline": "MEIN_ZUHAUSE",
+	"enter": "Eintreten",
+	"loading": "Lädt...",
+	"email": "contact@a42n.com",
+	"url": "https://www.a42n.com",
+	"story": {
+		"title": "Meine Story",
+		"description": "Ich liebe es, multifunktionale und erweiterbare Systeme zu entwickeln, die gleichzeitig das Maximum an Performance herausholen. Dabei nutze ich die Raw Power von Rust und C++, die elegante Concurrency von Go or die bewährte einfachkeit von Java."
+	},
+	"status": {
+		"title": "Status",
+		"description": "Freelancing & mein C++ verbessern"
+	},
+	"location": {
+		"tile": "Standort",
+		"description": "Wohnhaft in Tübingen, Deutschland"
+	},
+	"resume": {
+		"title": "Lebenslauf",
+		"update": "Zuletzt aktualisiert: {date}",
+		"button": "PDF herunterladen"
+	},
+	"letter": {
+		"title": "Warum ich?",
+		"button": "Motivations schreiben",
+		"pitch": "Vertrau dem Prozess|Ein Schritt nach dem anderen|Hier um zu lernen"
+	},
+	"image": "https://2.gravatar.com/avatar/3b4bfc82944bfb357ab19bc8644258f379caeac7256498f8c6cd81004cf0d544",
+	"milestones": {
+		"primary": {
+			"title": "Grundschule am Hechinger Eck",
+			"school": "Grundschule"
+		},
+		"secondary": {
+			"title": "Wildermuth Gymnasium",
+			"school": "Gymnasium"
+		},
+		"internship": {
+			"title": "Mehre Praktikas"
+		}
+	},
+	"dock": {
+		"navbar": {
+			"home": "Home",
+			"journey": "Reise",
+			"projects": "Projekte",
+			"skills": "Skills"
+		},
+		"contact": {
+			"github": "Github",
+			"linkedin": "LinkedIn",
+			"x": "X",
+			"blog": "Blog",
+			"instagram": "Instagram",
+			"email": "Email"
+		}
+	},
+	"project_labels": {
+		"projects": "Projekte",
+		"link": "Link"
+	},
+	"project_titles": {
+		"teclab": "Die offizielle Website des teclab"
+	},
+	"music_mobile": {
+		"top_lable": "Live-Feed",
+		"title": "Lieblingsmusik / Künstler",
+		"description": "Nicht alle aber ein paar",
+		"music": "Ausgewählt",
+		"update": "Aktualisiert",
+		"vault": "Vault öffnen",
+		"update_time": "Heute"
+	},
+	"music": {
+		"title": "All-Time Favorites",
+		"artist": "Künstler",
+		"song": "Song",
+		"playlist": "Playlist",
+		"description": "Künstler, Songs, Alben und Playlists"
+	},
+	"skills": {
+		"title": "Skill-Architektur",
+		"subtitle": "Eine kuratierte Auswahl meiner Kernkompetenzen und Zusatzskills",
+		"core": "Kernkompetenzen",
+		"other": "Zusätzliches",
+		"button": "Skills ansehen"
+	},
+	"help": {
+		"title": "Brauchst du Hilfe?",
+		"catchline": "Kurzer Guide zum Überleben.",
+		"header_nav": "Navigation",
+		"header_key": "Shortcuts",
+		"description": "Klicke auf die Icons in der Seitenleiste zum Navigieren. Doppelklicke auf eine Karte, um ihren Inhalt direkt zu bearbeiten.",
+		"nav": {
+			"home": "Klicke auf den MONITOR, die MILCH oder den SAFT, um einen Einblick in mein Leben zu erhalten.",
+			"wheel": "MAUSRAD klicken, um den Rauch zu verziehen.",
+			"music": "Klicke auf die KASSETTE, die MUSIK-ANLAGE oder den LAUTSPRECHER, um mehr über meinen Musikgeschmack zu erfahren.",
+			"skills": "Klicke auf meinen LAPTOP oder den TRANK, um mehr über meine Skills und Erfahrungen zu lernen.",
+			"mouse": "Nutze die LINKE Maustaste, um die Kamera zu bewegen, und die RECHTE, um mit Objekten zu interagieren oder Projekt-Links zu öffnen.",
+			"close": "Klicke außerhalb des Dialogs, um ihn zu schließen."
+		},
+		"key": {
+			"help": "Hilfe",
+			"home": "Zuhause",
+			"music": "Musik",
+			"skills": "Skills",
+			"close": "Schließen"
+		}
+	},
+	"lang": {
+		"title": "Sprache wählen",
+		"description": "Wähle deine bevorzugte Sprache für das Interface.",
+		"active": "Ausgewählt",
+		"button": "Sprache"
+	},
+	"webgl": {
+		"title": "3D nicht unterstützt",
+		"description": "Dein Browser oder Gerät hat die Hardwarebeschleunigung deaktiviert.",
+		"link": "Erfahre, wie du sie aktivieren kannst.",
+		"button": "Trotzdem fortfahren →"
+	},
+	"error": {
+		"title": "Nicht gefunden",
+		"description": "Hoppla! Beim Laden der Seite ist etwas schiefgegangen. Bitte versuche es später noch einmal.",
+		"link": "Zurück nach Hause"
+	},
+	"dust": {
+		"insult": "Was suchst du hier denn?",
+		"help": "Bitte hör auf damit.",
+		"button": "Na gut, ich hör auf."
+	},
+	"slides": {
+		"title": "Meine Motivation.",
+		"description": "Bitte stell mich ein, damit ich mir endlich Gucci-Schlappen kaufen kann!",
+		"button": "Ich zähle auf dich!"
+	},
+	"gallery": {
+		"title": "Asset-Index",
+		"description": "Direkte Links zu den Projekt-Quelldateien.",
+		"links": {
+			"teclab": "teclab Quelldateien",
+			"assets": "Einige Assets stammen aus diesem Tutorial, das ich sehr empfehle",
+			"slides": "Gucci-Schlappen",
+			"space": "Space Lautsprecher / Kassette / Saft / Milch / Trank",
+			"sofa": "Parametrischer Sofa-Generator",
+			"printer": "3D-Drucker Modell",
+			"ams": "AMS 3D-Modell",
+			"animated": "Animierte UI-Komponenten",
+			"house": "Strandhaus",
+			"meme": "Meme-Foto"
+		},
+		"category": {
+			"file": "Datei",
+			"photo": "Foto",
+			"model": "3D-Modell"
+		}
+	},
+	"friendlymode": {
+		"title_friendly": "Sicherheit zuerst?",
+		"title_rougue": "Rogue-Modus?",
+		"name": "SICHERER Modus",
+		"disabled": "Schieben zum Wiederherstellen",
+		"enabled": "Schieben zum Deaktivieren",
+		"release": "JETZT LOSLASSEN!",
+		"slide": "Schieben zum Bestätigen"
+	},
+	"tip": {
+		"first": "Linksklick zum Drehen",
+		"second": "Rechtsklick zum Interagieren"
+	},
+	"seo": {
+		"home": {
+			"title": "Adrians persönliches Portfolio",
+			"description": "Entdecke Adrians einzigartiges Portfolio - Eine interaktive 3D-Erfahrung seiner Projekte, Skills und Musik."
+		},
+		"music": {
+			"title": "Adrians Musik | Persönliches Portfolio",
+			"description": "Entdecke die Musik, die Adrian inspiriert – seine Lieblingstracks und Künstler in einer interaktiven Erfahrung."
+		},
+		"skills": {
+			"title": "Adrians Skills | Persönliches Portfolio",
+			"description": "Erfahre mehr über Adrians technische Fähigkeiten und Expertise als Softwareentwickler, von Frontend bis Backend."
+		},
+		"keywords": "Adrian, Portfolio, Softwareentwickler, Projekte, Skills, Musik, interaktives 3D",
+		"author": "Adrian",
+		"og_image_alt": "Vorschau von Adrians Portfolio",
+		"twitter_handle": "@real4drian"
+	}
 }

@@ -1,6 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
-	import * as m from '$lib/paraglide/messages.js';
+	import * as m from '$lib/paraglide/messages';
 	import { onMount } from 'svelte';
 
 	let visible = $state(true);

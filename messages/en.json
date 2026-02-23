@@ -9,11 +9,11 @@
   "url": "https://www.a42n.com",
   "story": {
     "title": "My Story",
-    "description": "I started my journey in software development when I was a teenager, tinkering with HTML and CSS to create simple websites. As I delved deeper into programming, I discovered a love for JavaScript and building interactive applications."
+    "description": "I build things because I love the challenge. Whether it’s the fine details under the hood or the big picture, I’m driven by a simple curiosity and a passion for doing good work. At the end of the day, I’m just someone who loves what they do and wants to make an impact."
   },
   "status": {
     "title": "Status",
-    "description": "Freelancing & learning C++"
+    "description": "Freelancing & improving my C++"
   },
   "location": {
     "tile": "Location",
@@ -27,13 +27,21 @@
   "letter": {
     "title": "Why me?",
     "button": "Pitch Letter",
-    "pitch": "Design-to-Code Specialist|High Performance Focus|Accessibility First"
+    "pitch": "trust the process|one step at a time|here to lern"
   },
   "image": "https://2.gravatar.com/avatar/3b4bfc82944bfb357ab19bc8644258f379caeac7256498f8c6cd81004cf0d544",
   "milestones": {
-    "primary": "Grundschule am Hechinger Eck",
-    "secondary": "Wildermuth Gymnasium",
-    "internship": "Various Internships"
+    "primary": {
+      "title": "Grundschule am Hechinger Eck",
+      "school": "Primary School"
+    },
+    "secondary": {
+      "title": "Wildermuth Gymnasium",
+      "school": "Secondary School"
+    },
+    "internship": {
+      "title": "Various Internships"
+    }
   },
   "dock": {
     "navbar": {
@@ -61,7 +69,7 @@
   "music_mobile": {
     "top_lable": "live feed",
     "title": "Favorite Music / Artists",
-    "description": "essential only",
+    "description": "not all but a few handpicked favorites",
     "music": "selected",
     "update": "updated",
     "vault": "enter vault",

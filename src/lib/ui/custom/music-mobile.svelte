@@ -1,14 +1,19 @@
 <script lang="ts">
 	import * as Card from '$lib/ui/cn/card';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { music } from '$lib/data';
+
+	import { getLocale, localizeHref } from '$lib/paraglide/runtime.js';
 
 	let { manual_override = $bindable() }: { manual_override: boolean } = $props();
 </script>
 
-<a href="/music" class="group block no-underline {!manual_override && 'md:hidden'}">
+<a
+	href={localizeHref('/music', { locale: getLocale() })}
+	class="group block no-underline {!manual_override && 'md:hidden'}"
+>
 	<Card.Root
-		class="relative overflow-hidden rounded-xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none"
+		class="relative overflow-hidden rounded-xl border-4 border-black bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none"
 	>
 		<div
 			class="absolute top-0 left-6 flex h-6 w-24 items-center justify-center rounded-b-md bg-black"

@@ -2,7 +2,7 @@
 	import * as Dialog from '$lib/ui/cn/dialog';
 	import { ExternalLink, Landmark } from 'lucide-svelte';
 	import { Button } from '$lib/ui/cn/button';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { media_assets } from '$lib/data';
 	import { shuffle_array } from '$lib/utils';
 

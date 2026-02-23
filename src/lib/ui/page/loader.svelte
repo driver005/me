@@ -2,7 +2,7 @@
 	import { useProgress } from '@threlte/extras';
 	import { fade } from 'svelte/transition';
 	import { Progress } from '$lib/ui/cn/progress';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import Helper from './helper.svelte';
 
 	const { progress, item } = useProgress();

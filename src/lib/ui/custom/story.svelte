@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/ui/cn/card';
 	import { User, Briefcase, Zap } from 'lucide-svelte';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 </script>
 
 <div class="relative z-10 flex h-full w-full flex-col rounded-[14px] bg-white p-6 dark:bg-zinc-950">

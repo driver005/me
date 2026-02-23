@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getLocale, setLocale } from '$lib/paraglide/runtime.js';
 	import * as Dialog from '$lib/ui/cn/dialog';
-	import { m } from '$lib/paraglide/messages.js';
+	import { m } from '$lib/paraglide/messages';
 	import { Button } from '$lib/ui/cn/button';
 	import { languages } from '$lib/data';
 
