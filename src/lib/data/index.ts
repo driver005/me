@@ -69,6 +69,19 @@ export const projects: PROJECT[] = [
     href: "https://sfz-tuebingen.org/",
     iframe_url: "https://sfz-tuebingen.org/",
   },
+  {
+    title: "C++ tutorial",
+    description: m["project_titles.chh"](),
+    tags: ["Youtube", m["music.playlist"]()],
+    href:
+      "https://youtube.com/playlist?list=PLvv0ScY6vfd8j-tlhYVPYgiIyXduu6m-L&si=cOae3zoUS9M7_056",
+  },
+  {
+    title: "Vim tutorial",
+    description: m["project_titles.vim"](),
+    tags: ["Vim", "Blog"],
+    href: "https://lazyvim-ambitious-devs.phillips.codes/",
+  },
 ];
 
 export const social_links = {

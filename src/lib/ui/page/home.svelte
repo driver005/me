@@ -30,7 +30,7 @@
 
 	function handleClick(name: string) {
 		if (name === 'letter') {
-			const file = getLocale() === 'en' ? 'pitch.pdf' : 'motivations-schreiben.pdf';
+			const file = getLocale() === 'en' ? 'motivation.pdf' : 'motivations-schreiben.pdf';
 			window.open(`/docs/${file}`, '_blank', 'noopener,noreferrer');
 		} else if (name === 'resume') {
 			const file = getLocale() === 'en' ? 'resume.pdf' : 'lebenslauf.pdf';
@@ -58,7 +58,7 @@
 						: ''}
 					class="mx-2 border-2 border-transparent px-3 py-1 font-bold uppercase transition-all data-[state=active]:border-black data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {item.color} bg-background"
 				>
-					{item.label.split(' ')[0]}
+					{item.label}
 				</Tabs.Trigger>
 			{/each}
 		</div>

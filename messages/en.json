@@ -47,7 +47,7 @@
     "navbar": {
       "home": "Home",
       "journey": "Journey",
-      "projects": "Projects",
+      "projects": "Knoledge Hub",
       "skills": "Skills"
     },
     "contact": {
@@ -64,7 +64,9 @@
     "link": "Link"
   },
   "project_titles": {
-    "teclab": "the offical website of the teclab"
+    "teclab": "the offical website of the teclab",
+    "chh": "One of my favourite tutorials on youtube. I highly recommend it. Mike Shah not only teaches you how to code in c++, but also how a language works under the hood, as well as many commonly used patterns in computer science.",
+    "vim": "In over 20 capters the author explaines how to use vim motions and lazyvim. Comming from a how can I quit vim background, this was the best resource to get into the vim way of doing things."
   },
   "music_mobile": {
     "top_lable": "live feed",
@@ -160,7 +162,7 @@
     }
   },
   "friendlymode": {
-    "title_friendly": "Safty first?",
+    "title_friendly": "Back to safety?",
     "title_rougue": "Go rogue?",
     "name": "SAFE mode",
     "disabled": "Slide to restore",

@@ -47,7 +47,7 @@
 		"navbar": {
 			"home": "Home",
 			"journey": "Reise",
-			"projects": "Projekte",
+			"projects": "Wissens-Hub",
 			"skills": "Skills"
 		},
 		"contact": {
@@ -64,7 +64,9 @@
 		"link": "Link"
 	},
 	"project_titles": {
-		"teclab": "Die offizielle Website des teclab"
+		"teclab": "Die offizielle Website des teclab",
+		"chh": "Eins meiner Lieblingstutorials auf ganz Youtube. Ich kann es wirklich empfehlen. Mike Shah erklärt nicht nur wie man c++ code scheibt, sondern auch wie die Sprache im Hintergrund funktioniert, so wie viele Koncepte der informatik.",
+		"vim": "In über 20 kapitel in denen der autor ein einblick in vim motions und lazyvim gibt. Als jemand der davor noch nachschauen musste wie man vim überhaupt verlässt, war das die beste Ressource um in die vim art zu arbeiten einzusteigen."
 	},
 	"music_mobile": {
 		"top_lable": "Live-Feed",
@@ -160,7 +162,7 @@
 		}
 	},
 	"friendlymode": {
-		"title_friendly": "Sicherheit zuerst?",
+		"title_friendly": "Schnell in Sicherheit?",
 		"title_rougue": "Rogue-Modus?",
 		"name": "SICHERER Modus",
 		"disabled": "Schieben zum Wiederherstellen",
