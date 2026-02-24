@@ -30,7 +30,7 @@
 
 	function handleClick(name: string) {
 		if (name === 'letter') {
-			const file = getLocale() === 'en' ? 'motivation.pdf' : 'motivations-schreiben.pdf';
+			const file = getLocale() === 'en' ? 'motivation_letter.pdf' : 'motivations_schreiben.pdf';
 			window.open(`/docs/${file}`, '_blank', 'noopener,noreferrer');
 		} else if (name === 'resume') {
 			const file = getLocale() === 'en' ? 'resume.pdf' : 'lebenslauf.pdf';
