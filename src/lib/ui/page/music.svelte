@@ -3,6 +3,9 @@
 	import { music } from '$lib/data';
 	import { m } from '$lib/paraglide/messages';
 	import { shuffle_array } from '$lib/utils';
+	import { getContext } from 'svelte';
+
+	const friendly = getContext<{ value: boolean }>('friendly');
 	shuffle_array(music);
 </script>
 
@@ -22,12 +25,21 @@
 				</div>
 			</div>
 		</header>
-		<div class="scrollbar-hide grow overflow-y-auto p-6 pb-10 lg:px-10">
-			<div class="grid grid-cols-1 gap-4 min-[1400px]:grid-cols-3 md:grid-cols-2 lg:gap-6">
-				{#each music as song, i}
-					<MusicCard {song} number={i} />
-				{/each}
+
+		{#if friendly.value}
+			<div class="p-6 lg:px-10">
+				<p class="font-bold text-muted-foreground">
+					{@html m['friendlymode.message']()}
+				</p>
 			</div>
-		</div>
+		{:else}
+			<div class="scrollbar-hide grow overflow-y-auto p-6 pb-10 lg:px-10">
+				<div class="grid grid-cols-1 gap-4 min-[1400px]:grid-cols-3 md:grid-cols-2 lg:gap-6">
+					{#each music as song, i}
+						<MusicCard {song} number={i} />
+					{/each}
+				</div>
+			</div>
+		{/if}
 	</main>
 </div>

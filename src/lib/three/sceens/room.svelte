@@ -200,11 +200,6 @@
 				let hit = obj.object;
 				let name = hit.material.name.toLowerCase();
 
-				if (hit.name.includes('SpaceSpeaker')) {
-					music_tab = true;
-					helper.value = false;
-					break;
-				}
 				if (hit.name.includes('SpacePotion')) {
 					skill_tab = true;
 					helper.value = false;
@@ -220,11 +215,6 @@
 					helper.value = false;
 					break;
 				}
-				if (hit.name.includes('SpaceCasset')) {
-					music_tab = true;
-					helper.value = false;
-					break;
-				}
 				if (name.includes('tv')) {
 					life_tab = true;
 					helper.value = false;
@@ -232,11 +222,6 @@
 				}
 				if (name.includes('laptop')) {
 					skill_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (name.includes('aux')) {
-					music_tab = true;
 					helper.value = false;
 					break;
 				}
@@ -249,6 +234,23 @@
 					slides_tab = true;
 					helper.value = false;
 					break;
+				}
+				if (!friendly.value) {
+					if (hit.name.includes('SpaceSpeaker')) {
+						music_tab = true;
+						helper.value = false;
+						break;
+					}
+					if (name.includes('aux')) {
+						music_tab = true;
+						helper.value = false;
+						break;
+					}
+					if (hit.name.includes('SpaceCasset')) {
+						music_tab = true;
+						helper.value = false;
+						break;
+					}
 				}
 				break;
 			}

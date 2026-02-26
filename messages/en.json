@@ -27,7 +27,7 @@
   "letter": {
     "title": "Why me?",
     "button": "Pitch Letter",
-    "pitch": "trust the process|one step at a time|here to lern"
+    "pitch": "here to learn|one step at a time|just ask me for passwd please"
   },
   "image": "https://2.gravatar.com/avatar/3b4bfc82944bfb357ab19bc8644258f379caeac7256498f8c6cd81004cf0d544",
   "milestones": {
@@ -165,10 +165,14 @@
     "title_friendly": "Back to safety?",
     "title_rougue": "Go rogue?",
     "name": "SAFE mode",
-    "disabled": "Slide to restore",
-    "enabled": "Slide to disable",
-    "release": "RELEASE NOW!",
-    "slide": "Slide to confirm"
+    "help": "Please ask me for the password. To disable",
+    "disabled": "Click to restore",
+    "enabled": "Click to disable",
+    "field": "Enter password ...",
+    "locked": "locked",
+    "wrong": "Wrong password, try again.",
+    "label": "Disable friendly mode to access",
+    "message": "🔒 Page can only be accesed if <span class='underline decoration-yellow-400 decoration-2'>Friendly Mode</span> is disabled."
   },
   "tip": {
     "first": "Left Mouse to Rotate",

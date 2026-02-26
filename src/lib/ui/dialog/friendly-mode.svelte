@@ -1,25 +1,38 @@
 <script lang="ts">
 	import * as Dialog from '$lib/ui/cn/dialog';
-	import { TriangleAlert, ChevronRight, ShieldCheck, ShieldOff, RefreshCw } from 'lucide-svelte';
+	import { TriangleAlert, ShieldCheck, ShieldOff, RefreshCw, Eye, EyeOff } from 'lucide-svelte';
 	import { Button } from '$lib/ui/cn/button';
 	import { m } from '$lib/paraglide/messages';
 	import { getContext } from 'svelte';
+	import { PASSWORD } from '$lib/const';
 
 	let open = $state(false);
-	let sliderValue = $state(0);
-
+	let password = $state('');
+	let showPassword = $state(false);
+	let error = $state(false);
 	const friendly = getContext<{ value: boolean }>('friendly');
 
 	$effect(() => {
-		if (!open) sliderValue = 0;
+		if (!open) {
+			password = '';
+			error = false;
+			showPassword = false;
+		}
 	});
 
-	function handleRelease() {
-		if (sliderValue >= 98) {
-			friendly.value = !friendly.value;
+	function handleSubmit(e: any) {
+		e.preventDefault();
+		if (!friendly.value) {
+			friendly.value = true;
 			open = false;
 		} else {
-			sliderValue = 0;
+			if (password === PASSWORD) {
+				friendly.value = false;
+				open = false;
+			} else {
+				error = true;
+				password = '';
+			}
 		}
 	}
 </script>
@@ -63,49 +76,57 @@
 		<div class="bg-background p-6">
 			<Dialog.Description class="text-lg leading-tight font-bold text-foreground">
 				{#if friendly.value}
-					{m['friendlymode.enabled']()}
+					{m['friendlymode.help']()}
 					<span class="underline decoration-red-500 decoration-4">{m['friendlymode.name']()}</span>.
 				{:else}
-					{m['friendlymode.disabled']()}
+					{m['friendlymode.help']()}
 					<span class="underline decoration-green-500 decoration-4">{m['friendlymode.name']()}</span
 					>.
 				{/if}
 			</Dialog.Description>
 
-			<div
-				class="relative mt-8 h-16 w-full overflow-hidden rounded-xl border-4 border-black bg-muted/40 p-1"
-			>
-				<div
-					class="absolute inset-y-0 left-0 transition-colors {friendly.value
-						? 'bg-red-400'
-						: 'bg-green-400'}"
-					style:width="{sliderValue}%"
-				></div>
-
-				<div
-					class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center font-black tracking-widest text-black uppercase opacity-90"
-				>
-					{sliderValue > 95 ? m['friendlymode.release']() : m['friendlymode.slide']()}
-				</div>
-
-				<div class="pointer-events-none relative h-full w-[calc(100%-3.5rem)]">
-					<div
-						class="absolute top-0 z-10 flex aspect-square h-full items-center justify-center rounded-lg border-4 border-black bg-white shadow-[2px_2px_0px_0px_#000]"
-						style:left="{sliderValue}%"
-					>
-						<ChevronRight class="text-black" strokeWidth={4} />
+			<div class="mt-8 space-y-3">
+				{#if friendly.value}
+					<div class="relative">
+						<input
+							type={showPassword ? 'text' : 'password'}
+							bind:value={password}
+							placeholder={m['friendlymode.field']()}
+							onkeydown={(e) => e.key === 'Enter' && handleSubmit(e)}
+							oninput={() => (error = false)}
+							class="h-14 w-full rounded-xl border-4 border-black bg-muted/40 px-4 pr-14 font-bold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:ring-4 focus:ring-black focus:outline-none
+								{error ? 'border-red-500 bg-red-50 focus:ring-red-500' : ''}"
+						/>
+						<button
+							type="button"
+							onclick={() => (showPassword = !showPassword)}
+							class="absolute top-1/2 right-3 -translate-y-1/2 rounded-lg p-1 hover:bg-muted"
+						>
+							{#if showPassword}
+								<EyeOff size={20} class="text-muted-foreground" />
+							{:else}
+								<Eye size={20} class="text-muted-foreground" />
+							{/if}
+						</button>
 					</div>
-				</div>
 
-				<input
-					type="range"
-					min="0"
-					max="100"
-					bind:value={sliderValue}
-					onmouseup={handleRelease}
-					ontouchend={handleRelease}
-					class="absolute inset-0 z-20 h-full w-full cursor-pointer opacity-0"
-				/>
+					{#if error}
+						<p class="flex items-center gap-2 font-bold text-red-500">
+							<TriangleAlert size={16} strokeWidth={3} />
+							{m['friendlymode.wrong']()}
+						</p>
+					{/if}
+				{/if}
+
+				<Button
+					onclick={handleSubmit}
+					class="h-14 w-full rounded-xl border-4 border-black font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none
+						{friendly.value
+						? 'bg-red-500 text-black hover:bg-red-500'
+						: 'bg-green-500 text-black hover:bg-green-500'}"
+				>
+					{friendly.value ? m['friendlymode.enabled']() : m['friendlymode.disabled']()}
+				</Button>
 			</div>
 		</div>
 	</Dialog.Content>

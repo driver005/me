@@ -27,7 +27,7 @@
 	"letter": {
 		"title": "Warum ich?",
 		"button": "Motivations schreiben",
-		"pitch": "Vertrau dem Prozess|Ein Schritt nach dem anderen|Hier um zu lernen"
+		"pitch": "Hier um zu lernen|Ein Schritt nach dem anderen|Frag mich einfach nach dem Passwd bitte"
 	},
 	"image": "https://2.gravatar.com/avatar/3b4bfc82944bfb357ab19bc8644258f379caeac7256498f8c6cd81004cf0d544",
 	"milestones": {
@@ -162,13 +162,16 @@
 		}
 	},
 	"friendlymode": {
-		"title_friendly": "Schnell in Sicherheit?",
-		"title_rougue": "Rogue-Modus?",
-		"name": "SICHERER Modus",
-		"disabled": "Schieben zum Wiederherstellen",
-		"enabled": "Schieben zum Deaktivieren",
-		"release": "JETZT LOSLASSEN!",
-		"slide": "Schieben zum Bestätigen"
+		"title_friendly": "Zurück in Sicherheit?",
+		"title_rougue": "Schutz ausschalten?",
+		"name": "Sicherheits Modus",
+		"disabled": "Tippen zum Wiederherstellen",
+		"enabled": "Tippen zum Deaktivieren",
+		"field": "Password eingeben ...",
+		"locked": "Gesperrt",
+		"wrong": "Falsches Passwort, versuche es erneut.",
+		"label": "Deaktiviere den Sicherheits Modus, um Zugriff zu erhalten",
+		"message": "🔒 Seite can nicth angezeigt werden bis <span class='underline decoration-yellow-400 decoration-2'>Sicherheits modus</span> ausgeschaltet ist."
 	},
 	"tip": {
 		"first": "Linksklick zum Drehen",
