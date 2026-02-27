@@ -39,13 +39,13 @@
 			adaptationRate: isDark ? 2.0 : 1.0
 		});
 		const colorBoost = new HueSaturationEffect({
-			hue: isDark ? 0.0 : 0.0,
-			saturation: isDark ? 0.12 : 0.3
+			hue: isDark ? 0.5 : 0.0,
+			saturation: isDark ? 0.2 : 0.3
 		});
 
 		const contrast = new BrightnessContrastEffect({
 			brightness: isDark ? 0.0 : -0.03,
-			contrast: isDark ? 0.12 : 0.15
+			contrast: isDark ? 0.2 : 0.15
 		});
 
 		const bloom = new BloomEffect({
@@ -67,7 +67,7 @@
 		const vignette = new VignetteEffect({
 			eskil: false,
 			offset: isDark ? 0.4 : 0.3,
-			darkness: isDark ? 0.65 : 0.6
+			darkness: isDark ? 0.7 : 0.6
 		});
 
 		composer.addPass(
