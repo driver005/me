@@ -7,6 +7,10 @@
   "loading": "Loading...",
   "email": "contact@a42n.com",
   "url": "https://www.a42n.com",
+  "contact": {
+    "title": "Contact Me",
+    "description": "Feel free to reach out to me via email or connect with me on social media. I'm always open to new opportunities and collaborations!"
+  },
   "story": {
     "title": "My Story",
     "description": "I build things because I love the challenge. Whether it’s the fine details under the hood or the big picture, I’m driven by a simple curiosity and a passion for doing good work. At the end of the day, I’m just someone who loves what they do and wants to make an impact."

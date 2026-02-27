@@ -7,9 +7,11 @@ import Slides from "./slides.svelte";
 import Dust from "./dust.svelte";
 import Gallery from "./gallery.svelte";
 import FriendlyMode from "./friendly-mode.svelte";
+import Contact from "./contact.svelte";
 
 export {
   Dust,
+  Contact,
   FriendlyMode,
   Gallery,
   Helper,

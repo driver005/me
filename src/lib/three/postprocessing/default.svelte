@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 	import { useThrelte, useTask } from '@threlte/core';
+	import { getContext } from 'svelte';
 	import {
 		EffectComposer,
 		EffectPass,
@@ -16,63 +17,57 @@
 	import { Vector2 } from 'three';
 
 	const { scene, renderer, camera, size, autoRender } = useThrelte();
+	const theme = getContext<{ value: string }>('theme');
 	const composer = new EffectComposer(renderer);
 
 	$effect(() => {
 		const cam = camera.current;
 		if (!cam) return;
 
+		const isDark = theme.value === 'dark';
+
 		composer.removeAllPasses();
 		composer.addPass(new RenderPass(scene, cam));
 
-		// 1. Tone mapping — gives the whole scene a cinematic color grade
-		//    ACES Filmic makes lights bloom naturally and shadows stay rich
 		const toneMapping = new ToneMappingEffect({
-			mode: ToneMappingMode.ACES_FILMIC,
-			resolution: 256,
-			whitePoint: 4.0,
-			middleGrey: 0.6,
-			minLuminance: 0.01,
-			averageLuminance: 1.0,
-			adaptationRate: 1.0
+			mode: isDark ? ToneMappingMode.REINHARD2_ADAPTIVE : ToneMappingMode.ACES_FILMIC,
+			resolution: isDark ? 512 : 256,
+			whitePoint: isDark ? 3.0 : 4.0,
+			middleGrey: isDark ? 0.35 : 0.6,
+			minLuminance: isDark ? 0.001 : 0.01,
+			averageLuminance: isDark ? 0.25 : 1.0,
+			adaptationRate: isDark ? 2.0 : 1.0
 		});
-
-		// 2. Vibrant but not overdone colors
 		const colorBoost = new HueSaturationEffect({
-			saturation: 0.3
+			hue: isDark ? 0.0 : 0.0,
+			saturation: isDark ? 0.12 : 0.3
 		});
 
-		// 3. Slight contrast punch — makes lit areas feel warmer and shadows deeper
 		const contrast = new BrightnessContrastEffect({
-			brightness: -0.03,
-			contrast: 0.15
+			brightness: isDark ? 0.0 : -0.03,
+			contrast: isDark ? 0.12 : 0.15
 		});
 
-		// 4. Bloom — wide spread so light influence bleeds onto walls visibly
 		const bloom = new BloomEffect({
-			intensity: 10,
-			luminanceThreshold: 0.8,
-			luminanceSmoothing: 0.8,
+			intensity: isDark ? 2.5 : 10.0,
+			luminanceThreshold: isDark ? 0.5 : 0.8,
+			luminanceSmoothing: isDark ? 0.7 : 0.8,
 			mipmapBlur: true,
-			kernelSize: KernelSize.VERY_LARGE,
-			height: 1048,
-			width: 1048
+			kernelSize: isDark ? KernelSize.LARGE : KernelSize.VERY_LARGE,
+			height: isDark ? 720 : 1048,
+			width: isDark ? 720 : 1048
 		});
 
-		// 5. Chromatic aberration — subtle RGB fringing on bright edges,
-		//    gives a slightly cinematic/lens feel without being distracting
 		const chromaticAberration = new ChromaticAberrationEffect({
-			offset: new Vector2(0.0008, 0.0008),
-			radialModulation: true, // stronger at screen edges like a real lens
-			modulationOffset: 0.15
+			offset: new Vector2(isDark ? 0.0004 : 0.0002, isDark ? 0.0004 : 0.0002),
+			radialModulation: true,
+			modulationOffset: isDark ? 0.1 : 0.5
 		});
 
-		// 7. Vignette — darkens screen edges, naturally draws the eye inward
-		//    and makes light sources in the center feel even brighter by contrast
 		const vignette = new VignetteEffect({
 			eskil: false,
-			offset: 0.3,
-			darkness: 0.6
+			offset: isDark ? 0.4 : 0.3,
+			darkness: isDark ? 0.65 : 0.6
 		});
 
 		composer.addPass(

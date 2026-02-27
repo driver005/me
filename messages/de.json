@@ -7,6 +7,10 @@
 	"loading": "Lädt...",
 	"email": "contact@a42n.com",
 	"url": "https://www.a42n.com",
+	"contact": {
+		"title": "Kontaktiere mich",
+		"description": "Zögere nicht, mich per E-Mail zu kontaktieren oder dich mit mir in den sozialen Medien zu verbinden. Ich bin immer offen für neue Möglichkeiten und Zusammenarbeit!"
+	},
 	"story": {
 		"title": "Meine Story",
 		"description": "Ich liebe es, multifunktionale und erweiterbare Systeme zu entwickeln, die gleichzeitig das Maximum an Performance herausholen. Dabei nutze ich die Raw Power von Rust und C++, die elegante Concurrency von Go or die bewährte einfachkeit von Java."
