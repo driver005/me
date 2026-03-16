@@ -18,6 +18,8 @@
 	const helper = getContext<{ value: boolean }>('helper');
 	const friendly = getContext<{ value: boolean }>('friendly');
 
+	const video_disposers: (() => void)[] = [];
+
 	let room_ref = $state<any>();
 	let now = $state(new Date());
 	let hourHand = $state<THREE.Mesh | null>(null);
@@ -100,8 +102,10 @@
 			}
 
 			if (name.includes('tv')) {
+				const { texture, dispose } = create_video_texture('/textures/video/screen.mp4');
+				video_disposers.push(dispose);
 				obj.material = new THREE.MeshBasicMaterial({
-					map: create_video_texture('/textures/video/screen.mp4'),
+					map: texture,
 					name: 'tv',
 					transparent: true,
 					opacity: 0.9
@@ -109,8 +113,10 @@
 			}
 
 			if (name.includes('auxdisplay')) {
+				const { texture, dispose } = create_video_texture('/textures/video/music_player.mp4');
+				video_disposers.push(dispose);
 				obj.material = new THREE.MeshBasicMaterial({
-					map: create_video_texture('/textures/video/music_player.mp4'),
+					map: texture,
 					name: 'aux',
 					transparent: true,
 					opacity: 0.9
@@ -166,6 +172,7 @@
 		});
 
 		onDestroy(() => {
+			video_disposers.forEach((d) => d());
 			dispose_node(args.ref);
 		});
 	});
@@ -268,7 +275,6 @@
 	name="Room"
 	onpointerup={(e: any) => handlePointerUp(e)}
 	onpointerdown={(e: any) => handlePointerDown(e)}
-	dispose={false}
 >
 	<Room bind:this={room_ref}>
 		{#snippet error({ error }: { error: Error })}

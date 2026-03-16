@@ -5,7 +5,7 @@ import { onDestroy } from "svelte";
  * Creates a video element and a corresponding Three.js texture.
  * @param {string} url - Path to your video file
  */
-export function create_video_texture(url: string, flipY = false): VideoTexture {
+export function create_video_texture(url: string, flipY = false): { texture: THREE.VideoTexture; dispose: () => void } {
   const video = document.createElement("video");
   video.src = url;
   video.loop = true;
@@ -20,13 +20,13 @@ export function create_video_texture(url: string, flipY = false): VideoTexture {
   texture.colorSpace = SRGBColorSpace;
   texture.flipY = flipY;
 
-  // Cleanup to prevent memory leaks
-  onDestroy(() => {
-    video.pause();
-    video.src = "";
-    video.load();
-    texture.dispose();
-  });
-
-  return texture;
+  return {
+    texture,
+    dispose: () => {
+      video.pause();
+      video.src = '';
+      video.load();
+      texture.dispose();
+    }
+  };
 }
