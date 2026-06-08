@@ -6,6 +6,7 @@
   }: { from?: string; to?: string; height?: number } = $props();
 
   function hexToRgb(hex: string): [number, number, number] {
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) throw new Error(`Invalid hex color: ${hex}`);
     return [
       parseInt(hex.slice(1, 3), 16),
       parseInt(hex.slice(3, 5), 16),
