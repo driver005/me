@@ -40,4 +40,4 @@
   );
 </script>
 
-<span bind:this={intersection.ref} class={className}>{padded}{suffix}</span>
+<span bind:this={intersection.element} class={className}>{padded}{suffix}</span>
