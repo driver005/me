@@ -1,93 +1,43 @@
 <script lang="ts">
-	import CanvasPortal from '$lib/three/canvas/portal.svelte';
-	import DevHelper from '$lib/three/dev/helper.svelte';
-	import Sceens from '$lib/three/sceens/default.svelte';
-	import { Grid, PerfMonitor } from '@threlte/extras';
-	import { World } from '@threlte/rapier';
-	import { useBreakpoint } from '$lib/util/screen.svelte';
-	import { Home } from '$lib/ui/page';
-	import { browser } from '@threlte/core';
-	import { getContext, onMount } from 'svelte';
-	import { m } from '$lib/paraglide/messages';
-	import SvelteSeo from 'svelte-seo';
+  import SmoothScroll from '$lib/ui/module/smooth-scroll.svelte';
+  import Cursor from '$lib/ui/module/cursor.svelte';
+  import ScrollProgress from '$lib/ui/module/scroll-progress.svelte';
+  import Nav from '$lib/ui/module/nav.svelte';
+  import Hero from '$lib/ui/module/hero.svelte';
+  import About from '$lib/ui/module/about.svelte';
+  import Gallery from '$lib/ui/module/gallery.svelte';
+  import Works from '$lib/ui/module/works.svelte';
+  import Spiral from '$lib/ui/module/spiral.svelte';
+  import Services from '$lib/ui/module/services.svelte';
+  import HorizontalScroll from '$lib/ui/module/horizontal-scroll.svelte';
+  import Contact from '$lib/ui/module/contact.svelte';
+  import Footer from '$lib/ui/module/footer.svelte';
+  import Divider from '$lib/ui/module/divider.svelte';
 
-	let isMounted = $state(false);
-	let active = $state('home');
-
-	let helper: 'Studio' | 'Theatre' = $state('Theatre');
-
-	let isDesktop = useBreakpoint('768px');
-
-	onMount(() => {
-		if (!browser) return;
-
-		isMounted = true;
-	});
-
-	const manual_override = getContext<{ value: boolean }>('manual_override');
+  const CREAM = '#F3F2EE';
+  const DARK = '#0A0A0A';
 </script>
 
-<svelte:head>
-	<SvelteSeo
-		title={m['seo.home.title']()}
-		description={m['seo.home.description']()}
-		keywords={m['seo.keywords']()}
-		canonical={m.url()}
-		openGraph={{
-			title: m['seo.home.title'](),
-			description: m['seo.home.description'](),
-			url: m.url(),
-			type: 'website',
-			images: [
-				{
-					url: `${m.url()}/images/preview_home.jpg`,
-					width: 800,
-					height: 600,
-					alt: m['seo.og_image_alt']()
-				}
-			],
-			site_name: m['seo.author']()
-		}}
-		twitter={{
-			card: 'summary_large_image',
-			site: m['seo.twitter_handle'](),
-			title: m['seo.home.title'](),
-			description: m['seo.home.description'](),
-			image: `${m.url()}/images/preview_home.jpg`
-		}}
-	/>
-</svelte:head>
-
-{#if isMounted}
-	{#if isDesktop.value && manual_override.value === false}
-		{#if import.meta.env.MODE === 'development'}
-			<button class="btn" onclick={() => (helper = helper === 'Studio' ? 'Theatre' : 'Studio')}>
-				Toggle Helper
-			</button>
-		{/if}
-		<CanvasPortal>
-			<World>
-				{#if import.meta.env.MODE === 'development'}
-					<DevHelper {helper}>
-						<PerfMonitor anchorX={'left'} anchorY={'bottom'} logsPerSecond={30} />
-						<Sceens />
-						<Grid sectionColor="#ff3e00" sectionThickness={1} cellColor="#cccccc" gridSize={40} />
-					</DevHelper>
-				{:else}
-					<Sceens />
-				{/if}
-			</World>
-		</CanvasPortal>
-	{:else}
-		<Home bind:manual_override={manual_override.value} bind:active />
-	{/if}
-{/if}
-
-<style>
-	.btn {
-		position: absolute;
-		top: 10px;
-		left: 0;
-		z-index: 999;
-	}
-</style>
+<SmoothScroll>
+  <div class="App grain min-h-screen bg-[#F3F2EE] text-[#0A0A0A]">
+    <Cursor />
+    <ScrollProgress />
+    <Nav />
+    <main>
+      <Hero />
+      <!-- <Divider from={DARK} to={CREAM} /> -->
+      <About />
+      <!-- <Divider from={CREAM} to={DARK} /> -->
+      <Gallery />
+      <!-- <Divider from={DARK} to={CREAM} /> -->
+      <Works />
+      <!-- <Divider from={CREAM} to={DARK} /> -->
+      <Spiral />
+      <!-- <Divider from={DARK} to={CREAM} /> -->
+      <Services />
+      <HorizontalScroll />
+      <Contact />
+    </main>
+    <Footer />
+  </div>
+</SmoothScroll>
