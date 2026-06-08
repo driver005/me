@@ -21,8 +21,6 @@
 	const MIN_WHEEL_SPEED = 0.002;
 	const EASING = 0.1;
 
-	const geo = new THREE.PlaneGeometry(1.7, 1, 8, 8);
-
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 
 	const vertexShader = `
@@ -121,12 +119,15 @@
 	}
 
 	onMount(() => {
+		let isMounted = true;
 		const canvas = canvasRef;
 		if (!canvas?.parentElement) return;
 
 		const container = canvas.parentElement;
 		const w = container.clientWidth;
 		const h = container.clientHeight;
+
+		const geo = new THREE.PlaneGeometry(1.7, 1, 8, 8);
 
 		const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -136,9 +137,6 @@
 		const scene = new THREE.Scene();
 		const camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 20);
 		camera.position.set(0, 0, 8);
-
-		const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-		scene.add(ambient);
 
 		let scrollOffset = 0;
 		let wheelDelta = MIN_WHEEL_SPEED;
@@ -242,9 +240,13 @@
 		// Load all 8 project textures, then create 16 cards
 		const loader = new THREE.TextureLoader();
 		const textures: THREE.Texture[] = new Array(PROJECTS.length);
+		let loadedTextures: THREE.Texture[] = [];
 		let loadedCount = 0;
+		const timeoutIds: ReturnType<typeof setTimeout>[] = [];
 
 		const onAllTexturesLoaded = () => {
+			if (!isMounted) return;
+			loadedTextures = textures;
 			for (let i = 0; i < TOTAL; i++) {
 				const tex = textures[i % PROJECTS.length];
 				const imgW = tex.image?.width ?? 1024;
@@ -275,10 +277,10 @@
 				});
 
 				// staggered reveal delay: (i % 4) * 50ms
-				setTimeout(() => {
+				timeoutIds.push(setTimeout(() => {
 					const cs = cardStates[i];
 					if (cs) { cs.hiddenTarget = 0; cs.isHidden = false; }
-				}, (i % 4) * 50);
+				}, (i % 4) * 50));
 			}
 		};
 
@@ -294,13 +296,16 @@
 		});
 
 		return () => {
+			isMounted = false;
 			cancelAnimationFrame(rafId);
+			timeoutIds.forEach(id => clearTimeout(id));
 			canvas.removeEventListener('wheel', onWheel);
 			canvas.removeEventListener('pointermove', onPointerMove);
 			window.removeEventListener('resize', onResize);
 			cardStates.forEach(cs => {
 				cs.mat.dispose();
 			});
+			loadedTextures.forEach(t => t.dispose());
 			geo.dispose();
 			renderer.dispose();
 		};
