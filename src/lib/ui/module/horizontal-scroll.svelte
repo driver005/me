@@ -164,6 +164,8 @@ void main() {
 		if (!browser || !vincentCanvas) return;
 		const canvas = vincentCanvas;
 
+		let cancelled = false;
+
 		const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
 		renderer.setClearColor(0x0F172A, 1);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -199,6 +201,7 @@ void main() {
 		SEEDS.forEach((seed, i) => {
 			const mesh = buildMesh(i);
 			loader.load(`https://picsum.photos/seed/${seed}/${Math.round(w * renderer.getPixelRatio())}/${Math.round(h * renderer.getPixelRatio())}`, (tex) => {
+				if (cancelled) return;
 				loadedTextures.push(tex);
 				(mesh.material as THREE.MeshBasicMaterial).map = tex;
 				(mesh.material as THREE.MeshBasicMaterial).color.setHex(0xffffff);
@@ -280,9 +283,12 @@ void main() {
 		rafId = requestAnimationFrame(loop);
 
 		return () => {
+			cancelled = true;
 			cancelAnimationFrame(rafId);
 			window.removeEventListener('mousemove', onMouseMove);
 			window.removeEventListener('resize', onResize);
+			mainScene.clear();
+			effectScene.clear();
 			meshes.forEach(m => { m.geometry.dispose(); m.material instanceof THREE.Material && m.material.dispose(); });
 			loadedTextures.forEach(t => t.dispose());
 			shaderMat.dispose();
