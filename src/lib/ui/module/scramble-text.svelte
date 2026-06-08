@@ -13,6 +13,8 @@
   let rafId: number | null = null;
 
   $effect(() => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
     display = text;
   });
 
