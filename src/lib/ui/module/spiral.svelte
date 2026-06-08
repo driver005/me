@@ -1,0 +1,354 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import * as THREE from 'three';
+
+	const PROJECTS = [
+		{ title: 'Ethereal Waves', year: 2024, categories: ['Creative Dev', 'WebGL'], img: 'https://images.unsplash.com/photo-1761083261633-5aa782b6ddfc' },
+		{ title: 'Neural Bloom', year: 2024, categories: ['Data Viz', 'Installation'], img: 'https://images.unsplash.com/photo-1760476943801-59ea26b13c3c' },
+		{ title: 'Chromatic Shift', year: 2023, categories: ['Creative Dev', 'Immersive Web'], img: 'https://images.unsplash.com/photo-1761428961720-38db3883826b' },
+		{ title: 'Liquid Architecture', year: 2023, categories: ['Installation', 'Interactive'], img: 'https://images.pexels.com/photos/20874864/pexels-photo-20874864.jpeg' },
+		{ title: 'Photon Garden', year: 2023, categories: ['WebGL', 'Generative Art'], img: 'https://images.pexels.com/photos/32191170/pexels-photo-32191170.jpeg' },
+		{ title: 'Temporal Drift', year: 2022, categories: ['Creative Dev', 'Experimental'], img: 'https://images.unsplash.com/photo-1714765761465-e7a4974fa05b' },
+		{ title: 'Haptic Fields', year: 2022, categories: ['Installation', 'Physical'], img: 'https://images.pexels.com/photos/33675021/pexels-photo-33675021.jpeg' },
+		{ title: 'Coded Matter', year: 2022, categories: ['Generative Art', 'Print'], img: 'https://images.unsplash.com/photo-1761083261633-5aa782b6ddfc' },
+	];
+
+	const TOTAL = PROJECTS.length * 2;
+	const CENTER = Math.floor(TOTAL / 2);
+	const VERTICAL_GAP = 0.5;
+	const ANGLE_GAP = 0.85;
+	const BASE_RADIUS = 2;
+	const MIN_WHEEL_SPEED = 0.002;
+	const EASING = 0.1;
+
+	const geo = new THREE.PlaneGeometry(1.7, 1, 8, 8);
+
+	let canvasRef: HTMLCanvasElement | null = $state(null);
+
+	const vertexShader = `
+		varying vec2 vUv;
+		varying vec3 vWorldPosition;
+		#define PI 3.14159265359
+
+		uniform float uScrollSpeed;
+
+		void main() {
+			vec3 worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+			vec3 newPosition = position;
+			newPosition.z = sin(uv.x * PI) * 0.2;
+
+			vec4 modelPosition = modelMatrix * vec4(newPosition, 1.0);
+			vec4 viewPosition = viewMatrix * modelPosition;
+			viewPosition.x += pow(worldPosition.y, 2.0) * 0.1;
+			viewPosition.x += sin(uv.y * PI) * uScrollSpeed * 2.0;
+			vec4 projectedPosition = projectionMatrix * viewPosition;
+			gl_Position = projectedPosition;
+
+			vUv = uv;
+		}
+	`;
+
+	const fragmentShader = `
+		uniform sampler2D uTexture;
+		uniform float uColorStrength;
+		uniform float uZoom;
+		uniform vec2 uPlaneSizes;
+		uniform vec2 uImageSizes;
+		uniform float uRevealProgress;
+
+		varying vec2 vUv;
+
+		float roundedRectSDF(vec2 uv, vec2 size, float radius) {
+			vec2 d = abs(uv - 0.5) - size * 0.5 + radius;
+			return length(max(d, 0.0)) - radius;
+		}
+
+		void main() {
+			vec2 ratio = vec2(
+				min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
+				min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
+			);
+
+			vec2 uv = vec2(
+				vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+				vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+			);
+
+			vec2 zoomedUv = (uv - 0.5) / uZoom + 0.5;
+
+			vec4 color;
+
+			if (gl_FrontFacing) {
+				color = texture2D(uTexture, zoomedUv);
+				color = mix(color, vec4(0.0, 0.0, 0.0, 1.0), uColorStrength);
+			} else {
+				float offset = 40.0 / 1024.0;
+				vec4 c = vec4(0.0);
+				c += texture2D(uTexture, uv + vec2(-offset, -offset)) * 1.0;
+				c += texture2D(uTexture, uv + vec2( 0.0,    -offset)) * 2.0;
+				c += texture2D(uTexture, uv + vec2( offset, -offset)) * 1.0;
+				c += texture2D(uTexture, uv + vec2(-offset,  0.0))    * 2.0;
+				c += texture2D(uTexture, uv)                          * 4.0;
+				c += texture2D(uTexture, uv + vec2( offset,  0.0))    * 2.0;
+				c += texture2D(uTexture, uv + vec2(-offset,  offset)) * 1.0;
+				c += texture2D(uTexture, uv + vec2( 0.0,     offset)) * 2.0;
+				c += texture2D(uTexture, uv + vec2( offset,  offset)) * 1.0;
+				c /= 16.0;
+				color = c;
+			}
+
+			float reveal = clamp(uRevealProgress, 0.0, 1.0);
+			vec2 revealSize = vec2(reveal);
+			float baseRadius = 0.05;
+			float radius = baseRadius * reveal;
+			float sdf = roundedRectSDF(vUv, revealSize, radius);
+			float edge = 0.002;
+			float alpha = 1.0 - smoothstep(0.0, edge, sdf);
+			alpha *= smoothstep(0.1, 1.0, uRevealProgress);
+
+			gl_FragColor = vec4(color.rgb, alpha);
+		}
+	`;
+
+	interface CardState {
+		mesh: THREE.Mesh;
+		mat: THREE.ShaderMaterial;
+		hoverProgress: number;
+		hoverTarget: number;
+		hiddenProgress: number;
+		hiddenTarget: number;
+		isHidden: boolean;
+	}
+
+	onMount(() => {
+		const canvas = canvasRef;
+		if (!canvas?.parentElement) return;
+
+		const container = canvas.parentElement;
+		const w = container.clientWidth;
+		const h = container.clientHeight;
+
+		const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+		renderer.setClearColor(0x0a0a0a, 1);
+		renderer.setSize(w, h);
+
+		const scene = new THREE.Scene();
+		const camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 20);
+		camera.position.set(0, 0, 8);
+
+		const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+		scene.add(ambient);
+
+		let scrollOffset = 0;
+		let wheelDelta = MIN_WHEEL_SPEED;
+		let targetWheelDelta = MIN_WHEEL_SPEED;
+		let wheelDirection = 1;
+
+		const cardStates: CardState[] = [];
+
+		let rafId: number;
+		let lastTime = performance.now();
+
+		const tick = () => {
+			rafId = requestAnimationFrame(tick);
+			const now = performance.now();
+			const delta = (now - lastTime) / 1000;
+			lastTime = now;
+
+			wheelDelta += (targetWheelDelta - wheelDelta) * EASING;
+			scrollOffset += wheelDelta;
+			if (Math.abs(targetWheelDelta) < MIN_WHEEL_SPEED) {
+				targetWheelDelta = wheelDirection * MIN_WHEEL_SPEED;
+			}
+			targetWheelDelta *= 0.9;
+
+			for (let i = 0; i < cardStates.length; i++) {
+				const cs = cardStates[i];
+				if (!cs) continue;
+
+				// hover easing
+				const hoverRate = cs.hoverTarget > 0 ? 0.09 : 0.07;
+				const hoverEase = 1 - Math.pow(1 - hoverRate, delta * 200);
+				cs.hoverProgress += (cs.hoverTarget - cs.hoverProgress) * hoverEase;
+
+				// hidden easing
+				const hiddenEase = 1 - Math.pow(1 - 0.05, delta * 150);
+				cs.hiddenProgress += (cs.hiddenTarget - cs.hiddenProgress) * hiddenEase;
+
+				// position
+				const hideSign = cs.isHidden ? 1.5 : -1.5;
+				let ws = i - scrollOffset;
+				ws = ((ws % TOTAL) + TOTAL) % TOTAL;
+				const Ba = ws - CENTER;
+				const Va = Ba * VERTICAL_GAP - 0.8 - cs.hiddenProgress * hideSign;
+				const Ga = BASE_RADIUS * (1 - cs.hiddenProgress / 2);
+				const Ha = Ba * ANGLE_GAP;
+
+				cs.mesh.position.set(Math.cos(Ha) * Ga, Va, Math.sin(Ha) * Ga);
+				cs.mesh.rotation.y = -Ha + Math.PI / 2;
+
+				// uniforms
+				const u = cs.mat.uniforms;
+				u.uColorStrength.value = 0.55 * cs.hoverProgress;
+				u.uZoom.value = 1 + 0.05 * cs.hoverProgress;
+				u.uRevealProgress.value = (1 - cs.hoverProgress * 0.05) * (1 - cs.hiddenProgress);
+				u.uScrollSpeed.value = wheelDelta;
+			}
+
+			renderer.render(scene, camera);
+		};
+		tick();
+
+		const onWheel = (e: WheelEvent) => {
+			targetWheelDelta = THREE.MathUtils.clamp(
+				targetWheelDelta + e.deltaY * 15e-5,
+				-2, 2
+			);
+			wheelDirection = e.deltaY > 0 ? 1 : -1;
+		};
+		canvas.addEventListener('wheel', onWheel, { passive: true });
+
+		const onResize = () => {
+			const cw = container.clientWidth;
+			const ch = container.clientHeight;
+			camera.aspect = cw / ch;
+			camera.updateProjectionMatrix();
+			renderer.setSize(cw, ch);
+		};
+		window.addEventListener('resize', onResize);
+
+		// Raycaster and hover state (declared here, populated after textures load)
+		const raycaster = new THREE.Raycaster();
+		const mouse = new THREE.Vector2();
+		let hoveredIndex = -1;
+
+		const onPointerMove = (e: PointerEvent) => {
+			const rect = canvas.getBoundingClientRect();
+			mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+			mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+			raycaster.setFromCamera(mouse, camera);
+			const meshes = cardStates.map(cs => cs.mesh);
+			const hits = raycaster.intersectObjects(meshes);
+			const newHoveredIndex = hits.length > 0 ? meshes.indexOf(hits[0].object as THREE.Mesh) : -1;
+			if (newHoveredIndex !== hoveredIndex) {
+				if (hoveredIndex >= 0 && cardStates[hoveredIndex]) cardStates[hoveredIndex].hoverTarget = 0;
+				if (newHoveredIndex >= 0 && cardStates[newHoveredIndex]) cardStates[newHoveredIndex].hoverTarget = 1;
+				hoveredIndex = newHoveredIndex;
+			}
+		};
+		canvas.addEventListener('pointermove', onPointerMove);
+
+		// Load all 8 project textures, then create 16 cards
+		const loader = new THREE.TextureLoader();
+		const textures: THREE.Texture[] = new Array(PROJECTS.length);
+		let loadedCount = 0;
+
+		const onAllTexturesLoaded = () => {
+			for (let i = 0; i < TOTAL; i++) {
+				const tex = textures[i % PROJECTS.length];
+				const imgW = tex.image?.width ?? 1024;
+				const imgH = tex.image?.height ?? 683;
+				const mat = new THREE.ShaderMaterial({
+					uniforms: {
+						uTexture: { value: tex },
+						uColorStrength: { value: 0 },
+						uZoom: { value: 1 },
+						uPlaneSizes: { value: new THREE.Vector2(1.7, 1) },
+						uImageSizes: { value: new THREE.Vector2(imgW, imgH) },
+						uRevealProgress: { value: 0 },
+						uScrollSpeed: { value: 0 },
+					},
+					vertexShader,
+					fragmentShader,
+					transparent: true,
+					side: THREE.DoubleSide,
+				});
+				const mesh = new THREE.Mesh(geo, mat);
+				scene.add(mesh);
+
+				cardStates.push({
+					mesh, mat,
+					hoverProgress: 0, hoverTarget: 0,
+					hiddenProgress: 1, hiddenTarget: 1,
+					isHidden: true,
+				});
+
+				// staggered reveal delay: (i % 4) * 50ms
+				setTimeout(() => {
+					const cs = cardStates[i];
+					if (cs) { cs.hiddenTarget = 0; cs.isHidden = false; }
+				}, (i % 4) * 50);
+			}
+		};
+
+		PROJECTS.forEach((p, idx) => {
+			loader.load(p.img, (tex) => {
+				tex.colorSpace = THREE.SRGBColorSpace;
+				textures[idx] = tex;
+				loadedCount++;
+				if (loadedCount === PROJECTS.length) {
+					onAllTexturesLoaded();
+				}
+			});
+		});
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			canvas.removeEventListener('wheel', onWheel);
+			canvas.removeEventListener('pointermove', onPointerMove);
+			window.removeEventListener('resize', onResize);
+			cardStates.forEach(cs => {
+				cs.mat.dispose();
+			});
+			geo.dispose();
+			renderer.dispose();
+		};
+	});
+</script>
+
+<section
+	id="spiral"
+	data-testid="spiral-section"
+	class="relative bg-[#0A0A0A] text-[#F3F2EE] border-b border-black overflow-hidden"
+>
+	<div class="absolute top-0 left-0 right-0 z-40 grid grid-cols-12 border-b border-[#F3F2EE]/20">
+		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
+			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
+				§ 04.5 — Spiral
+			</span>
+		</div>
+		<div class="col-span-6 sm:col-span-6 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
+			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
+				Project archive, drifting through depth
+			</span>
+		</div>
+		<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-4">
+			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#FF3B00]">
+				◴ scroll to explore
+			</span>
+		</div>
+	</div>
+
+	<div class="relative h-[120vh] sm:h-[140vh] w-full">
+		<div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+			<h2 class="font-display uppercase text-[14vw] sm:text-[12vw] tracking-tighter leading-none text-stroke" style="-webkit-text-stroke: 1.5px #F3F2EE; color: transparent;">
+				Spiral
+			</h2>
+		</div>
+
+		<canvas
+			bind:this={canvasRef}
+			class="absolute inset-0 z-10 w-full h-full"
+		></canvas>
+
+		<div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30">
+			<div class="font-mono text-[10px] uppercase tracking-[0.3em] px-4 py-2 border border-[#F3F2EE]/30 rounded-full text-[#F3F2EE]/80 backdrop-blur-sm">
+				◴ scroll to explore
+			</div>
+		</div>
+
+		<div class="absolute inset-0 z-20 pointer-events-none" style="background: radial-gradient(ellipse at center, transparent 35%, rgba(10,10,10,0.85) 100%);"></div>
+		<div class="absolute bottom-0 left-0 right-0 pointer-events-none z-30" style="height: 38%; background: linear-gradient(to bottom, transparent, #0A0A0A);"></div>
+	</div>
+</section>
