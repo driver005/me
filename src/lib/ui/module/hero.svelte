@@ -109,27 +109,31 @@
 			class="font-display text-[18vw] sm:text-[15vw] uppercase leading-[0.82] tracking-[-0.05em] mt-6"
 			style:color="#E1E0CC"
 		>
-			<!-- Line 1: Alex -->
+			<!-- Line 1: Alex — outer div clips the slide-up, inner span applies scaleY -->
 			<div class="overflow-hidden">
-				<span class="block slide-up" style:transform="scaleY({stretch.value})" style:transform-origin="50% 50%">
-					Alex
-				</span>
+				<div class="slide-up">
+					<span class="block" style:transform="scaleY({stretch.value})" style:transform-origin="50% 50%">
+						Alex
+					</span>
+				</div>
 			</div>
 			<!-- Line 2: Cartér© -->
 			<div class="overflow-hidden">
-				<span
-					class="block slide-up-delay"
-					style:transform="scaleY({stretch.value})"
-					style:transform-origin="50% 50%"
-					style:-webkit-text-stroke="2px #E1E0CC"
-					style:color="transparent"
-				>
-					Cart<span class="text-[#FF3B00]" style:-webkit-text-stroke="0">é</span>r<span
-						class="align-top inline-block ml-2 text-[3vw] sm:text-[2vw]"
-						style:-webkit-text-stroke="0"
-						style:color="#E1E0CC"
-					>©</span>
-				</span>
+				<div class="slide-up-delay">
+					<span
+						class="block"
+						style:transform="scaleY({stretch.value})"
+						style:transform-origin="50% 50%"
+						style:-webkit-text-stroke="2px #E1E0CC"
+						style:color="transparent"
+					>
+						Cart<span class="text-[#FF3B00]" style:-webkit-text-stroke="0">é</span>r<span
+							class="align-top inline-block ml-2 text-[3vw] sm:text-[2vw]"
+							style:-webkit-text-stroke="0"
+							style:color="#E1E0CC"
+						>©</span>
+					</span>
+				</div>
 			</div>
 		</h1>
 
