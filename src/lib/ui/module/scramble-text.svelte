@@ -55,15 +55,20 @@
   }
 
   function scramble(target: string) {
-    const old = display.replace(/<[^>]+>/g, '');
+    const raw = typeof display === 'string' ? display : text;
+    const old = raw.replace(/<[^>]+>/g, '');
     const length = Math.max(old.length, target.length);
-    queue = Array.from({ length }, (_, i) => ({
-      from: old[i] ?? '',
-      to: target[i] ?? '',
-      start: Math.floor(Math.random() * 18),
-      end: Math.floor(Math.random() * 18) + Math.floor(Math.random() * 18) + 6,
-      char: '',
-    }));
+    queue = Array.from({ length }, (_, i) => {
+      const start = Math.floor(Math.random() * 18);
+      const end = start + Math.floor(Math.random() * 18) + 6;
+      return {
+        from: old[i] ?? '',
+        to: target[i] ?? '',
+        start,
+        end,
+        char: '',
+      };
+    });
     if (rafId) cancelAnimationFrame(rafId);
     frame = 0;
     update();
