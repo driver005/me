@@ -45,18 +45,23 @@
 
 <section
 	id="about"
-	class="relative overflow-hidden bg-[#F3F2EE] px-6 py-32 md:px-12"
-	data-testid="about"
+	class="relative overflow-hidden bg-[#F3F2EE] px-6 py-32 md:px-12 border-b border-black"
+	data-testid="about-section"
 >
 	<!-- Header strip -->
-	<div class="mx-auto mb-16 max-w-7xl border-b border-black/10 pb-8">
-		<p class="font-mono text-xs uppercase tracking-[0.2em] text-black/40">/ About</p>
-	</div>
+	<div class="grid grid-cols-12 border-b border-black">
+  <div class="col-span-12 sm:col-span-6 px-4 sm:px-8 py-4 border-r-0 sm:border-r border-black">
+    <span class="font-mono text-xs uppercase tracking-[0.25em] text-[#555]">§ 02 — About</span>
+  </div>
+  <div class="col-span-12 sm:col-span-6 px-4 sm:px-8 py-4 border-t sm:border-t-0 border-black">
+    <span class="font-mono text-xs uppercase tracking-[0.25em] text-[#555]">A short, unreliable biography</span>
+  </div>
+</div>
 
 	<!-- Main grid: 7 col text | 5 col portrait -->
 	<div class="mx-auto grid max-w-7xl grid-cols-1 gap-16 lg:grid-cols-12 lg:gap-24">
 		<!-- ── Text column (7 cols) ───────────────────────────────────────── -->
-		<div class="lg:col-span-7">
+		<div class="lg:col-span-7 md:border-r border-black">
 			<!-- Headline with line-by-line slide-up reveal -->
 			<div bind:this={headlineObs.element} class="mb-14">
 				<h2 class="font-display text-[clamp(2.8rem,6vw,5.5rem)] font-black leading-[0.92] tracking-[-0.03em] text-black">
