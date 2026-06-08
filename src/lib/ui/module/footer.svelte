@@ -53,7 +53,6 @@
 
 		<!-- Outline layer -->
 		<span
-			aria-hidden="false"
 			class="block font-display uppercase text-[22vw] sm:text-[18vw] leading-[0.8] tracking-tighter"
 			style="-webkit-text-stroke: 1.5px #F3F2EE; color: transparent;"
 		>
