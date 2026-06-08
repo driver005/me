@@ -103,6 +103,7 @@
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-0">
 				{#each services as svc, i}
 					<div
+						data-testid="service-{i}"
 						class="group relative border-b border-[#0A0A0A]/10 p-8 cursor-default transition-colors duration-300 hover:bg-[#FF3B00] {i % 2 === 0 ? 'sm:border-r border-[#0A0A0A]/10' : ''}"
 					>
 						<!-- Card number -->

@@ -82,7 +82,7 @@
 						style:transition-delay="200ms"
 						style:transform={headObs.isIntersecting ? 'translateY(0)' : 'translateY(110%)'}
 					>
-						or a problem?
+						<span class="italic">or a problem?</span>
 					</span>
 				</span>
 			</h2>
@@ -125,8 +125,7 @@
 				<div>
 					<p class="font-mono text-[10px] uppercase tracking-[0.2em] text-[#0A0A0A]/50 mb-3">Studio</p>
 					<p class="font-sans text-sm leading-relaxed text-[#0A0A0A]/80">
-						Berlin, Germany<br />
-						Remote-first · Worldwide
+						Linienstr. 144<br />10115 Berlin, DE
 					</p>
 				</div>
 
