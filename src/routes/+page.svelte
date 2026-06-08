@@ -23,7 +23,7 @@
     <Cursor />
     <ScrollProgress />
     <Nav />
-    <main>
+    <main data-testid="main">
       <Hero />
       <!-- <Divider from={DARK} to={CREAM} /> -->
       <About />
