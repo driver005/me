@@ -56,13 +56,6 @@
     class="fixed top-0 left-0 right-0 z-50 bg-[#F3F2EE]/90 backdrop-blur-sm border-b border-black"
     style="animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) forwards;"
   >
-    <style>
-      @keyframes slideDown {
-        from { transform: translateY(-100%); }
-        to   { transform: translateY(0); }
-      }
-    </style>
-
     <div class="flex items-center justify-between px-4 sm:px-8 h-14">
       <a href="#top" class="font-mono text-sm font-bold tracking-tighter flex items-center gap-2">
         <span class="inline-block h-2 w-2 bg-[#FF3B00] rounded-full"></span>
@@ -130,3 +123,10 @@
     {/if}
   </header>
 {/if}
+
+<style>
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to   { transform: translateY(0); }
+  }
+</style>
