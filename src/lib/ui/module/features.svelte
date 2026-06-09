@@ -66,7 +66,7 @@
 						{#each data as _, i}
 							<button
 								onclick={() => (currentIndex = i)}
-								class="rounded-xl border-2 border-black bg-violet-400 px-3 py-1 text-xs font-black transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+								class="rounded-xl border-2 border-black bg-violet-400 px-3 py-1 text-xs font-black transition-all hover:-translate-y-1 hover:brutal-shadow
 							{currentIndex === i ? 'text-white dark:text-black' : ''}"
 							>
 								0{i + 1}

@@ -15,16 +15,16 @@
 		ToneMappingMode
 	} from 'postprocessing';
 	import { Vector2 } from 'three';
+	import { mode } from 'mode-watcher';
 
 	const { scene, renderer, camera, size, autoRender } = useThrelte();
-	const theme = getContext<{ value: string }>('theme');
 	const composer = new EffectComposer(renderer);
 
 	$effect(() => {
 		const cam = camera.current;
 		if (!cam) return;
 
-		const isDark = theme.value === 'dark';
+		const isDark = mode.current === 'dark';
 
 		composer.removeAllPasses();
 		composer.addPass(new RenderPass(scene, cam));

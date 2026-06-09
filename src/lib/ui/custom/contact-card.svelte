@@ -16,7 +16,7 @@
 		>
 			<Button
 				class="relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-xl border-4 border-black text-black {item.color} 
-                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                brutal-shadow
                 transition-all duration-75 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none hover:{item.color}"
 			>
 				<div

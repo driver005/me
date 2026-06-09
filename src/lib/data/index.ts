@@ -28,38 +28,30 @@ import {
 } from "lucide-svelte";
 import { SiGithub, SiInstagram, SiX } from "@icons-pack/svelte-simple-icons";
 import { m } from "$lib/paraglide/messages.js";
-import type { DOCK, PROJECT, SKILL } from "$lib/types/ui.ts";
+import type { DOCK, PROJECT, SKILL, NAVITEM, CONTACTITEM } from "$lib/types/ui.ts";
 
-export const journey = [
-  {
-    name: m["milestones.primary.title"](),
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Grundschule_Hechinger_Eck_06.jpg/500px-Grundschule_Hechinger_Eck_06.jpg",
-    text:
-      `<a href="https://hechingereck.de/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">${
-        m["milestones.primary.school"]()
-      }</a>`,
-    time: "09.2012 - 07.2016",
-  },
-  {
-    name: m["milestones.secondary.title"](),
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/1/1c/Wildermuth-Gymnasium_T%C3%BCbingen_Juli_2022.jpg",
-    text:
-      `<a href="https://www.wildermuth-gymnasium.de/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">${
-        m["milestones.secondary.school"]()
-      }</a><li><a href="https://de.wikipedia.org/wiki/Abitur_in_Baden-W%C3%BCrttemberg" target="_blank" class="hover:underline underline-offset-4 decoration-black transition-all">Abitur 2024/2025</a></li>`,
-    time: "09.2016 - 07.2025",
-  },
-  {
-    name: m["milestones.internship.title"](),
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Grundschule_Hechinger_Eck_06.jpg/500px-Grundschule_Hechinger_Eck_06.jpg",
-    text:
-      `<a href="https://kmz-tuebingen.de" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">KMZ Tübingen - 2022</a><li><a href="https://www.sfz-tuebingen.org/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4 decoration-black transition-all">SFZ Tübingen(${m.member()} 2016) - 2025</a></li>`,
-    time: "2022 and 2025",
-  },
-];
+export interface WorkItem {
+  id: number;
+  title: string;
+  client: string;
+  year: string;
+  category: string;
+  img: string;
+}
+
+export interface ServiceItem {
+  code: string;
+  title: string;
+  description: string;
+  tags: string[];
+}
+
+export const journey: {
+  name: string;
+  image: string;
+  text: string;
+  time: string;
+}[] = [];
 
 export const projects: PROJECT[] = [
   {
@@ -91,6 +83,45 @@ export const social_links = {
   instagram: "https://www.instagram.com/4real4drian/",
   linkedin: "https://www.linkedin.com/in/adrian-fernandez-84b3183a6/",
 };
+
+export const works: WorkItem[] = [
+  { id: 1, title: 'teclab', client: 'SFZ Tübingen', year: '2025', category: 'Web · React', img: '/images/works/teclab-preview.png' },
+  { id: 2, title: 'hhmodle', client: 'Personal', year: '2026', category: 'Science · Python', img: '/images/works/hhmodle-preview.png' },
+  { id: 3, title: 'congelado', client: 'Personal', year: '2026', category: 'Systems · C++', img: '/images/works/congelado-preview.png' },
+  { id: 4, title: 'blog', client: 'Personal', year: '2025', category: 'Publishing · Python', img: '/images/works/blog-preview.png' },
+  { id: 5, title: 'me', client: 'Personal', year: '2026', category: 'Web · Svelte', img: '/images/works/me-preview.png' },
+  { id: 6, title: 'fuzzyboard', client: 'Personal', year: '2026', category: 'App · Flutter', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c' },
+];
+
+export const services: ServiceItem[] = [
+  { code: 'S/01', title: m['services.ai_title'](), description: m['services.ai_desc'](), tags: ['Python', 'Neural Nets', 'Simulation', 'Data'] },
+  { code: 'S/02', title: m['services.web_title'](), description: m['services.web_desc'](), tags: ['SvelteKit', 'React', 'Next.js', 'Three.js'] },
+  { code: 'S/03', title: m['services.creative_title'](), description: m['services.creative_desc'](), tags: ['Blender', 'Flutter', 'WebGL', 'Figma'] },
+  { code: 'S/04', title: m['services.systems_title'](), description: m['services.systems_desc'](), tags: ['Rust', 'Go', 'Docker', 'K8s'] },
+];
+
+export const navLinks = [
+  { href: '#work', label: m['nav.work']() },
+  { href: '#about', label: m['nav.about']() },
+  { href: '#services', label: m['nav.services']() },
+  { href: '#gallery', label: m['nav.gallery']() },
+  { href: '#contact', label: m['nav.contact']() },
+];
+
+export const appNavRoutes = [
+  { href: '/', label: m['app_nav.home']() },
+  { href: '/home', label: m['app_nav.room']() },
+  { href: '/music', label: m['app_nav.music']() },
+  { href: '/imprint', label: m['app_nav.imprint']() },
+  { href: '/privacy', label: m['app_nav.privacy']() },
+];
+
+export const stats = [
+  { v: '10+', l: m['about.stat_years']() },
+  { v: '63', l: m['about.stat_projects']() },
+  { v: '03', l: m['about.stat_awards']() },
+  { v: '05', l: m['about.stat_countries']() },
+];
 
 export const dock: DOCK = {
   navbar: [

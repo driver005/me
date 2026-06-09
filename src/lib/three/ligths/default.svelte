@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { getContext } from 'svelte';
-	const theme = getContext<{ value: string }>('theme');
+	import { mode } from 'mode-watcher';
 </script>
 
-{#if theme.value === 'light'}
+{#if mode.current === 'light'}
 	<!-- Key light — warm sun -->
 	<T.DirectionalLight position={[10, 20, 10]} intensity={1.5} color="#fff5e0" />
 	<!-- Fill light — cool sky bounce -->

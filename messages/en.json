@@ -1,5 +1,135 @@
 {
   "headline": "👋 Hi,  I'm Adrian",
+  "// desktop hero — to be removed": "",
+  "nav": {
+    "work": "Work",
+    "about": "About",
+    "services": "Services",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "open": "Open",
+    "cta": "Let's Talk →",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "hero": {
+    "meta_portfolio": "Portfolio / 2025—26",
+    "meta_index": "Index № 001 / 12",
+    "meta_studio": "Studio: Tübingen / Remote",
+    "meta_available": "✷ Available for Work",
+    "eyebrow_a": "(A) Designer",
+    "eyebrow_b": "(B) Developer",
+    "eyebrow_c": "(C) Director",
+    "status": "Available for Q3 2026",
+    "scroll": "Scroll<br />\u2193",
+    "marquee_1": "Selected Works 2018\u20132026",
+    "marquee_2": "Brand Systems",
+    "marquee_3": "Web Experiences",
+    "marquee_4": "Art Direction",
+    "marquee_5": "Type Driven",
+    "marquee_6": "Awwwards Honoree",
+    "bio": "▌ Freelancing & sharpening my C++, currently searching for work. I build things because I love the challenge — whether it's the fine details under the hood or the big picture."
+  },
+  "about": {
+    "meta": "§ 02 — About",
+    "meta_sub": "A short, unreliable biography",
+    "headline_1": "I make things",
+    "headline_2": "that <span class=\"italic\">feel <span class=\"text-[#FF3B00]\">loud</span></span>",
+    "headline_3": "in quiet rooms.",
+    "bio_1": "I'm Adrian — I build things because I love the challenge. I'm driven by simple curiosity and a passion for doing good work.",
+    "bio_2": "Freelancing & improving my C++. Based in Tübingen, Germany.",
+    "current_label": "Currently —",
+    "current_text": "Sharpening my C++ skills. Open for new opportunities.",
+    "current_open": "Available for work.",
+    "stat_years": "Years",
+    "stat_projects": "Projects",
+    "stat_awards": "Awards",
+    "stat_countries": "Countries",
+    "portrait_label": "▌Portrait",
+    "portrait_number": "01 / 01",
+    "portrait_iso": "ISO 800",
+    "portrait_rec": "●REC",
+    "portrait_caption": "Adrian Fernández"
+  },
+  "works": {
+    "meta": "§ 03 — Selected",
+    "meta_sub": "Index of recent expeditions, 2023 — present",
+    "meta_hint": "Hover ↳ image",
+    "title_selected": "Selected",
+    "title_works": "Works.",
+    "row_view": "View →",
+    "footer_end": "End of index — 06 of 42",
+    "footer_cta": "Request Full Archive →"
+  },
+  "spiral": {
+    "meta": "§ 04.5 — Spiral",
+    "meta_sub": "Project archive, drifting through depth",
+    "meta_hint": "◴ scroll to explore",
+    "title": "Spiral"
+  },
+  "services": {
+    "meta": "§ 04 — Services",
+    "marquee": "Capabilities ✷ Capabilities ✷ Capabilities ✷",
+    "headline_1": "What I",
+    "headline_2": "actually do.",
+    "description": "Four practices, one studio. Engagements range from one-week audits to twelve-week buildouts. No retainers, no fluff, no agency overhead.",
+    "ai_title": "AI & ML",
+    "ai_desc": "Custom models, simulations, data pipelines. Turning research into working systems.",
+    "web_title": "Web Engineering",
+    "web_desc": "Portfolios, dashboards, full-stack apps — SvelteKit, React, Three.js.",
+    "creative_title": "Creative Tech",
+    "creative_desc": "3D, motion, interactive experiences. Blender, Flutter, WebGL, Figma.",
+    "systems_title": "Systems & Infra",
+    "systems_desc": "Backend services, tooling, deployment. Rust, Go, Docker, Kubernetes."
+  },
+  "process": {
+    "meta": "§ 05.5 — Mindset",
+    "meta_sub": "How I work, what drives me",
+    "step_1_title": "Learn",
+    "step_1_sub": "Curiosity",
+    "step_1_desc": "Driven by curiosity — I dive deep into whatever catches my interest. From C++ systems to AI models, I learn by building.",
+    "step_2_title": "Build",
+    "step_2_sub": "Engineering",
+    "step_2_desc": "Ideas become things. SvelteKit, React, Flutter, Three.js — I pick the right tool and ship quality work.",
+    "step_3_title": "Share",
+    "step_3_sub": "Publishing",
+    "step_3_desc": "I write about tech, quantum computing, AI, and tools like Zed. Blogging helps me think clearly.",
+    "step_4_title": "Repeat",
+    "step_4_sub": "Evolution",
+    "step_4_desc": "Every project teaches me something. I refine, iterate, and keep shipping. Growth over perfection."
+  },
+  "contact": {
+    "meta": "§ 06 — Contact",
+    "meta_sub": "One inbox, two timezones, zero retainers",
+    "meta_rec": "●REC — 2026",
+    "marquee": "Let's Talk ✷ ",
+    "headline_1": "Got a brief,",
+    "headline_2": "a half-idea,",
+    "headline_3": "or a problem?",
+    "title": "Contact Me",
+    "description": "Feel free to reach out to me via email or connect with me on social media. I'm always open to new opportunities and collaborations!",
+    "email_cta": "contact@a42n.com →",
+    "call_cta": "Let's Talk ↗",
+    "sidebar_studio": "Location",
+    "sidebar_address_1": "Tübingen",
+    "sidebar_address_2": "Germany",
+    "sidebar_press": "Email",
+    "sidebar_press_email_1": "contact@a42n.",
+    "sidebar_press_email_2": "com",
+    "sidebar_elsewhere": "Elsewhere"
+  },
+  "footer": {
+    "copyright": "Adrian Fernández",
+    "rights": "All rights reserved.",
+    "berlin_time": "Local Time",
+    "clock_suffix": "CET",
+    "built_with": "Built With",
+    "tech_stack": "SvelteKit · Svelte 5 · Lenis · Stubbornness",
+    "top": "Top",
+    "back_to_start": "↑ Back to start",
+    "credit": "Designed & built by hand in Berlin. No templates. No agency overhead.",
+    "end": "End of scroll — Vol. 001"
+  },
   "tagline": "I am {age} years old and currently searching for work.",
   "member": "member since",
   "catchline": "MY_HOME",
@@ -7,10 +137,6 @@
   "loading": "Loading...",
   "email": "contact@a42n.com",
   "url": "https://www.a42n.com",
-  "contact": {
-    "title": "Contact Me",
-    "description": "Feel free to reach out to me via email or connect with me on social media. I'm always open to new opportunities and collaborations!"
-  },
   "story": {
     "title": "My Story",
     "description": "I build things because I love the challenge. Whether it’s the fine details under the hood or the big picture, I’m driven by a simple curiosity and a passion for doing good work. At the end of the day, I’m just someone who loves what they do and wants to make an impact."
@@ -34,19 +160,6 @@
     "pitch": "here to learn|one step at a time|please ask me for the passwd"
   },
   "image": "/images/me.jpeg",
-  "milestones": {
-    "primary": {
-      "title": "Grundschule am Hechinger Eck",
-      "school": "Primary School"
-    },
-    "secondary": {
-      "title": "Wildermuth Gymnasium",
-      "school": "Secondary School"
-    },
-    "internship": {
-      "title": "Various Internships"
-    }
-  },
   "dock": {
     "navbar": {
       "home": "Home",
@@ -147,6 +260,11 @@
   "gallery": {
     "title": "Asset Index",
     "description": "Direct links to project source files.",
+    "meta": "§ 06 \u2014 Gallery",
+    "meta_sub": "Selected works 2023\u20142026",
+    "meta_hint": "Scroll \u21B3 explore",
+    "title_visual": "Visual",
+    "title_archive": "Archive<span class=\"text-[#FF3B00] not-italic\">.</span>",
     "links": {
       "teclab": "teclab source files",
       "assets": "Some assets are from this tutorial, which I highly recommend",
@@ -182,6 +300,43 @@
     "first": "Left Mouse to Rotate",
     "second": "Right Mouse to Click"
   },
+  "app_nav": {
+    "home": "Home",
+    "room": "Room",
+    "skills": "Skills",
+    "music": "Music",
+    "imprint": "Imprint",
+    "privacy": "Privacy"
+  },
+  "imprint": {
+    "title": "Imprint",
+    "description": "Legal disclosure according to § 5 TMG",
+    "responsible": "Responsible for Content",
+    "address_line1": "Adrian Fernández",
+    "address_line2": "Tübingen, Germany",
+    "contact": "Contact",
+    "email": "contact@a42n.com",
+    "disclaimer_title": "Disclaimer",
+    "disclaimer_liability": "Liability for Contents",
+    "disclaimer_liability_text": "The contents of this website have been created with the utmost care. However, we cannot guarantee the accuracy, completeness, or timeliness of the content.",
+    "disclaimer_links": "Liability for Links",
+    "disclaimer_links_text": "This website contains links to external third-party websites. We have no influence over the content of those linked websites and cannot assume any liability for them.",
+    "disclaimer_copyright": "Copyright",
+    "disclaimer_copyright_text": "All content and works on this website are subject to German copyright law. Reproduction, editing, distribution, or any form of commercialization requires the written consent of the author."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "description": "Information about data protection and privacy",
+    "intro": "This privacy policy explains how we collect, use, and protect your personal data when you visit this website.",
+    "data_collection_title": "Data Collection",
+    "data_collection_text": "This website does not use cookies or tracking scripts. We do not collect any personal data unless you voluntarily provide it via email.",
+    "data_storage_title": "Data Storage",
+    "data_storage_text": "Any personal data you provide (e.g., via email) is stored securely and used only for the purpose of responding to your inquiry. Data is not shared with third parties.",
+    "rights_title": "Your Rights",
+    "rights_text": "You have the right to request information about your stored data, its correction, deletion, or restriction of processing at any time.",
+    "contact_title": "Contact",
+    "contact_text": "For any questions regarding data protection, please contact us at:"
+  },
   "seo": {
     "home": {
       "title": "Adrian's Personal Portfolio",
@@ -194,6 +349,14 @@
     "skills": {
       "title": "Adrian's Skills | Personal Portfolio",
       "description": "Explore Adrian's technical skills and expertise as a software developer, from frontend to backend and everything in between."
+    },
+    "imprint": {
+      "title": "Imprint | Adrian Fernández",
+      "description": "Legal disclosure and contact information for Adrian Fernández."
+    },
+    "privacy": {
+      "title": "Privacy Policy | Adrian Fernández",
+      "description": "Privacy policy and data protection information for Adrian Fernández's portfolio."
     },
     "keywords": "Adrian, personal portfolio, software developer, projects, skills, music, interactive 3D",
     "author": "Adrian",

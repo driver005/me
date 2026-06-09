@@ -2,20 +2,9 @@
 	import Room from '$lib/models/home.svelte';
 	import * as THREE from 'three';
 	import { T, injectPlugin } from '@threlte/core';
-	import { interactivity } from '@threlte/extras';
 	import { getContext, onMount, onDestroy } from 'svelte';
-	import { Home, Skills, Music, Dust, Slides } from '$lib/ui/dialog';
 	import { create_video_texture } from '$lib/util/video.svelte';
-	import { social_links } from '$lib/data';
 
-	let life_tab = $state(false);
-	let skill_tab = $state(false);
-	let music_tab = $state(false);
-	let dust_tab = $state(false);
-	let slides_tab = $state(false);
-	let dust_opened = $state(1);
-
-	const helper = getContext<{ value: boolean }>('helper');
 	const friendly = getContext<{ value: boolean }>('friendly');
 
 	const video_disposers: (() => void)[] = [];
@@ -57,8 +46,6 @@
 			});
 		});
 	});
-
-	interactivity();
 
 	function change_obj(obj: any) {
 		if (obj.children && obj.children.length !== 0) {
@@ -177,105 +164,9 @@
 		});
 	});
 
-	function handlePointerUp(e: any) {
-		e.stopPropagation();
-
-		if (e.nativeEvent.button !== 2) return;
-
-		for (const obj of e.intersections ?? []) {
-			if (obj != null) {
-				let name = obj.object.name.toLowerCase();
-				const linkKey = Object.keys(social_links).find((key) => name.includes(key));
-				if (linkKey) {
-					const newWindow = window.open(social_links[linkKey], '_blank', 'noopener,noreferrer');
-					if (newWindow) {
-						newWindow.opener = null;
-					}
-				}
-				break;
-			}
-		}
-	}
-
-	function handlePointerDown(e: any) {
-		e.stopPropagation();
-
-		if (e.nativeEvent.button !== 2) return;
-
-		for (const obj of e.intersections ?? []) {
-			if (obj != null) {
-				let hit = obj.object;
-				let name = hit.material.name.toLowerCase();
-
-				if (hit.name.includes('SpacePotion')) {
-					skill_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (hit.name.includes('SpaceMilk')) {
-					life_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (hit.name.includes('SpaceJuice')) {
-					life_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (name.includes('tv')) {
-					life_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (name.includes('laptop')) {
-					skill_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (name.includes('dust')) {
-					dust_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (name.includes('gucci')) {
-					slides_tab = true;
-					helper.value = false;
-					break;
-				}
-				if (!friendly.value) {
-					if (hit.name.includes('SpaceSpeaker')) {
-						music_tab = true;
-						helper.value = false;
-						break;
-					}
-					if (name.includes('aux')) {
-						music_tab = true;
-						helper.value = false;
-						break;
-					}
-					if (hit.name.includes('SpaceCasset')) {
-						music_tab = true;
-						helper.value = false;
-						break;
-					}
-				}
-				break;
-			}
-		}
-	}
 </script>
 
-<Home bind:open={life_tab} />
-<Skills bind:open={skill_tab} />
-<Music bind:open={music_tab} />
-<Dust bind:open={dust_tab} bind:open_count={dust_opened} />
-<Slides bind:open={slides_tab} />
-
-<T.Group
-	name="Room"
-	onpointerup={(e: any) => handlePointerUp(e)}
-	onpointerdown={(e: any) => handlePointerDown(e)}
->
+<T.Group name="Room">
 	<Room bind:this={room_ref}>
 		{#snippet error({ error }: { error: Error })}
 			<div class="error-ui">{error.message}</div>

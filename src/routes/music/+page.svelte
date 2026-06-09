@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Music } from '$lib/ui/page';
+	import PageShell from '$lib/ui/module/page-shell.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import SvelteSeo from 'svelte-seo';
 </script>
@@ -35,4 +36,6 @@
 	/>
 </svelte:head>
 
-<Music />
+<PageShell>
+	<Music />
+</PageShell>

@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { browser } from '$app/environment';
 	import { useScrollStretchY } from '$lib/util/scroll-stretch.svelte';
 	import InfiniteGallerySection from './infinite-gallery-section.svelte';
+	import SectionHeader from './section-header.svelte';
 
 	function mulberry32(seed: number) {
 		return function () {
@@ -73,36 +75,24 @@
 </script>
 
 <section class="relative bg-[#0A0A0A] text-[#F3F2EE] border-b border-[#F3F2EE]/20">
-	<div class="grid grid-cols-12 border-b border-[#F3F2EE]/20">
-		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
-			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#555]">
-				§ 06 — Gallery
-			</span>
-		</div>
-		<div class="col-span-6 sm:col-span-6 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
-			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#555]">
-				Selected works 2023—2026
-			</span>
-		</div>
-		<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-4">
-			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#555]">
-				Scroll ↳ explore
-			</span>
-		</div>
-	</div>
+	<SectionHeader dark items={[
+		{ label: m['gallery.meta'], span: 'col-span-6 sm:col-span-3' },
+		{ label: m['gallery.meta_sub'], span: 'col-span-6 sm:col-span-6' },
+		{ label: m['gallery.meta_hint'], span: 'hidden sm:block col-span-3' },
+	]} />
 	<div bind:this={headingRef} class="px-4 sm:px-8 py-12 sm:py-20">
 		<h2 class="font-display uppercase text-[14vw] sm:text-[11vw] leading-[0.85] tracking-tighter overflow-hidden">
 			<span
 				class="block"
 				style="transform: scaleY({scaleY.value}) translateX({visualX}); transform-origin: 50% 100%;"
 			>
-				Visual
+				{m['gallery.title_visual']()}
 			</span>
 			<span
 				class="block text-stroke-inverted italic"
 				style="transform: scaleY({scaleY.value}) translateX({archiveX}); transform-origin: 50% 0%;"
 			>
-				Archive<span class="text-[#FF3B00] not-italic">.</span>
+				{@html m['gallery.title_archive']()}
 			</span>
 		</h2>
 	</div>

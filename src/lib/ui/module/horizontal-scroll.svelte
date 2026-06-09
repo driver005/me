@@ -1,38 +1,39 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { browser } from '$app/environment';
 	import * as THREE from 'three';
 
 	const steps = [
 		{
 			num: '01',
-			title: 'Brief',
-			sub: 'Discovery',
-			desc: 'Two hours of honest conversation. No decks, no wireframes yet — just questions. What are you trying to do? Who for? By when? What would success look like?',
-			tags: ['Workshop', 'Research', 'Strategy'],
+			title: m['process.step_1_title'](),
+			sub: m['process.step_1_sub'](),
+			desc: m['process.step_1_desc'](),
+			tags: ['C++', 'Rust', 'Python', 'AI'],
 			accent: '#FF3B00',
 		},
 		{
 			num: '02',
-			title: 'Concept',
-			sub: 'Design',
-			desc: 'Three directions. One deck. Hard opinions about which is right and why. Typography-first, system-wide, with all the edge cases already solved before we build.',
-			tags: ['Identity', 'Type', 'Motion'],
+			title: m['process.step_2_title'](),
+			sub: m['process.step_2_sub'](),
+			desc: m['process.step_2_desc'](),
+			tags: ['SvelteKit', 'React', 'Flutter', 'Three.js'],
 			accent: '#F3F2EE',
 		},
 		{
 			num: '03',
-			title: 'Build',
-			sub: 'Engineering',
-			desc: 'Every component hand-written. Motion choreographed per-element. Code nobody else will read but everyone will feel. Lighthouse 99+. No templates.',
-			tags: ['React', 'WebGL', 'Motion'],
+			title: m['process.step_3_title'](),
+			sub: m['process.step_3_sub'](),
+			desc: m['process.step_3_desc'](),
+			tags: ['Blog', 'Open Source', 'Tutorials'],
 			accent: '#FF3B00',
 		},
 		{
 			num: '04',
-			title: 'Ship',
-			sub: 'Launch',
-			desc: 'A quiet Tuesday, then a loud one. Post-launch support, analytics review, and a debrief covering what worked, what didn\'t, and what we do differently next time.',
-			tags: ['Deploy', 'CDN', 'Iterate'],
+			title: m['process.step_4_title'](),
+			sub: m['process.step_4_sub'](),
+			desc: m['process.step_4_desc'](),
+			tags: ['Iterate', 'Improve', 'Ship'],
 			accent: '#F3F2EE',
 		},
 	];
@@ -46,7 +47,7 @@
 		const onScroll = () => {
 			const rect = el.getBoundingClientRect();
 			const total = rect.height;
-			const scrolled = window.innerHeight - rect.top;
+			const scrolled = Math.max(0, -rect.top);
 			scrollYProgress = Math.max(0, Math.min(1, scrolled / (total - window.innerHeight)));
 		};
 		window.addEventListener('scroll', onScroll, { passive: true });
@@ -312,12 +313,12 @@ void main() {
 		<div class="absolute top-0 left-0 right-0 z-20 grid grid-cols-12 border-b border-[#F3F2EE]/20">
 			<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
 				<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-					§ 05.5 — Process
+					{m['process.meta']()}
 				</span>
 			</div>
 			<div class="col-span-6 sm:col-span-6 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
 				<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-					How a project actually moves from brief to live
+					{m['process.meta_sub']()}
 				</span>
 			</div>
 			<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-4">

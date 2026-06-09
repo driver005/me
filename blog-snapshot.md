@@ -1,0 +1,137 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - link "Adrian's Blog" [ref=e6] [cursor=pointer]:
+        - /url: https://blog.a42n.com/
+        - img "Adrian's Blog" [ref=e7]
+      - button "Burger menu button" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: 
+        - text: 
+    - complementary [ref=e10]:
+      - generic [ref=e11]:
+        - navigation [ref=e12]:
+          - list [ref=e13]
+        - generic [ref=e31]:
+          - heading "Archives" [level=2] [ref=e32]
+          - list [ref=e33]
+        - generic [ref=e38]:
+          - heading "Categories" [level=2] [ref=e39]
+          - list [ref=e40]
+    - generic [ref=e49]:
+      - link "Github" [ref=e50] [cursor=pointer]:
+        - /url: https://github.com/driver005/blog
+      - generic [ref=e51]:
+        - button "Scheme Toggle" [ref=e52] [cursor=pointer]:
+          - generic [ref=e53]
+        - generic [ref=e56]:
+          - link "@real4drian" [ref=e57] [cursor=pointer]:
+            - /url: https://x.com/real4drian
+          - link "@4real4drian" [ref=e61] [cursor=pointer]:
+            - /url: https://www.instagram.com/4real4drian
+          - link "@inthemaking!!" [ref=e65] [cursor=pointer]:
+            - /url: /
+          - link "@driver005" [ref=e69] [cursor=pointer]:
+            - /url: https://github.com/driver005
+          - link "Contact me" [ref=e72] [cursor=pointer]:
+            - /url: https://blog.a42n.com/contact
+  - generic [ref=e76]:
+    - banner [ref=e77]:
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - heading "Adrian's Blog" [level=1] [ref=e82]
+          - navigation [ref=e86]
+          - generic [ref=e103]
+        - text:    
+    - main [ref=e112]:
+      - generic [ref=e116]:
+        - generic [ref=e117]:
+          - generic [ref=e118]: Ink on a Dead Medium
+          - generic [ref=e119]: Written for the ones still reading
+        - generic [ref=e120]:
+          - generic [ref=e121]
+          - generic [ref=e127]
+        - link "Part of a vison " [ref=e147] [cursor=pointer]:
+          - /url: https://www.a42n.com
+          - img [ref=e148]
+          - text: Part of a vison
+          - generic [ref=e151]: 
+      - generic [ref=e155]:
+        - generic [ref=e157]:
+          - article "Slide 1 of 3" [ref=e158]
+          - article "Slide 2 of 3" [ref=e184]
+          - article "Slide 3 of 3" [ref=e212]
+        - generic [ref=e237]:
+          - img [ref=e239]
+          - img [ref=e243]
+          - img [ref=e247]
+        - button "Previous slide" [ref=e250] [cursor=pointer]:
+          - generic [ref=e251]: 
+        - button "Next slide" [ref=e252] [cursor=pointer]:
+          - generic [ref=e253]: 
+      - complementary [ref=e258]:
+        - generic [ref=e259]:
+          - search [ref=e261]
+          - generic [ref=e268]
+          - generic [ref=e277]
+          - generic [ref=e344]
+          - generic [ref=e360]
+      - generic [ref=e382]:
+        - generic [ref=e383]: Read by Category
+        - generic [ref=e384]:
+          - generic [ref=e386]
+          - text:  
+  - generic [ref=e424]:
+    - generic [ref=e425]:
+      - img "Updates, No AI Slope" [ref=e427]
+      - img "Updates, No AI Slope" [ref=e429]
+      - img "Updates, No AI Slope" [ref=e431]
+    - generic [ref=e432]:
+      - generic [ref=e434]:
+        - img [ref=e435]
+        - text: Stay in the Loop
+      - generic [ref=e437]: Updates, No AI Slope
+      - generic [ref=e438]: Insights in my head — shared with care.
+    - generic [ref=e440]:
+      - textbox "Your Email" [ref=e441]
+      - button "Subscribe" [ref=e442] [cursor=pointer]
+  - contentinfo [ref=e443]:
+    - generic [ref=e444]:
+      - generic [ref=e445]:
+        - generic [ref=e446]:
+          - link "Adrian's Blog" [ref=e448] [cursor=pointer]:
+            - /url: https://blog.a42n.com/
+          - generic [ref=e450]: Thank you for visiting my blog — on a mission to bring focus in your life, one commit at a time.
+        - list [ref=e453]:
+          - listitem [ref=e454]
+          - listitem [ref=e457]
+          - listitem [ref=e460]
+          - listitem [ref=e463]
+          - listitem [ref=e466]
+        - generic [ref=e471]:
+          - link "@real4drian" [ref=e472] [cursor=pointer]:
+            - /url: https://x.com/real4drian
+          - link "@4real4drian" [ref=e477] [cursor=pointer]:
+            - /url: https://www.instagram.com/4real4drian
+          - link "@inthemaking!!" [ref=e482] [cursor=pointer]:
+            - /url: /
+          - link "@driver005 @driver005" [ref=e487] [cursor=pointer]:
+            - /url: https://github.com/driver005
+          - link "Contact me Contact me" [ref=e491] [cursor=pointer]:
+            - /url: https://blog.a42n.com/contact
+        - generic [ref=e495]: © 2025 A42N. All Rights Reserved.
+      - generic [ref=e496]:
+        - generic [ref=e498]:
+          - text: Think
+          - img [ref=e499]
+          - text: Create
+          - img [ref=e501]
+          - text: Repeate
+          - img [ref=e503]
+        - generic [ref=e506]:
+          - text: Think
+          - img [ref=e507]
+          - text: Create
+          - img [ref=e509]
+          - text: Repeate
+          - img [ref=e511]
+  - generic [ref=e513] [cursor=pointer]: 

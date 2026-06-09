@@ -33,7 +33,7 @@
 		class="group block no-underline {!manual_override && 'md:hidden'}"
 	>
 		<Card.Root
-			class="relative overflow-hidden rounded-xl border-4 border-black bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none"
+			class="relative overflow-hidden rounded-xl border-4 border-black bg-background brutal-shadow transition-all group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none"
 		>
 			<div
 				class="absolute top-0 left-6 flex h-6 w-24 items-center justify-center rounded-b-md bg-black"
@@ -97,7 +97,7 @@
 {:else}
 	<div class={!manual_override ? 'md:hidden' : ''}>
 		<Card.Root
-			class="relative overflow-hidden rounded-xl border-4 border-black bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+			class="relative overflow-hidden rounded-xl border-4 border-black bg-background brutal-shadow"
 		>
 			<div
 				class="absolute top-0 left-6 flex h-6 w-24 items-center justify-center rounded-b-md bg-black"

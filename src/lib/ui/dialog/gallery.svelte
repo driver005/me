@@ -15,7 +15,7 @@
 	<Button
 		variant="outline"
 		onclick={() => (open = true)}
-		class="h-12 rounded-xl border-4 border-black bg-blue-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-blue-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-blue-400 dark:hover:bg-blue-400"
+		class="h-12 rounded-xl border-4 border-black bg-blue-400 brutal-shadow transition-all hover:bg-blue-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-blue-400 dark:hover:bg-blue-400"
 	>
 		<Landmark />
 	</Button>

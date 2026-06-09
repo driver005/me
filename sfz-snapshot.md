@@ -1,0 +1,42 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - 'link "Space exploration [WLP series #8]" [ref=e8] [cursor=pointer]':
+      - /url: https://sketchfab.com/models/91964c1ce1a34c3985b6257441efa500
+    - banner [ref=e9]:
+      - navigation [ref=e10]:
+        - list [ref=e11]:
+          - generic [ref=e12]
+      - generic [ref=e33]:
+        - heading "teclab VDI-Schülerforschungszentrum" [level=1] [ref=e34]
+        - paragraph [ref=e35]: Home of the VDInis and Zukunftspiloten Tübingen-Reutlingen a place for students to meet and bring their dreams to life
+        - link "View Projects" [ref=e36] [cursor=pointer]:
+          - /url: /projects
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - text: About us
+          - heading "What's the teclab" [level=2] [ref=e42]
+          - paragraph [ref=e43]
+          - paragraph [ref=e46]: Students have the possibilities to make connections with other students, work on projects, eat something, make homework or listen to presentations.
+        - link "Contact us" [ref=e47] [cursor=pointer]:
+          - /url: mailto:sfz.teclab@vdi.de
+      - img "vdi logo" [ref=e50]
+  - contentinfo [ref=e52]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - heading "Legal notice:" [level=3] [ref=e56]
+        - paragraph [ref=e57]: teclab VDI-Schülerforschungszentrum
+        - paragraph [ref=e58]: at the Wildermuth Gymnasium
+        - paragraph [ref=e59]: Felipe Fernández
+        - paragraph [ref=e60]: Derendinger Allee 8
+        - paragraph [ref=e61]: 72072 Tübingen
+        - paragraph [ref=e62]: "Phone: +491634363720"
+        - paragraph [ref=e63]:
+          - text: "Email:"
+          - link "sfz.teclab@vdi.de" [ref=e64] [cursor=pointer]:
+            - /url: mailto:sfz.teclab@vdi.de
+      - generic [ref=e65]:
+        - link "teclab logo":
+          - /url: /
+          - img "teclab logo"
+        - generic [ref=e66]: teclab © 2025

@@ -10,11 +10,10 @@
 	} from 'three';
 	import { Tween } from 'svelte/motion';
 	import { quadOut } from 'svelte/easing';
-	import { onMount, onDestroy, getContext } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { mode } from 'mode-watcher';
 
 	const { scene } = useThrelte();
-
-	const theme = getContext<{ value: string }>('theme');
 
 	const LIGHT_MODE_COLOR = new Color('#0a3d8f'); // deep navy  — pops on light bg
 	const DARK_MODE_COLOR = new Color('#7ab8ff'); // soft blue  — pops on dark bg
@@ -47,8 +46,8 @@
 			uOpacity: { value: 0 },
 			uHeight: { value: RAIN_HEIGHT },
 			uSpeed: { value: 6.0 },
-			uColor: { value: theme.value == 'dark' ? DARK_MODE_COLOR : LIGHT_MODE_COLOR },
-			uDropSize: { value: theme.value == 'dark' ? 50 : 120 }
+			uColor: { value: mode.current == 'dark' ? DARK_MODE_COLOR : LIGHT_MODE_COLOR },
+			uDropSize: { value: mode.current == 'dark' ? 50 : 120 }
 		},
 
 		vertexShader: /* glsl */ `
@@ -128,8 +127,8 @@
 	const rain = new Points(rainGeo, rainMat);
 
 	$effect(() => {
-		rainMat.uniforms.uColor.value = theme.value == 'dark' ? DARK_MODE_COLOR : LIGHT_MODE_COLOR;
-		rainMat.uniforms.uDropSize.value = theme.value == 'dark' ? 50 : 120;
+		rainMat.uniforms.uColor.value = mode.current == 'dark' ? DARK_MODE_COLOR : LIGHT_MODE_COLOR;
+		rainMat.uniforms.uDropSize.value = mode.current == 'dark' ? 50 : 120;
 		rainMat.uniforms.uColor.value.needsUpdate = true; // Ensure shader updates with new color
 	});
 

@@ -1,5 +1,135 @@
 {
 	"headline": "👋 Hi, ich bin Adrian",
+	"// desktop hero — to be removed": "",
+	"nav": {
+		"work": "Work",
+		"about": "Über mich",
+		"services": "Services",
+		"gallery": "Gallery",
+		"contact": "Kontakt",
+		"open": "Offen",
+		"cta": "Lass uns reden →",
+		"menu": "Menü",
+		"close": "Schließen"
+	},
+	"hero": {
+		"meta_portfolio": "Portfolio / 2025—26",
+		"meta_index": "Index № 001 / 12",
+		"meta_studio": "Studio: Tübingen / Remote",
+		"meta_available": "✷ Verfügbar für Arbeit",
+		"eyebrow_a": "(A) Designer",
+		"eyebrow_b": "(B) Entwickler",
+		"eyebrow_c": "(C) Direktor",
+		"status": "Verfügbar ab Q3 2026",
+		"scroll": "Scrollen<br />\u2193",
+	"marquee_1": "Ausgew\u00e4hlte Arbeiten 2018\u20132026",
+	"marquee_2": "Markensysteme",
+	"marquee_3": "Web-Erlebnisse",
+	"marquee_4": "Art Direction",
+	"marquee_5": "Type Driven",
+	"marquee_6": "Awwwards Honoree",
+		"bio": "▌ Freiberuflich & mein C++ verbessernd, aktuell auf der Suche nach Arbeit. Ich baue Dinge, weil ich die Herausforderung liebe — ob die feinen Details unter der Haube oder das große Ganze."
+	},
+	"about": {
+		"meta": "§ 02 — Über mich",
+		"meta_sub": "Eine kurze, unzuverlässige Biografie",
+		"headline_1": "Ich mache Dinge,",
+		"headline_2": "die sich <span class=\"italic\">laut <span class=\"text-[#FF3B00]\">anfühlen</span></span>,",
+		"headline_3": "in stillen Räumen.",
+		"bio_1": "Ich bin Adrian — ich baue Dinge, weil ich die Herausforderung liebe. Angetrieben von purer Neugier und der Leidenschaft, gute Arbeit zu leisten.",
+		"bio_2": "Freiberuflich & mein C++ verbessernd. Basis in Tübingen, Deutschland.",
+		"current_label": "Aktuell —",
+		"current_text": "Verbessere meine C++-Fähigkeiten. Offen für neue Möglichkeiten.",
+		"current_open": "Verfügbar für Arbeit.",
+		"stat_years": "Jahre",
+		"stat_projects": "Projekte",
+		"stat_awards": "Auszeichnungen",
+		"stat_countries": "Länder",
+		"portrait_label": "▌Porträt",
+		"portrait_number": "01 / 01",
+		"portrait_iso": "ISO 800",
+		"portrait_rec": "●REC",
+		"portrait_caption": "Adrian Fernández"
+	},
+	"works": {
+		"meta": "§ 03 — Ausgewählt",
+		"meta_sub": "Index aktueller Expeditionen, 2023 — heute",
+		"meta_hint": "Hover ↳ Bild",
+		"title_selected": "Ausgewählte",
+		"title_works": "Arbeiten.",
+		"row_view": "Ansehen →",
+		"footer_end": "Ende des Index — 06 von 42",
+		"footer_cta": "Vollständiges Archiv anfordern →"
+	},
+	"spiral": {
+		"meta": "§ 04.5 — Spirale",
+		"meta_sub": "Projektarchiv, durch die Tiefe treibend",
+		"meta_hint": "◴ scrollen zum erkunden",
+		"title": "Spirale"
+	},
+	"services": {
+		"meta": "§ 04 — Leistungen",
+		"marquee": "Fähigkeiten ✷ Fähigkeiten ✷ Fähigkeiten ✷",
+		"headline_1": "Was ich",
+		"headline_2": "wirklich mache.",
+		"description": "Vier Praktiken, ein Studio. Engagements reichen von Ein-Wochen-Audits bis zu Zwölf-Wochen-Projekten. Keine Retainer, kein Unsinn, keine Agentur-Overhead.",
+		"ai_title": "KI & ML",
+		"ai_desc": "Eigene Modelle, Simulationen, Datenpipelines. Forschung in funktionierende Systeme verwandeln.",
+		"web_title": "Web-Engineering",
+		"web_desc": "Portfolios, Dashboards, Full-Stack-Apps — SvelteKit, React, Three.js.",
+		"creative_title": "Creative Tech",
+		"creative_desc": "3D, Motion, interaktive Erlebnisse. Blender, Flutter, WebGL, Figma.",
+		"systems_title": "Systeme & Infra",
+		"systems_desc": "Backend-Dienste, Tooling, Deployment. Rust, Go, Docker, Kubernetes."
+	},
+	"process": {
+		"meta": "§ 05.5 — Denkweise",
+		"meta_sub": "Wie ich arbeite, was mich antreibt",
+		"step_1_title": "Lernen",
+		"step_1_sub": "Neugier",
+		"step_1_desc": "Von Neugier getrieben — ich tauche tief ein in alles, was mein Interesse weckt. Von C++-Systemen bis zu KI-Modellen lerne ich durch Bauen.",
+		"step_2_title": "Bauen",
+		"step_2_sub": "Entwicklung",
+		"step_2_desc": "Ideen werden Wirklichkeit. SvelteKit, React, Flutter, Three.js — ich wähle das richtige Werkzeug und liefere qualitativ hochwertige Arbeit.",
+		"step_3_title": "Teilen",
+		"step_3_sub": "Veröffentlichung",
+		"step_3_desc": "Ich schreibe über Technologie, Quantencomputing, KI und Tools wie Zed. Bloggen hilft mir, klar zu denken.",
+		"step_4_title": "Wiederholen",
+		"step_4_sub": "Evolution",
+		"step_4_desc": "Jedes Projekt lehrt mich etwas. Ich verfeinere, iteriere und liefere weiter aus. Wachstum vor Perfektion."
+	},
+	"contact": {
+		"meta": "§ 06 — Kontakt",
+		"meta_sub": "Ein Posteingang, zwei Zeitzonen, keine Retainer",
+		"meta_rec": "●REC — 2026",
+		"marquee": "Lass uns reden ✷ ",
+		"headline_1": "Hast du ein Briefing,",
+		"headline_2": "eine halbe Idee,",
+		"headline_3": "oder ein Problem?",
+		"title": "Kontaktiere mich",
+		"description": "Schreib mir einfach eine E-Mail oder vernetze dich mit mir in den sozialen Medien. Ich bin immer offen für neue Möglichkeiten und Zusammenarbeit!",
+		"email_cta": "contact@a42n.com →",
+		"call_cta": "Lass uns reden ↗",
+		"sidebar_studio": "Standort",
+		"sidebar_address_1": "Tübingen",
+		"sidebar_address_2": "Deutschland",
+		"sidebar_press": "E-Mail",
+		"sidebar_press_email_1": "contact@a42n.",
+		"sidebar_press_email_2": "com",
+		"sidebar_elsewhere": "Sonstiges"
+	},
+	"footer": {
+		"copyright": "Adrian Fernández",
+		"rights": "Alle Rechte vorbehalten.",
+		"berlin_time": "Ortszeit",
+		"clock_suffix": "MEZ",
+		"built_with": "Gebaut mit",
+		"tech_stack": "SvelteKit · Svelte 5 · Lenis · Sturheit",
+		"top": "Nach oben",
+		"back_to_start": "↑ Zurück zum Anfang",
+		"credit": "Von Hand entworfen und gebaut. Keine Vorlagen.",
+		"end": "Ende des Scrollens — Vol. 001"
+	},
 	"tagline": "Ich bin {age} Jahre alt und aktuell auf der Suche nach neuen Herausforderungen.",
 	"member": "Mitglied seit",
 	"catchline": "MEIN_ZUHAUSE",
@@ -7,10 +137,6 @@
 	"loading": "Lädt...",
 	"email": "contact@a42n.com",
 	"url": "https://www.a42n.com",
-	"contact": {
-		"title": "Kontaktiere mich",
-		"description": "Zögere nicht, mich per E-Mail zu kontaktieren oder dich mit mir in den sozialen Medien zu verbinden. Ich bin immer offen für neue Möglichkeiten und Zusammenarbeit!"
-	},
 	"story": {
 		"title": "Meine Story",
 		"description": "Ich liebe es, multifunktionale und erweiterbare Systeme zu entwickeln, die gleichzeitig das Maximum an Performance herausholen. Dabei nutze ich die Raw Power von Rust und C++, die elegante Concurrency von Go or die bewährte einfachkeit von Java."
@@ -34,19 +160,6 @@
 		"pitch": "Hier um zu lernen|Ein Schritt nach dem anderen|Frag mich einfach nach dem Passwd bitte"
 	},
 	"image": "/images/me.jpeg",
-	"milestones": {
-		"primary": {
-			"title": "Grundschule am Hechinger Eck",
-			"school": "Grundschule"
-		},
-		"secondary": {
-			"title": "Wildermuth Gymnasium",
-			"school": "Gymnasium"
-		},
-		"internship": {
-			"title": "Mehre Praktikas"
-		}
-	},
 	"dock": {
 		"navbar": {
 			"home": "Home",
@@ -147,6 +260,11 @@
 	"gallery": {
 		"title": "Asset-Index",
 		"description": "Direkte Links zu den Projekt-Quelldateien.",
+		"meta": "\u00a7 06 \u2014 Galerie",
+		"meta_sub": "Ausgew\u00e4hlte Arbeiten 2023\u20132026",
+		"meta_hint": "Scrollen \u21B3 erkunden",
+		"title_visual": "Visuelles",
+		"title_archive": "Archiv<span class=\"text-[#FF3B00] not-italic\">.</span>",
 		"links": {
 			"teclab": "teclab Quelldateien",
 			"assets": "Einige Assets stammen aus diesem Tutorial, das ich sehr empfehle",
@@ -181,22 +299,67 @@
 		"first": "Linksklick zum Drehen",
 		"second": "Rechtsklick zum Interagieren"
 	},
-	"seo": {
-		"home": {
-			"title": "Adrians persönliches Portfolio",
-			"description": "Entdecke Adrians einzigartiges Portfolio - Eine interaktive 3D-Erfahrung seiner Projekte, Skills und Musik."
-		},
-		"music": {
-			"title": "Adrians Musik | Persönliches Portfolio",
-			"description": "Entdecke die Musik, die Adrian inspiriert – seine Lieblingstracks und Künstler in einer interaktiven Erfahrung."
-		},
-		"skills": {
-			"title": "Adrians Skills | Persönliches Portfolio",
-			"description": "Erfahre mehr über Adrians technische Fähigkeiten und Expertise als Softwareentwickler, von Frontend bis Backend."
-		},
-		"keywords": "Adrian, Portfolio, Softwareentwickler, Projekte, Skills, Musik, interaktives 3D",
-		"author": "Adrian",
-		"og_image_alt": "Vorschau von Adrians Portfolio",
-		"twitter_handle": "@real4drian"
-	}
+  "app_nav": {
+    "home": "Start",
+    "room": "Raum",
+    "skills": "Skills",
+    "music": "Musik",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz"
+  },
+  "imprint": {
+    "title": "Impressum",
+    "description": "Rechtliche Angaben gemäß § 5 TMG",
+    "responsible": "Verantwortlich für den Inhalt",
+    "address_line1": "Adrian Fernández",
+    "address_line2": "Tübingen, Deutschland",
+    "contact": "Kontakt",
+    "email": "contact@a42n.com",
+    "disclaimer_title": "Haftungsausschluss",
+    "disclaimer_liability": "Haftung für Inhalte",
+    "disclaimer_liability_text": "Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.",
+    "disclaimer_links": "Haftung für Links",
+    "disclaimer_links_text": "Diese Website enthält Links zu externen Websites Dritter. Wir haben keinen Einfluss auf deren Inhalte und übernehmen keine Haftung für diese.",
+    "disclaimer_copyright": "Urheberrecht",
+    "disclaimer_copyright_text": "Alle Inhalte und Werke auf dieser Website unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung oder jede Art der Verwertung bedarf der schriftlichen Zustimmung des Autors."
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "description": "Informationen zum Datenschutz",
+    "intro": "Diese Datenschutzerklärung erklärt, wie wir Ihre personenbezogenen Daten erfassen, nutzen und schützen, wenn Sie diese Website besuchen.",
+    "data_collection_title": "Datenerfassung",
+    "data_collection_text": "Diese Website verwendet keine Cookies oder Tracking-Skripte. Wir erheben keine personenbezogenen Daten, es sei denn, Sie teilen sie uns freiwillig per E-Mail mit.",
+    "data_storage_title": "Datenspeicherung",
+    "data_storage_text": "Alle personenbezogenen Daten, die Sie uns übermitteln (z.B. per E-Mail), werden sicher gespeichert und nur zur Beantwortung Ihrer Anfrage genutzt. Daten werden nicht an Dritte weitergegeben.",
+    "rights_title": "Ihre Rechte",
+    "rights_text": "Sie haben jederzeit das Recht auf Auskunft über Ihre gespeicherten Daten, deren Berichtigung, Löschung oder Einschränkung der Verarbeitung.",
+    "contact_title": "Kontakt",
+    "contact_text": "Bei Fragen zum Datenschutz kontaktieren Sie uns bitte unter:"
+  },
+  "seo": {
+    "home": {
+      "title": "Adrians persönliches Portfolio",
+      "description": "Entdecke Adrians einzigartiges Portfolio - Eine interaktive 3D-Erfahrung seiner Projekte, Skills und Musik."
+    },
+    "music": {
+      "title": "Adrians Musik | Persönliches Portfolio",
+      "description": "Entdecke die Musik, die Adrian inspiriert – seine Lieblingstracks und Künstler in einer interaktiven Erfahrung."
+    },
+    "skills": {
+      "title": "Adrians Skills | Persönliches Portfolio",
+      "description": "Erfahre mehr über Adrians technische Fähigkeiten und Expertise als Softwareentwickler, von Frontend bis Backend."
+    },
+    "imprint": {
+      "title": "Impressum | Adrian Fernández",
+      "description": "Rechtliche Angaben und Kontaktinformationen von Adrian Fernández."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung | Adrian Fernández",
+      "description": "Datenschutzerklärung für das Portfolio von Adrian Fernández."
+    },
+    "keywords": "Adrian, Portfolio, Softwareentwickler, Projekte, Skills, Musik, interaktives 3D",
+    "author": "Adrian",
+    "og_image_alt": "Vorschau von Adrians Portfolio",
+    "twitter_handle": "@real4drian"
+  }
 }

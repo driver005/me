@@ -1,20 +1,22 @@
 <script lang="ts">
 	import { Motion } from 'svelte-motion';
-	import { cva, type VariantProps } from 'class-variance-authority';
+	import { cva } from 'class-variance-authority';
 	import { cn } from '$lib/utils';
+	import type { Snippet } from 'svelte';
 
-	interface DockProps extends VariantProps<typeof dockVariants> {
-		className?: string;
+	let {
+		magnification = 60,
+		distance = 140,
+		direction = 'middle' as 'top' | 'middle' | 'bottom',
+		class: className = '',
+		children,
+	}: {
 		magnification?: number;
 		distance?: number;
 		direction?: 'top' | 'middle' | 'bottom';
-	}
-
-	let className: DockProps['className'] = undefined;
-	export { className as class };
-	export let magnification: DockProps['magnification'] = 60;
-	export let distance: DockProps['distance'] = 140;
-	export let direction: DockProps['direction'] = 'middle';
+		class?: string;
+		children: Snippet;
+	} = $props();
 
 	const dockVariants = cva(
 		'w-max p-2 flex gap-2 rounded-2xl border supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 backdrop-blur-md'
@@ -52,9 +54,6 @@
 		}}
 		class={dockClass}
 	>
-		<slot {mouseX} {magnification} {distance}>
-			<!-- Your Content -->
-			Default
-		</slot>
+		{@render children({ mouseX, magnification, distance })}
 	</div>
 </Motion>

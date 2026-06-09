@@ -47,7 +47,7 @@
 
 			<button
 				onclick={() => (manual_override.value = true)}
-				class="rounded-xl border-2 border-black bg-yellow-400 px-4 py-2 font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none dark:text-black"
+				class="rounded-xl border-2 border-black bg-yellow-400 px-4 py-2 font-bold uppercase brutal-shadow transition-all active:translate-x-1 active:translate-y-1 active:shadow-none dark:text-black"
 			>
 				{m['webgl.button']()}
 			</button>

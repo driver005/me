@@ -2,11 +2,11 @@
 	import { browser } from '$app/environment';
 	import { cn } from '$lib/utils';
 	import { M, Motion } from 'svelte-motion';
+	import type { Snippet } from 'svelte';
 
 	const TypedM = M as any;
 
-	let className: any = '';
-	export { className as class };
+	let { class: className = '', children }: { class?: string; children: Snippet } = $props();
 </script>
 
 {#if browser}
@@ -65,8 +65,8 @@
 				</Motion>
 			</defs>
 		</svg>
-		<slot>Helo</slot>
+		{@render children()}
 	</div>
 {:else}
-	<slot>Helo</slot>
+	{@render children()}
 {/if}

@@ -1,16 +1,26 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
 	import { Motion, useMotionValue, useSpring, useTransform } from 'svelte-motion';
+	import type { Snippet } from 'svelte';
 
-	export let magnification = 60;
-	export let distance = 160;
-	export let mouseX = 0;
-	let mint = useMotionValue(mouseX);
-	$: mint.set(mouseX);
+	let {
+		magnification = 60,
+		distance = 160,
+		mouseX: mouseXVal = 0,
+		onclick = () => {},
+		class: className = '',
+		children,
+	}: {
+		magnification?: number;
+		distance?: number;
+		mouseX?: number;
+		onclick?: () => void;
+		class?: string;
+		children: Snippet;
+	} = $props();
 
-	let className: string | undefined = '';
-	export { className as class };
-	export let onclick: () => void = () => {};
+	let mint = useMotionValue(mouseXVal);
+	$effect(() => { mint.set(mouseXVal); });
 
 	let iconElement: HTMLDivElement;
 
@@ -42,6 +52,6 @@
 		onkeydown={(e) => e.key === 'Enter' && onclick()}
 		class={iconClass}
 	>
-		<slot></slot>
+		{@render children()}
 	</div>
 </Motion>

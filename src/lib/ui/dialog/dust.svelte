@@ -48,7 +48,7 @@
 				{#if open_count > 5}
 					<button
 						onclick={handleClose}
-						class="mt-4 w-full rounded-xl bg-black p-3 font-bold text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-800 active:translate-x-1 active:translate-y-1 active:shadow-none"
+						class="mt-4 w-full rounded-xl bg-black p-3 font-bold text-white brutal-shadow transition-all hover:bg-zinc-800 active:translate-x-1 active:translate-y-1 active:shadow-none"
 					>
 						{m['dust.button']()}
 					</button>

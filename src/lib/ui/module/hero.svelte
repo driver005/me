@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { useScrollStretchY } from '$lib/util/scroll-stretch.svelte';
 
 	const HERO_VIDEO =
@@ -15,17 +16,17 @@
 	}
 
 	const marqueeItems = [
-		{ text: 'Selected Works 2018–2026', italic: false, sep: false },
+		{ text: m['hero.marquee_1'](), italic: false, sep: false },
 		{ text: '✷', sep: true, italic: false },
-		{ text: 'Brand Systems', italic: false, sep: false },
+		{ text: m['hero.marquee_2'](), italic: false, sep: false },
 		{ text: '✷', sep: true, italic: false },
-		{ text: 'Web Experiences', italic: true, sep: false },
+		{ text: m['hero.marquee_3'](), italic: true, sep: false },
 		{ text: '✷', sep: true, italic: false },
-		{ text: 'Art Direction', italic: false, sep: false },
+		{ text: m['hero.marquee_4'](), italic: false, sep: false },
 		{ text: '✷', sep: true, italic: false },
-		{ text: 'Type Driven', italic: true, sep: false },
+		{ text: m['hero.marquee_5'](), italic: true, sep: false },
 		{ text: '✷', sep: true, italic: false },
-		{ text: 'Awwwards Honoree', italic: false, sep: false },
+		{ text: m['hero.marquee_6'](), italic: false, sep: false },
 		{ text: '✷', sep: true, italic: false },
 	];
 </script>
@@ -63,22 +64,22 @@
 	<div class="relative z-20 grid grid-cols-12 border-b border-[#E1E0CC]/15">
 		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-3 border-r border-[#E1E0CC]/15">
 			<span class="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70">
-				Portfolio / 2025—26
+				{m['hero.meta_portfolio']()}
 			</span>
 		</div>
 		<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-3 border-r border-[#E1E0CC]/15">
 			<span class="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70">
-				Index № 001 / 12
+				{m['hero.meta_index']()}
 			</span>
 		</div>
 		<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-3 border-r border-[#E1E0CC]/15">
 			<span class="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70">
-				Studio: Berlin / Remote
+				{m['hero.meta_studio']()}
 			</span>
 		</div>
 		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-3 text-right">
 			<span class="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#FF3B00]">
-				✷ Available for Commissions
+				{m['hero.meta_available']()}
 			</span>
 		</div>
 	</div>
@@ -88,19 +89,19 @@
 		<div class="flex items-start justify-between gap-6">
 			<div data-testid="hero-eyebrow" class="pt-2">
 				<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70">
-					(A) Designer<br />
-					(B) Developer<br />
-					(C) Director
+					{m['hero.eyebrow_a']()}<br />
+					{m['hero.eyebrow_b']()}<br />
+					{m['hero.eyebrow_c']()}
 				</span>
 				<div class="mt-3 flex items-center gap-2">
 					<span class="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-pulse flex-shrink-0"></span>
 					<span class="font-mono text-[10px] uppercase tracking-[0.25em] text-[#22c55e]">
-						Available for Q3 2026
+						{m['hero.status']()}
 					</span>
 				</div>
 			</div>
 			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70 pt-2 text-right hidden sm:block">
-				Scroll<br />↓
+				{@html m['hero.scroll']()}
 			</span>
 		</div>
 
@@ -109,15 +110,15 @@
 			class="font-display text-[18vw] sm:text-[15vw] uppercase leading-[0.82] tracking-[-0.05em] mt-6"
 			style:color="#E1E0CC"
 		>
-			<!-- Line 1: Alex — outer div clips the slide-up, inner span applies scaleY -->
+			<!-- Line 1: Adrian — outer div clips the slide-up, inner span applies scaleY -->
 			<div class="overflow-hidden">
 				<div class="slide-up">
 					<span class="block" style:transform="scaleY({stretch.value})" style:transform-origin="50% 50%">
-						Alex
+						Adrian
 					</span>
 				</div>
 			</div>
-			<!-- Line 2: Cartér© -->
+			<!-- Line 2: Fernández -->
 			<div class="overflow-hidden">
 				<div class="slide-up-delay">
 					<span
@@ -127,11 +128,7 @@
 						style:-webkit-text-stroke="2px #E1E0CC"
 						style:color="transparent"
 					>
-						Cart<span class="text-[#FF3B00]" style:-webkit-text-stroke="0">é</span>r<span
-							class="align-top inline-block ml-2 text-[3vw] sm:text-[2vw]"
-							style:-webkit-text-stroke="0"
-							style:color="#E1E0CC"
-						>©</span>
+						Fern<span class="text-[#FF3B00]" style:-webkit-text-stroke="0">á</span>ndez
 					</span>
 				</div>
 			</div>
@@ -144,17 +141,14 @@
 				class="col-span-12 md:col-span-6 md:col-start-7 font-mono text-base sm:text-lg leading-relaxed"
 				style:color="#E1E0CC"
 			>
-				<span class="text-[#FF3B00]">▌</span> Independent designer &amp; engineer building uncommon
-				interfaces, identities, and small obsessions for studios, founders,
-				and the occasional museum. Currently obsessing over kinetic
-				typography and oversized footers.
+				{@html m['hero.bio']()}
 			</p>
 		</div>
 	</div>
 
 	<!-- Marquee -->
 	<div class="relative z-20 mt-16 sm:mt-24 border-t border-b border-[#E1E0CC]/20 py-4 sm:py-6 bg-black/40 backdrop-blur-sm overflow-hidden">
-		<div class="marquee-track flex gap-10 sm:gap-16 whitespace-nowrap" style="--gap: 2.5rem;">
+		<div class="marquee-track flex items-center gap-10 sm:gap-16 whitespace-nowrap" style="--gap: 2.5rem;">
 			{#each [...marqueeItems, ...marqueeItems] as item}
 				<span
 					class={[

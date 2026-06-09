@@ -53,7 +53,7 @@
 					<div class="hidden h-10 w-0.5 bg-primary/10 lg:block"></div>
 
 					<div
-						class="z-10 mb-6 flex w-full items-center gap-4 rounded-2xl border-4 border-black bg-background p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:mb-8 lg:flex-col lg:gap-0 lg:p-6"
+						class="z-10 mb-6 flex w-full items-center gap-4 rounded-2xl border-4 border-black bg-background p-4 brutal-shadow transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:mb-8 lg:flex-col lg:gap-0 lg:p-6"
 					>
 						<div
 							class={`flex h-10 w-10 items-center justify-center rounded-xl bg-secondary lg:h-12 lg:w-12 ${category.color} shrink-0`}

@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import * as THREE from 'three';
 
+	// TODO: replace hardcoded PROJECTS with dynamic data from works[]
 	const PROJECTS = [
 		{ title: 'Ethereal Waves', year: 2024, categories: ['Creative Dev', 'WebGL'], img: 'https://images.unsplash.com/photo-1761083261633-5aa782b6ddfc' },
 		{ title: 'Neural Bloom', year: 2024, categories: ['Data Viz', 'Installation'], img: 'https://images.unsplash.com/photo-1760476943801-59ea26b13c3c' },
@@ -320,17 +322,17 @@
 	<div class="absolute top-0 left-0 right-0 z-40 grid grid-cols-12 border-b border-[#F3F2EE]/20">
 		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
 			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-				§ 04.5 — Spiral
+				{m['spiral.meta']()}
 			</span>
 		</div>
 		<div class="col-span-6 sm:col-span-6 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
 			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-				Project archive, drifting through depth
+				{m['spiral.meta_sub']()}
 			</span>
 		</div>
 		<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-4">
 			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#FF3B00]">
-				◴ scroll to explore
+				{m['spiral.meta_hint']()}
 			</span>
 		</div>
 	</div>
@@ -338,7 +340,7 @@
 	<div class="relative h-[120vh] sm:h-[140vh] w-full">
 		<div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
 			<h2 class="font-display uppercase text-[14vw] sm:text-[12vw] tracking-tighter leading-none text-stroke" style="-webkit-text-stroke: 1.5px #F3F2EE; color: transparent;">
-				Spiral
+				{m['spiral.title']()}
 			</h2>
 		</div>
 
@@ -349,7 +351,7 @@
 
 		<div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30">
 			<div class="font-mono text-[10px] uppercase tracking-[0.3em] px-4 py-2 border border-[#F3F2EE]/30 rounded-full text-[#F3F2EE]/80 backdrop-blur-sm">
-				◴ scroll to explore
+				{m['spiral.meta_hint']()}
 			</div>
 		</div>
 

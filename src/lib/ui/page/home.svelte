@@ -48,7 +48,7 @@
 		{!manual_override && 'md:hidden'}"
 	>
 		<div
-			class="flex w-full flex-wrap items-center gap-2 rounded-xl py-1 min-[500px]:border-4 min-[500px]:border-black min-[500px]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+			class="flex w-full flex-wrap items-center gap-2 rounded-xl py-1 min-[500px]:border-4 min-[500px]:border-black min-[500px]:brutal-shadow"
 		>
 			{#each dock.navbar as item}
 				<Tabs.Trigger
@@ -83,14 +83,14 @@
 				</Card.Root>
 				<Card.Root
 					onclick={() => (active = 'skills')}
-					class="cursor-pointer border-4 border-black bg-background py-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+					class="cursor-pointer border-4 border-black bg-background py-0 brutal-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 				>
 					<Circle />
 				</Card.Root>
 
 				<!-- Dowload buttons -->
 				<Card.Root
-					class="gap-0 overflow-hidden border-4 border-black bg-background py-0 pb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+					class="gap-0 overflow-hidden border-4 border-black bg-background py-0 pb-6 brutal-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 				>
 					<Card.Header class="border-b-2 border-black bg-yellow-300 pt-2">
 						<Card.Title class="text-lg font-black uppercase italic dark:text-black"
@@ -116,7 +116,7 @@
 					</Card.Content>
 				</Card.Root>
 				<Card.Root
-					class="flex flex-col justify-center border-4 border-black bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+					class="flex flex-col justify-center border-4 border-black bg-background p-6 brutal-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 				>
 					<div class="text-center">
 						<div

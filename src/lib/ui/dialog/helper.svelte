@@ -22,7 +22,7 @@
 		<Button
 			variant="outline"
 			onclick={() => (open = true)}
-			class="h-12 rounded-xl border-4 border-black bg-violet-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-violet-500 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-violet-500 dark:hover:bg-violet-500"
+			class="h-12 rounded-xl border-4 border-black bg-violet-500 brutal-shadow transition-all hover:bg-violet-500 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-violet-500 dark:hover:bg-violet-500"
 		>
 			<CircleQuestionMark class="h-6 w-6 text-black dark:text-white" />
 		</Button>

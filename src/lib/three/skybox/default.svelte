@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { useLoader, T } from '@threlte/core';
 	import { Environment, Stars } from '@threlte/extras';
-	import { getContext } from 'svelte';
+	import { mode } from 'mode-watcher';
 	import { EquirectangularReflectionMapping, TextureLoader, Color } from 'three';
 	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-
-	const theme = getContext<{ value: string }>('theme');
 
 	const initialCol = new Color('#D9CAD1');
 	const bgTween = new Tween([initialCol.r, initialCol.g, initialCol.b], {
@@ -15,7 +13,7 @@
 	});
 
 	$effect(() => {
-		const targetCol = new Color(theme.value === 'dark' ? '#000000' : '#D9CAD1');
+		const targetCol = new Color(mode.current === 'dark' ? '#000000' : '#D9CAD1');
 		bgTween.target = [targetCol.r, targetCol.g, targetCol.b];
 	});
 
@@ -30,7 +28,7 @@
 
 <T.Color attach="background" args={[bgTween.current[0], bgTween.current[1], bgTween.current[2]]} />
 
-{#if theme.value === 'dark'}
+{#if mode.current === 'dark'}
 	<Stars />
 {/if}
 

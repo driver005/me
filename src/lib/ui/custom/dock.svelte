@@ -35,7 +35,7 @@
 			>
 				<Tooltip.Root>
 					<Tooltip.Trigger
-						class={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-black ${item.color} p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-black`}
+						class={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-black ${item.color} p-3 brutal-shadow transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-black`}
 					>
 						<item.icon size={22} strokeWidth={2} />
 					</Tooltip.Trigger>
@@ -64,7 +64,7 @@
 			>
 				<Tooltip.Root>
 					<Tooltip.Trigger
-						class={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-black ${item.color} p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-black`}
+						class={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-black ${item.color} p-3 brutal-shadow transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:text-black`}
 					>
 						<item.icon size={22} strokeWidth={2} />
 					</Tooltip.Trigger>

@@ -1,87 +1,179 @@
 <script lang="ts">
-	import { useProgress } from '@threlte/extras';
-	import { fade } from 'svelte/transition';
-	import { Progress } from '$lib/ui/cn/progress';
-	import { m } from '$lib/paraglide/messages';
-	import Helper from './helper.svelte';
+  import { useProgress } from '@threlte/extras';
+  import { browser } from '$app/environment';
+  import { fade } from 'svelte/transition';
 
-	const { progress, item } = useProgress();
+  const { progress, item } = useProgress();
 
-	let isLoaded = $state(false);
-	let hasEntered = $state(false);
-	let hasTargetStarted = $state(false);
-	let percent = $state(0);
+  let isLoaded = $state(false);
+  let { hasEntered = $bindable(false) }: { hasEntered: boolean } = $props();
+  let hasTargetStarted = $state(false);
+  let percent = $state(0);
+  let canvasEl = $state<HTMLCanvasElement | null>(null);
+  let ctx = $state<CanvasRenderingContext2D | null>(null);
+  let scratchRevealed = $state(false);
+  let shouldZoom = $state(false);
+  let scratchPercent = $state(0);
+  let threshold = 15;
 
-	$effect(() => {
-		if ($item?.includes('/models/home-transformed.glb')) {
-			hasTargetStarted = true;
-		}
-	});
+  let radius = 50;
+  let circumference = 2 * Math.PI * radius;
+  let offset = $derived(circumference * (1 - percent / 100));
+  let fillProgress = $derived(Math.min((scratchPercent / threshold) * 100, 100));
 
-	$effect(() => {
-		if (!hasTargetStarted) return;
+  $effect(() => {
+    if ($item?.includes('/models/home-transformed.glb')) hasTargetStarted = true;
+  });
 
-		const value = Math.round($progress * 100);
+  $effect(() => {
+    if (!hasTargetStarted) return;
+    const value = Math.round($progress * 100);
+    if (value > percent) percent = value;
+    if ($progress === 1) isLoaded = true;
+  });
 
-		if (value > percent) {
-			percent = value;
-		}
+  function fillCanvas() {
+    if (!canvasEl || !browser) return;
+    const dpr = window.devicePixelRatio || 1;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvasEl.width = w * dpr;
+    canvasEl.height = h * dpr;
+    canvasEl.style.width = `${w}px`;
+    canvasEl.style.height = `${h}px`;
+    const c = canvasEl.getContext('2d')!;
+    ctx = c;
+    c.scale(dpr, dpr);
+    c.fillStyle = '#F3F2EE';
+    c.fillRect(0, 0, w, h);
+    drawGrain(c, w, h);
+  }
 
-		if ($progress === 1) {
-			isLoaded = true;
-		}
-	});
+  function drawGrain(c: CanvasRenderingContext2D, w: number, h: number) {
+    for (let i = 0; i < 3000; i++) {
+      const x = Math.random() * w;
+      const y = Math.random() * h;
+      const size = Math.random() * 1.5 + 0.5;
+      c.fillStyle = `rgba(0,0,0,${Math.random() * 0.04})`;
+      c.beginPath();
+      c.arc(x, y, size, 0, Math.PI * 2);
+      c.fill();
+    }
+  }
 
-	function handleEnter(withSound = true) {
-		if (!isLoaded) return;
-		hasEntered = true;
-	}
+  function handleMove(e: PointerEvent) {
+    if (!isLoaded || scratchRevealed || !ctx || !canvasEl) return;
+    const rect = canvasEl.getBoundingClientRect();
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
+
+
+    const brushSize = 18 + scratchPercent * 1.2;
+    const strength = 0.3 + scratchPercent * 0.015;
+    ctx.fillStyle = `rgba(0,0,0,${strength})`;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(cx, cy, brushSize, 0, Math.PI * 2);
+    ctx.fill();
+
+    checkProgress();
+    console.log('scratchPercent', scratchPercent);
+  }
+
+  function checkProgress() {
+    if (!canvasEl || !ctx) return;
+    const imageData = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+    const pixels = imageData.data;
+    let transparent = 0;
+    const total = pixels.length / 4;
+    for (let i = 3; i < pixels.length; i += 4) {
+      if (pixels[i] < 128) transparent++;
+    }
+    scratchPercent = (transparent / total) * 100;
+    if (scratchPercent > threshold) {
+      scratchRevealed = true;
+      triggerZoom();
+    }
+  }
+
+  function triggerZoom() {
+    shouldZoom = true;
+    setTimeout(() => {
+      hasEntered = true;
+    }, 900);
+  }
+
+  function handleAutoReveal() {
+    scratchRevealed = true;
+    triggerZoom();
+  }
+
+  $effect(() => {
+    if (canvasEl && browser) fillCanvas();
+  });
 </script>
 
 {#if !hasEntered}
-	<div
-		transition:fade={{ duration: 600 }}
-		class="absolute inset-0 top-0 left-0 z-100 flex flex-col items-center justify-center bg-background p-4"
-	>
-		<div
-			class="w-full max-w-md rounded-xl border-4 border-black bg-background p-6 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]"
-		>
-			<h2
-				class="mb-6 text-3xl font-black tracking-tighter text-black uppercase italic dark:text-white"
-			>
-				{isLoaded ? '~ 안녕하세요 ~' : m.catchline()}
-			</h2>
+  <div class="absolute inset-0 top-0 left-0 z-100 bg-[#F3F2EE] grain">
+    {#if !isLoaded}
+      <div class="flex h-full items-center justify-center" transition:fade={{ duration: 400 }}>
+        <div class="relative flex items-center justify-center">
+          <svg width="160" height="160" viewBox="0 0 120 120" class="rotate-[-90deg]">
+            <circle cx="60" cy="60" r={radius} fill="none" stroke="#D9D9D6" stroke-width="5" />
+            <circle
+              cx="60" cy="60" r={radius}
+              fill="none" stroke="#FF3B00" stroke-width="5"
+              stroke-dasharray={circumference}
+              stroke-dashoffset={offset}
+              stroke-linecap="round"
+              class="transition-all duration-300 ease-out"
+            />
+          </svg>
+          <span class="absolute font-mono text-[22px] tracking-[0.05em] text-[#0A0A0A]">{percent}%</span>
+        </div>
+      </div>
+    {:else}
+      <div
+        class="flex h-full flex-col items-center justify-center px-4 pointer-events-none select-none transition-all duration-700 ease-in"
+        class:scale-[2]={shouldZoom}
+        class:opacity-0={shouldZoom}
+      >
+        <span class="font-mono text-[10px] uppercase tracking-[0.3em] text-[#555] mb-6">ADRIAN FERNÁNDEZ</span>
+        <h2 class="font-display uppercase text-5xl sm:text-7xl lg:text-8xl leading-[0.9] tracking-tighter text-center">
+          <span class="block text-[#0A0A0A]">ADRIAN</span>
+          <span class="block italic text-[#0A0A0A]">
+            Fern<span class="text-[#FF3B00] not-italic">á</span>ndez
+          </span>
+        </h2>
+      </div>
 
-			<div class="progress-wrapper space-y-6">
-				{#if !isLoaded}
-					<Progress
-						role="progressbar"
-						value={percent}
-						max={100}
-						class="h-12 w-full overflow-hidden border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-black"
-					/>
-				{/if}
+      <div class="absolute left-1/2 bottom-8 -translate-x-1/2 pointer-events-none z-20">
+        <span class="block font-mono text-sm uppercase tracking-[0.35em] font-bold whitespace-nowrap" style="color:transparent;-webkit-text-stroke:0.5px #FF3B00">
+          scratch!
+        </span>
+        <div class="absolute left-0 top-0 bottom-0 overflow-hidden" style="width:{fillProgress}%">
+          <span class="block font-mono text-sm uppercase tracking-[0.35em] font-bold text-[#FF3B00] whitespace-nowrap" style="-webkit-text-stroke:0.5px #FF3B00">
+            scratch!
+          </span>
+        </div>
+      </div>
 
-				<button
-					disabled={!isLoaded}
-					onclick={() => handleEnter(true)}
-					class="relative w-full cursor-pointer rounded-xl border-4 border-black bg-zinc-700 p-4 font-black
-					 {isLoaded
-						? 'text-gray-300 uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-0 active:translate-y-0'
-						: 'cursor-not-allowed bg-gray-200 text-gray-400'}"
-				>
-					{isLoaded ? m.enter() : m.loading()}
-				</button>
-			</div>
-		</div>
-	</div>
-{:else}
-	<Helper />
+      <canvas
+        bind:this={canvasEl}
+        class="absolute inset-0 w-full h-full cursor-crosshair transition-opacity duration-700 ease-in touch-none"
+        class:pointer-events-none={shouldZoom}
+        class:opacity-0={shouldZoom}
+        onpointermove={handleMove}
+      ></canvas>
+
+      <button
+        onclick={handleAutoReveal}
+        class="absolute top-6 right-6 font-mono text-[9px] uppercase tracking-[0.3em] text-[#555] hover:text-[#FF3B00] border border-black/20 px-3 py-1.5 bg-[#F3F2EE]/80 backdrop-blur-sm cursor-pointer z-10 transition-[color,opacity] duration-700 ease-in"
+        class:pointer-events-none={shouldZoom}
+        class:opacity-0={shouldZoom}
+      >
+        skip →
+      </button>
+    {/if}
+  </div>
 {/if}
-
-<style>
-	.progress-wrapper :global([data-slot='progress-indicator']) {
-		background-color: #a855f7 !important;
-		border-right: 4px solid black;
-	}
-</style>

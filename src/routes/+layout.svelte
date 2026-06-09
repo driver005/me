@@ -1,78 +1,22 @@
 <script lang="ts">
-	import './layout.css';
 	import '../app.css';
-	import CanvasPortalTarget from '$lib/three/canvas/target.svelte';
-	import { Canvas } from '@threlte/core';
-	import { setContext, type Snippet } from 'svelte';
-	import { useBreakpoint } from '$lib/util/screen.svelte';
-	import Webgl from '$lib/three/dev/webgl.svelte';
-	import { page } from '$app/state';
-	import { Loader } from '$lib/ui/page';
-	import { ModeWatcher, mode } from 'mode-watcher';
-	import { WebGLRenderer } from 'three';
+	import { type Snippet } from 'svelte';
+	import { setMode } from 'mode-watcher';
+	import { pageTransition } from '$lib/stores/page-transition';
+	import { fade } from 'svelte/transition';
+	import { afterNavigate } from '$app/navigation';
 
-	let manual_override = $state(false);
-	let helper = $state(true);
-	let friendly = $state(true);
-
-	let theme_var: string = $state(mode.current ? mode.current : 'light');
-
-	let isDesktop = useBreakpoint('768px');
-
-	setContext('manual_override', {
-		get value() {
-			return manual_override;
-		},
-		set value(v: boolean) {
-			manual_override = v;
-		}
-	});
-
-	setContext('theme', {
-		get value() {
-			return theme_var;
-		},
-		set value(v: string) {
-			theme_var = v;
-		}
-	});
-
-	setContext('helper', {
-		get value() {
-			return helper;
-		},
-		set value(v: boolean) {
-			helper = v;
-		}
-	});
-
-	setContext('friendly', {
-		get value() {
-			return friendly;
-		},
-		set value(v: boolean) {
-			friendly = v;
-		}
-	});
-
-	function createRenderer(canvas: any) {
-		return new WebGLRenderer({ canvas, antialias: true });
-	}
+	setMode('light');
 
 	let { children }: { children: Snippet } = $props();
+
+	afterNavigate(() => {
+		pageTransition.set(false);
+	});
 </script>
 
-<ModeWatcher />
-
-{#if isDesktop.value && page.route.id == '/'}
-	<Webgl>
-		<Loader />
-		<div class="h-screen bg-black">
-			<Canvas {createRenderer}>
-				<CanvasPortalTarget />
-			</Canvas>
-		</div>
-	</Webgl>
+{#if $pageTransition}
+	<div transition:fade={{ duration: 200 }} class="fixed inset-0 z-[200] bg-[#F3F2EE] pointer-events-none"></div>
 {/if}
 
 {@render children()}

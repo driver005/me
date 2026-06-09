@@ -10,7 +10,8 @@
 		Color,
 		Vector3
 	} from 'three';
-	import { onMount, onDestroy, getContext } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { mode } from 'mode-watcher';
 
 	interface Props {
 		originX?: number;
@@ -28,8 +29,6 @@
 		fillDuration = 60,
 		idleTimeout = 120_000
 	}: Props = $props();
-
-	const theme = getContext<{ value: string }>('theme');
 
 	const ROOM_W = 3;
 	const ROOM_H = 2.5;
@@ -248,7 +247,7 @@
 	});
 
 	$effect(() => {
-		mat.blending = theme.value == 'dark' ? AdditiveBlending : NormalBlending;
+		mat.blending = mode.current == 'dark' ? AdditiveBlending : NormalBlending;
 		mat.needsUpdate = true;
 	});
 
@@ -271,7 +270,7 @@
 			mat.uniforms.uOpacity.value += (0.0 - mat.uniforms.uOpacity.value) * Math.min(delta * 2.0, 1);
 		}
 
-		const nightTarget = theme.value == 'dark' ? 1 : 0;
+		const nightTarget = mode.current == 'dark' ? 1 : 0;
 		nightCur += (nightTarget - nightCur) * Math.min(delta * 1.5, 1);
 		mat.uniforms.uNightBlend.value = nightCur;
 	});

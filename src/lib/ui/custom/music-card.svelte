@@ -5,7 +5,7 @@
 </script>
 
 <div
-	class="group relative cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-background p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
+	class="group relative cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-background p-6 brutal-shadow transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
 >
 	<a
 		href={song.href}
