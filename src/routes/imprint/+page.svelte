@@ -1,7 +1,35 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import PageShell from '$lib/ui/module/page-shell.svelte';
   import { m } from '$lib/paraglide/messages';
   import SvelteSeo from 'svelte-seo';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  let contentRef: HTMLElement | null = $state(null);
+
+  $effect(() => {
+    if (!browser || !contentRef) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(contentRef!.querySelectorAll('section'), {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        ease: 'power2.out',
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: contentRef,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    }, contentRef);
+
+    return () => ctx.revert();
+  });
 </script>
 
 <svelte:head>
@@ -37,7 +65,7 @@
       {m['imprint.description']()}
     </p>
 
-    <div class="mt-12 space-y-10">
+    <div bind:this={contentRef} class="mt-12 space-y-10">
       <section>
         <h2 class="font-mono text-xs uppercase tracking-[0.25em] text-[#555] mb-3">
           {m['imprint.responsible']()}

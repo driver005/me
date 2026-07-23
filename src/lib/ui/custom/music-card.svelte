@@ -5,7 +5,7 @@
 </script>
 
 <div
-	class="group relative cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-background p-6 brutal-shadow transition-all duration-700 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
+	class="group relative cursor-pointer overflow-hidden rounded-4xl border-4 border-black bg-background p-6 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:p-8"
 >
 	<a
 		href={song.href}
@@ -24,7 +24,7 @@
 			</div>
 		{:else}
 			<div
-				class="absolute inset-0 z-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+				class="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
 			>
 				<div
 					class="animate-blob1 absolute -top-12 -left-12 h-80 w-80 rounded-full bg-indigo-400/20 mix-blend-multiply blur-[60px]"
@@ -40,7 +40,7 @@
 			</div>
 		{/if}
 		<span
-			class="pointer-events-none absolute -right-2 -bottom-4 z-10 text-7xl font-black text-slate-100 italic transition-all duration-700 group-hover:-translate-x-3.75 group-hover:-translate-y-2.5 group-hover:text-indigo-500/30 lg:text-8xl dark:group-hover:text-indigo-500/70"
+			class="pointer-events-none absolute -right-2 -bottom-4 z-10 text-7xl font-black text-slate-100 italic transition-transform transition-colors duration-500 ease-[var(--ease-out-expo)] group-hover:-translate-x-3.75 group-hover:-translate-y-2.5 group-hover:text-indigo-500/30 lg:text-8xl dark:group-hover:text-indigo-500/70"
 		>
 			{number < 9 ? `0${number + 1}` : number + 1}
 		</span>
@@ -48,16 +48,16 @@
 		<div class="relative z-20 flex h-full min-h-35 flex-col lg:min-h-40">
 			<div class="mb-auto">
 				<span
-					class="inline-block rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 text-[8px] font-black tracking-widest text-slate-400 uppercase transition-all duration-500 group-hover:border-transparent group-hover:bg-indigo-500 group-hover:text-white group-hover:shadow-md lg:text-[9px]"
+					class="inline-block rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 text-[8px] font-black tracking-widest text-slate-400 uppercase transition-colors transition-shadow duration-500 ease-[var(--ease-out-expo)] group-hover:border-transparent group-hover:bg-indigo-500 group-hover:text-white group-hover:shadow-md lg:text-[9px]"
 				>
 					{song.tag}
 				</span>
 			</div>
 
 			<div class="mt-4">
-				<h3
-					class="truncate text-xl leading-tight font-black text-black transition-all duration-500 group-hover:text-indigo-950 lg:text-3xl dark:text-slate-300"
-				>
+			<h3
+				class="truncate text-xl leading-tight font-black text-black transition-colors duration-500 group-hover:text-indigo-950 lg:text-3xl dark:text-slate-300"
+			>
 					{song.title ? song.title : song.artist}
 				</h3>
 				{#if song.title}
@@ -72,49 +72,4 @@
 	</a>
 </div>
 
-<style>
-	/* More dynamic floating animations */
-	@keyframes blob1 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(40px, -30px) scale(1.2);
-		}
-		66% {
-			transform: translate(-20px, 20px) scale(0.9);
-		}
-	}
-	@keyframes blob2 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		50% {
-			transform: translate(-40px, 50px) scale(1.3);
-		}
-	}
-	@keyframes blob3 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		40% {
-			transform: translate(-50px, -20px) scale(1.2);
-		}
-		80% {
-			transform: translate(30px, 40px) scale(0.8);
-		}
-	}
 
-	.animate-blob1 {
-		animation: blob1 12s infinite ease-in-out;
-	}
-	.animate-blob2 {
-		animation: blob2 16s infinite ease-in-out;
-	}
-	.animate-blob3 {
-		animation: blob3 10s infinite ease-in-out;
-	}
-</style>

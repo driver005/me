@@ -27,7 +27,7 @@
 
 		<div class="grid gap-4">
 			<div
-				class="flex flex-col items-center justify-between rounded-xl border-4 border-black bg-cyan-400 px-4 py-3 brutal-shadow transition-all hover:bg-cyan-300 sm:flex-row dark:hover:bg-cyan-500"
+				class="flex flex-col items-center justify-between rounded-xl border-4 border-black bg-cyan-400 px-4 py-3 brutal-shadow transition-colors duration-500 ease-[var(--ease-out-expo)] hover:bg-cyan-300 sm:flex-row dark:hover:bg-cyan-500"
 			>
 				<div class="flex items-center gap-3">
 					<Briefcase size={20} strokeWidth={3} class="text-black" />
@@ -41,7 +41,7 @@
 			</div>
 
 			<div
-				class="flex flex-col items-center justify-between rounded-xl border-4 border-black bg-lime-400 px-4 py-3 brutal-shadow transition-all hover:bg-lime-300 sm:flex-row dark:hover:bg-lime-500"
+				class="flex flex-col items-center justify-between rounded-xl border-4 border-black bg-lime-400 px-4 py-3 brutal-shadow transition-colors duration-500 ease-[var(--ease-out-expo)] hover:bg-lime-300 sm:flex-row dark:hover:bg-lime-500"
 			>
 				<div class="flex items-center gap-3">
 					<Zap size={20} strokeWidth={3} class="text-black" />

@@ -1,11 +1,11 @@
-import { SRGBColorSpace, VideoTexture } from "three";
+import { SRGBColorSpace, VideoTexture, type VideoTexture as VideoTextureType } from "three";
 import { onDestroy } from "svelte";
 
 /**
  * Creates a video element and a corresponding Three.js texture.
  * @param {string} url - Path to your video file
  */
-export function create_video_texture(url: string, flipY = false): { texture: THREE.VideoTexture; dispose: () => void } {
+export function create_video_texture(url: string, flipY = false): { texture: VideoTextureType; dispose: () => void } {
   const video = document.createElement("video");
   video.src = url;
   video.loop = true;

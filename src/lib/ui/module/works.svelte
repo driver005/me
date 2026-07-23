@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import { works as projects } from '$lib/data';
+	import { browser } from '$app/environment';
+	import { onScrollBounded } from '$lib/util/scroll-manager.svelte';
 	import ScrambleText from './scramble-text.svelte';
 	import Cube3d from './cube-3d.svelte';
-	import SectionHeader from './section-header.svelte';
+	import SectionHeaderMarquee from './section-header-marquee.svelte';
 
 	// --- Scroll-driven heading slide ---
 	let headingEl = $state<HTMLElement | null>(null);
@@ -11,18 +13,14 @@
 	let worksX = $state('8%');
 
 	$effect(() => {
-		const onScroll = () => {
-			if (!headingEl) return;
-			const rect = headingEl.getBoundingClientRect();
-			const vh = window.innerHeight;
+		if (!browser || !headingEl) return;
+		const unsub = onScrollBounded(headingEl, (scrollY, vh, rect) => {
 			const progress = Math.max(0, Math.min(1, 1 - (rect.top - vh * 0.2) / (vh * 0.7)));
 			const x = progress * 8;
 			selectedX = `${-8 + x}%`;
 			worksX = `${8 - x}%`;
-		};
-		window.addEventListener('scroll', onScroll, { passive: true });
-		onScroll();
-		return () => window.removeEventListener('scroll', onScroll);
+		});
+		return unsub;
 	});
 
 	// --- Image trail ---
@@ -49,7 +47,11 @@
 		trail = [...trail, { id, x, y, img: project.img, rot }];
 		const MAX_TRAIL = 5;
 		if (trail.length > MAX_TRAIL) trail = trail.slice(trail.length - MAX_TRAIL);
-		setTimeout(() => { trail = trail.filter(t => t.id !== id); }, 900);
+		setTimeout(() => {
+			const el = document.getElementById(`trail-${id}`);
+			if (el) el.classList.add('trail-exit');
+			setTimeout(() => { trail = trail.filter(t => t.id !== id); }, 300);
+		}, 600);
 	}
 </script>
 
@@ -59,11 +61,7 @@
 	class="border-b border-black bg-[#F3F2EE]"
 >
 	<!-- Header strip -->
-	<SectionHeader items={[
-		{ label: m['works.meta'], span: 'col-span-6 sm:col-span-3' },
-		{ label: m['works.meta_sub'], span: 'col-span-6 sm:col-span-6' },
-		{ label: m['works.meta_hint'], span: 'hidden sm:block col-span-3' },
-	]} /> 
+	<SectionHeaderMarquee text="{m['works.meta']()} × {m['works.meta_sub']()}" separator="?" />
 
 	<!-- Large heading with scroll-driven slide -->
 	<div
@@ -74,12 +72,14 @@
 			<span
 				class="block"
 				style:transform="translateX({selectedX})"
+				style:will-change="transform"
 			>
 				{m['works.title_selected']()}
 			</span>
 			<span
 				class="block text-stroke italic"
 				style:transform="translateX({worksX})"
+				style:will-change="transform"
 			>
 				{m['works.title_works']()}
 			</span>
@@ -98,15 +98,16 @@
 		role="list"
 	>
 			{#each projects as p, i (p.id)}
-			<a
-				href="#contact"
-				data-testid="work-row-{p.id}"
-				data-cursor="hover"
-				class="group block border-b border-black opacity-0 text-[#0A0A0A] no-underline"
-				style:animation="fadeUp 0.6s {i * 0.07}s cubic-bezier(0.22,1,0.36,1) both"
-				onmousemove={(e) => spawn(e.clientX, e.clientY, p)}
-				role="listitem"
-			>
+		<a
+			href={p.href}
+			target="_blank"
+			rel="noopener noreferrer"
+			data-testid="work-row-{p.id}"
+			data-cursor="hover"
+			class="group block border-b border-black opacity-0 text-[#0A0A0A] no-underline transition-transform duration-200 ease-[var(--ease-out-back)] hover:translate-x-1"
+			style:animation="fadeUp 0.5s {i * 0.06}s var(--ease-out-expo) both"
+			onmousemove={(e) => spawn(e.clientX, e.clientY, p)}
+		>
 				<div class="grid grid-cols-12 items-center px-4 sm:px-8 py-6 sm:py-8 hover:bg-[#0A0A0A] hover:text-[#F3F2EE] transition-colors duration-300">
 					<span class="col-span-1 font-mono text-xs uppercase tracking-[0.25em] opacity-50">
 						( {String(i + 1).padStart(2, '0')} )
@@ -141,7 +142,7 @@
 					style:aspect-ratio="4/5"
 					style:translate="-50% -50%"
 					style:rotate="{t.rot}deg"
-					style:animation="trailIn 0.5s cubic-bezier(0.22,1,0.36,1) both"
+					style:animation="trailIn 0.4s var(--ease-out-expo) both"
 				>
 					<img src={t.img} alt="" class="w-full h-full object-cover" />
 				</div>
@@ -157,7 +158,7 @@
 		<a
 			href="#contact"
 			data-testid="works-cta"
-			class="font-mono text-xs uppercase tracking-[0.25em] px-4 py-2 bg-[#0A0A0A] text-[#F3F2EE] hover:bg-[#FF3B00] transition-colors"
+			class="font-mono text-xs uppercase tracking-[0.25em] px-4 py-2 bg-[#0A0A0A] text-[#F3F2EE] hover:bg-[#FF3B00] transition-colors duration-500 ease-[var(--ease-out-expo)]"
 		>
 			{m['works.footer_cta']()}
 		</a>
@@ -186,6 +187,12 @@
 				opacity: 1;
 				transform: translateY(0);
 			}
+		}
+
+		.trail-exit {
+			opacity: 0;
+			transform: scale(0.95) translateY(-10px);
+			transition: opacity 0.3s var(--ease-out-expo), transform 0.3s var(--ease-out-expo);
 		}
 	}
 </style>

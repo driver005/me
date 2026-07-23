@@ -19,5 +19,7 @@ export function useBerlinTime() {
     return () => clearInterval(id);
   });
 
-  return time;
+  return {
+    get value() { return time; }
+  };
 }

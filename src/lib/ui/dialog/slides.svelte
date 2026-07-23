@@ -52,7 +52,7 @@
 		<Dialog.Footer class="border-t-[3px] border-black bg-slate-50 p-6 dark:bg-zinc-950">
 			<Button
 				onclick={handleClose}
-				class="w-full border-[3px] border-black bg-green-400 py-6 text-xl font-black shadow-[4px_4px_0px_black] transition-all hover:bg-green-500 active:translate-x-1 active:translate-y-1 active:shadow-none"
+				class="w-full border-[3px] border-black bg-green-400 py-6 text-xl font-black shadow-[4px_4px_0px_black] transition-transform transition-colors duration-500 ease-[var(--ease-out-expo)] hover:bg-green-500 active:translate-x-1 active:translate-y-1 active:shadow-none"
 			>
 				{m['slides.button']()}
 			</Button>

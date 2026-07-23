@@ -1,6 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages';
-  import { social_links } from '$lib/data';
+  import { social_links, socialLabels } from '$lib/data';
   import { SiGithub, SiInstagram, SiX } from '@icons-pack/svelte-simple-icons';
   import { Briefcase, Rss, Mail } from 'lucide-svelte';
   import { useBerlinTime } from '$lib/util/berlin-time.svelte';
@@ -8,12 +8,12 @@
   const berlinTime = useBerlinTime();
 
   const socials = [
-    { icon: SiGithub, href: social_links.github, label: 'GitHub' },
-    { icon: SiX, href: social_links.twitter, label: 'X' },
-    { icon: SiInstagram, href: social_links.instagram, label: 'Instagram' },
-    { icon: Briefcase, href: social_links.linkedin, label: 'LinkedIn' },
-    { icon: Rss, href: social_links.blog, label: 'Blog' },
-    { icon: Mail, href: `mailto:${m.email()}`, label: 'Email' },
+    { icon: SiGithub, href: social_links.github, label: socialLabels.github },
+    { icon: SiX, href: social_links.twitter, label: socialLabels.x },
+    { icon: SiInstagram, href: social_links.instagram, label: socialLabels.instagram },
+    { icon: Briefcase, href: social_links.linkedin, label: socialLabels.linkedin },
+    { icon: Rss, href: social_links.blog, label: socialLabels.blog },
+    { icon: Mail, href: `mailto:${m.email()}`, label: socialLabels.email },
   ];
 
   const year = new Date().getFullYear();
@@ -25,7 +25,7 @@
       <span
         style="-webkit-text-stroke: 1.5px #F3F2EE; color: transparent; display: block;"
       >
-        AdrianFern<span class="text-[#FF3B00]" style="-webkit-text-stroke: 0;">á</span>ndez
+        {m['name.first']()}Fern<span class="text-[#FF3B00]" style="-webkit-text-stroke: 0;">á</span>ndez
       </span>
     </div>
 
@@ -43,7 +43,7 @@
           {m['footer.berlin_time']()}
         </span>
         <div class="font-mono text-sm mt-2 text-[#F3F2EE]/70">
-          {berlinTime} {m['footer.clock_suffix']()}
+          {berlinTime.value} {m['footer.clock_suffix']()}
         </div>
       </div>
       <div class="col-span-6 sm:col-span-3">
@@ -59,10 +59,10 @@
           {m['footer.top']()}
         </span>
         <div class="mt-2">
-          <a
-            href="/"
-            class="font-mono text-sm hover:text-[#FF3B00] text-[#F3F2EE]/70 no-underline transition-colors"
-          >
+				<a
+					href="/"
+					class="font-mono text-sm hover:text-[#FF3B00] text-[#F3F2EE]/70 no-underline transition-colors duration-500 ease-[var(--ease-out-expo)]"
+				>
             {m['footer.back_to_start']()}
           </a>
         </div>
@@ -72,28 +72,28 @@
     <div class="mt-8 pt-4 border-t border-[#F3F2EE]/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         {#each socials as s}
-          <a
-            href={s.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-[#F3F2EE]/40 hover:text-[#FF3B00] transition-colors"
-            aria-label={s.label}
-          >
+				<a
+					href={s.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-[#F3F2EE]/40 hover:text-[#FF3B00] transition-colors duration-500 ease-[var(--ease-out-expo)]"
+					aria-label={s.label}
+				>
             <s.icon size={18} />
           </a>
         {/each}
       </div>
       <div class="flex gap-4">
-        <a
-          href="/imprint"
-          class="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F3F2EE]/25 hover:text-[#FF3B00] transition-colors no-underline"
-        >
-          {m['app_nav.imprint']()}
-        </a>
-        <a
-          href="/privacy"
-          class="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F3F2EE]/25 hover:text-[#FF3B00] transition-colors no-underline"
-        >
+			<a
+				href="/imprint"
+				class="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F3F2EE]/25 hover:text-[#FF3B00] transition-colors duration-500 ease-[var(--ease-out-expo)] no-underline"
+			>
+				{m['app_nav.imprint']()}
+			</a>
+			<a
+				href="/privacy"
+				class="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F3F2EE]/25 hover:text-[#FF3B00] transition-colors duration-500 ease-[var(--ease-out-expo)] no-underline"
+			>
           {m['app_nav.privacy']()}
         </a>
       </div>

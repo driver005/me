@@ -56,7 +56,7 @@
 					style={active === item.value
 						? `background-color: var(--${item.color.replaceAll('bg', 'color')})`
 						: ''}
-					class="mx-2 border-2 border-transparent px-3 py-1 font-bold uppercase transition-all data-[state=active]:border-black data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {item.color} bg-background"
+					class="mx-2 border-2 border-transparent px-3 py-1 font-bold uppercase transition-colors transition-shadow transition-transform data-[state=active]:border-black data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {item.color} bg-background"
 				>
 					{item.label}
 				</Tabs.Trigger>
@@ -73,7 +73,7 @@
 		<Tabs.Content value="home" class="m-0 space-y-6 pb-2">
 			<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 				<Card.Root
-					class="group relative h-full overflow-hidden rounded-2xl border-none p-1 transition-all duration-500"
+					class="group relative h-full overflow-hidden rounded-2xl border-none p-1 transition-opacity transition-shadow duration-500"
 				>
 					<div
 						class="absolute -inset-full animate-[spin_3s_linear_infinite] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
@@ -83,14 +83,14 @@
 				</Card.Root>
 				<Card.Root
 					onclick={() => (active = 'skills')}
-					class="cursor-pointer border-4 border-black bg-background py-0 brutal-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+					class="cursor-pointer border-4 border-black bg-background py-0 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 				>
 					<Circle />
 				</Card.Root>
 
 				<!-- Dowload buttons -->
 				<Card.Root
-					class="gap-0 overflow-hidden border-4 border-black bg-background py-0 pb-6 brutal-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+					class="gap-0 overflow-hidden border-4 border-black bg-background py-0 pb-6 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 				>
 					<Card.Header class="border-b-2 border-black bg-yellow-300 pt-2">
 						<Card.Title class="text-lg font-black uppercase italic dark:text-black"
@@ -116,7 +116,7 @@
 					</Card.Content>
 				</Card.Root>
 				<Card.Root
-					class="flex flex-col justify-center border-4 border-black bg-background p-6 brutal-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+					class="flex flex-col justify-center border-4 border-black bg-background p-6 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
 				>
 					<div class="text-center">
 						<div

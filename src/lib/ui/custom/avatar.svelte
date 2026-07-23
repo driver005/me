@@ -25,7 +25,7 @@
 		<img
 			src={url}
 			{alt}
-			class="h-full w-full object-cover grayscale-20 transition-all duration-500 group-hover:grayscale-0 hover:scale-105"
+			class="h-full w-full object-cover grayscale-20 transition-transform transition-filter duration-500 ease-[var(--ease-out-expo)] group-hover:grayscale-0 hover:scale-105"
 		/>
 	</a>
 	{#if children}

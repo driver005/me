@@ -1,24 +1,47 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { Motion, useMotionValue, useSpring } from 'svelte-motion';
+	import { works } from '$lib/data';
 
 	let { size = 220 }: { size?: number } = $props();
 
-	const FACES = [
-		{ tx: 'rotateY(0deg)', img: 'https://images.unsplash.com/photo-1761083261633-5aa782b6ddfc', label: 'Heliograph' },
-		{ tx: 'rotateY(90deg)', img: 'https://images.unsplash.com/photo-1760476943801-59ea26b13c3c', label: 'Field Notes' },
-		{ tx: 'rotateY(180deg)', img: 'https://images.unsplash.com/photo-1761428961720-38db3883826b', label: 'Volta' },
-		{ tx: 'rotateY(-90deg)', img: 'https://images.pexels.com/photos/20874864/pexels-photo-20874864.jpeg', label: 'Atlas' },
-		{ tx: 'rotateX(90deg)', img: 'https://images.pexels.com/photos/32191170/pexels-photo-32191170.jpeg', label: 'Pale' },
-		{ tx: 'rotateX(-90deg)', img: 'https://images.unsplash.com/photo-1714765761465-e7a4974fa05b', label: 'Half-Light' },
+	const prefersReduced = typeof window !== 'undefined'
+		? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		: false;
+
+	const FACE_TRANSFORMS = [
+		'rotateY(0deg)',
+		'rotateY(90deg)',
+		'rotateY(180deg)',
+		'rotateX(-90deg)',
+		'rotateX(90deg)',
+		'rotateX(-90deg)',
 	];
 
-	let half = size / 2;
+	const FACES = works.slice(0, 6).map((w, i) => ({
+		tx: FACE_TRANSFORMS[i],
+		img: w.img,
+		label: w.title,
+	}));
+
+	const half = $derived(size / 2);
 	let mx = useMotionValue(0);
 	let my = useMotionValue(0);
 	let smx = useSpring(mx, { stiffness: 160, damping: 22 });
 	let smy = useSpring(my, { stiffness: 160, damping: 22 });
 
 	let containerRef: HTMLElement | null = $state(null);
+	let isVisible = $state(true);
+
+	$effect(() => {
+		if (!browser || !containerRef) return;
+		const observer = new IntersectionObserver(
+			([entry]) => { isVisible = entry.isIntersecting; },
+			{ threshold: 0 }
+		);
+		observer.observe(containerRef);
+		return () => observer.disconnect();
+	});
 
 	function onMove(e: MouseEvent) {
 		const r = containerRef?.getBoundingClientRect();
@@ -33,21 +56,24 @@
 		mx.set(0);
 		my.set(0);
 	}
+
+	const shouldAnimate = $derived(!prefersReduced && isVisible);
 </script>
 
 <div
 	bind:this={containerRef}
 	onmousemove={onMove}
 	onmouseleave={onLeave}
+	role="presentation"
 	data-testid="cube-3d"
 	class="relative"
-	style="width: {size}px; height: {size}px; perspective: 1200px;"
+	style="width: {size}px; height: {size}px; perspective: 1200px; will-change: transform;"
 >
 	<Motion
-		animate={{ rotateY: 360, rotateX: 360 }}
+		animate={shouldAnimate ? { rotateY: 360, rotateX: 360 } : { rotateY: 0, rotateX: 0 }}
 		transition={{
-			rotateY: { duration: 22, ease: 'linear', repeat: Infinity },
-			rotateX: { duration: 32, ease: 'linear', repeat: Infinity },
+			rotateY: { duration: shouldAnimate ? 22 : 0.01, ease: 'linear', repeat: shouldAnimate ? Infinity : 0 },
+			rotateX: { duration: shouldAnimate ? 32 : 0.01, ease: 'linear', repeat: shouldAnimate ? Infinity : 0 },
 		}}
 		let:motion
 	>

@@ -7,7 +7,7 @@
 </script>
 
 <figure
-	class={`relative min-w-32 cursor-pointer overflow-hidden rounded-2xl border-4 p-4 ${border} ${color} shadow-[4px_4px_0px_0px_currentColor] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none`}
+	class={`relative min-w-32 cursor-pointer overflow-hidden rounded-2xl border-4 p-4 ${border} ${color} shadow-[4px_4px_0px_0px_currentColor] transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none`}
 >
 	<div class="flex flex-row items-center gap-2">
 		<div

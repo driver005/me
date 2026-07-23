@@ -14,11 +14,11 @@
 			class="relative transition-transform active:scale-90"
 			style="transform: rotate({i % 2 === 0 ? -4 : 4}deg);"
 		>
-			<Button
-				class="relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-xl border-4 border-black text-black {item.color} 
+		<Button
+			class="relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-xl border-4 border-black text-black {item.color} 
                 brutal-shadow
-                transition-all duration-75 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none hover:{item.color}"
-			>
+                transition-transform transition-shadow duration-50 ease-[var(--ease-out-expo)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none hover:{item.color}"
+		>
 				<div
 					class="pointer-events-none absolute inset-0 rounded-[15px] bg-gradient-to-b from-white/20 to-transparent"
 				></div>

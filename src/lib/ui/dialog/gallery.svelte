@@ -15,7 +15,7 @@
 	<Button
 		variant="outline"
 		onclick={() => (open = true)}
-		class="h-12 rounded-xl border-4 border-black bg-blue-400 brutal-shadow transition-all hover:bg-blue-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-blue-400 dark:hover:bg-blue-400"
+		class="h-12 rounded-xl border-4 border-black bg-blue-400 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:bg-blue-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-blue-400 dark:hover:bg-blue-400"
 	>
 		<Landmark />
 	</Button>
@@ -38,7 +38,7 @@
 					href={item.url}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="group flex items-center justify-between rounded-xl border-4 border-black p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] {item.color}"
+					class="group flex items-center justify-between rounded-xl border-4 border-black p-4 transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] {item.color}"
 				>
 					<div class="flex items-center gap-4 text-black">
 						<div class="rounded-xl border-2 border-black bg-white p-2">

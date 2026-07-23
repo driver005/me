@@ -19,16 +19,19 @@
 		children: Snippet;
 	} = $props();
 
+	// svelte-ignore state_referenced_locally — synced via $effect below
 	let mint = useMotionValue(mouseXVal);
 	$effect(() => { mint.set(mouseXVal); });
 
 	let iconElement: HTMLDivElement;
 
+	// svelte-ignore state_referenced_locally
 	let distanceCalc = useTransform(mint, (val: number) => {
 		const bounds = iconElement?.getBoundingClientRect() ?? { y: 0, width: 0 };
 		return val - bounds.y - bounds.width / 2;
 	});
 
+	// svelte-ignore state_referenced_locally
 	let widthSync = useTransform(distanceCalc, [-distance, 0, distance], [38, magnification, 38]);
 
 	let width = useSpring(widthSync, {
@@ -37,15 +40,15 @@
 		damping: 12
 	});
 
-	let iconClass = cn(
+	const iconClass = $derived(cn(
 		'flex aspect-square cursor-pointer items-center justify-center rounded-full',
 		className
-	);
+	));
 </script>
 
 <Motion style={{ height: width }} let:motion>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
+		role="presentation"
 		use:motion
 		bind:this={iconElement}
 		{onclick}

@@ -7,11 +7,13 @@
 
   const CHARS = '!<>-_\\/[]{}—=+*^?#________';
 
+  // svelte-ignore state_referenced_locally — synced via $effect below
   let display = $state(text);
   let frame = 0;
   let queue: Array<{ from: string; to: string; start: number; end: number; char: string }> = [];
   let rafId: number | null = null;
 
+  // svelte-ignore state_referenced_locally
   $effect(() => {
     if (rafId) cancelAnimationFrame(rafId);
     rafId = null;

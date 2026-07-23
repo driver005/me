@@ -37,6 +37,7 @@ export interface WorkItem {
   year: string;
   category: string;
   img: string;
+  href: string;
 }
 
 export interface ServiceItem {
@@ -46,12 +47,18 @@ export interface ServiceItem {
   tags: string[];
 }
 
+// placeholder milestones — swap in Adrian's real timeline when provided
 export const journey: {
   name: string;
   image: string;
   text: string;
   time: string;
-}[] = [];
+}[] = [
+  { name: "First lines of code", image: "", text: "Started tinkering with code out of curiosity — small scripts, broken websites, a lot of trial and error.", time: "2016" },
+  { name: "First freelance project", image: "", text: "Took on a real client project and shipped it. Learned more in three weeks than in the two years before.", time: "2019" },
+  { name: "Went deep on 3D & WebGL", image: "", text: "Started building interactive, shader-driven experiences instead of just flat pages.", time: "2022" },
+  { name: "Independent studio", image: "", text: "No agency overhead, no templates — just direct work with people who want something built well.", time: "2024" },
+];
 
 export const projects: PROJECT[] = [
   {
@@ -85,12 +92,12 @@ export const social_links = {
 };
 
 export const works: WorkItem[] = [
-  { id: 1, title: 'teclab', client: 'SFZ Tübingen', year: '2025', category: 'Web · React', img: '/images/works/teclab-preview.png' },
-  { id: 2, title: 'hhmodle', client: 'Personal', year: '2026', category: 'Science · Python', img: '/images/works/hhmodle-preview.png' },
-  { id: 3, title: 'congelado', client: 'Personal', year: '2026', category: 'Systems · C++', img: '/images/works/congelado-preview.png' },
-  { id: 4, title: 'blog', client: 'Personal', year: '2025', category: 'Publishing · Python', img: '/images/works/blog-preview.png' },
-  { id: 5, title: 'me', client: 'Personal', year: '2026', category: 'Web · Svelte', img: '/images/works/me-preview.png' },
-  { id: 6, title: 'fuzzyboard', client: 'Personal', year: '2026', category: 'App · Flutter', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c' },
+  { id: 1, title: 'teclab', client: 'SFZ Tübingen', year: '2025', category: 'Web · React', img: '/images/works/teclab-preview.png', href: 'https://sfz-tuebingen.org/' },
+  { id: 2, title: 'hhmodle', client: 'Personal', year: '2026', category: 'Science · Python', img: '/images/works/hhmodle-preview.png', href: 'https://github.com/driver005/hhmodle' },
+  { id: 3, title: 'congelado', client: 'Personal', year: '2026', category: 'Systems · C++', img: '/images/works/congelado-preview.png', href: 'https://github.com/driver005/congelado' },
+  { id: 4, title: 'blog', client: 'Personal', year: '2025', category: 'Publishing · Python', img: '/images/works/blog-preview.png', href: 'https://blog.a42n.com/' },
+  { id: 5, title: 'me', client: 'Personal', year: '2026', category: 'Web · Svelte', img: '/images/works/me-preview.png', href: 'https://github.com/driver005/me' },
+  { id: 6, title: 'fuzzyboard', client: 'Personal', year: '2026', category: 'App · Flutter', img: '/images/works/fuzzyboard-preview.png', href: 'https://github.com/driver005/fuzzyboard' },
 ];
 
 export const services: ServiceItem[] = [
@@ -110,11 +117,23 @@ export const navLinks = [
 
 export const appNavRoutes = [
   { href: '/', label: m['app_nav.home']() },
+  { href: '/me', label: m['app_nav.me']() },
   { href: '/home', label: m['app_nav.room']() },
+  { href: '/spiral', label: m['app_nav.spiral']() },
+  { href: '/motion-path', label: m['app_nav.motion_path']() },
   { href: '/music', label: m['app_nav.music']() },
   { href: '/imprint', label: m['app_nav.imprint']() },
   { href: '/privacy', label: m['app_nav.privacy']() },
 ];
+
+export const socialLabels = {
+  github: m['dock.contact.github'](),
+  x: m['dock.contact.x'](),
+  instagram: m['dock.contact.instagram'](),
+  linkedin: m['dock.contact.linkedin'](),
+  blog: m['dock.contact.blog'](),
+  email: m['dock.contact.email'](),
+};
 
 export const stats = [
   { v: '10+', l: m['about.stat_years']() },
@@ -337,7 +356,7 @@ export const skill_tree = {
   name: m["skills.subtitle"](),
   categories: [
     {
-      name: "Frontend",
+      name: m['skills_tree.frontend'](),
       icon: LayoutDashboard,
       color: "text-blue-500",
       skills: [
@@ -374,7 +393,7 @@ export const skill_tree = {
       ],
     },
     {
-      name: "Backend & Languages",
+      name: m['skills_tree.backend'](),
       icon: Database,
       color: "text-green-500",
       skills: [
@@ -423,7 +442,7 @@ export const skill_tree = {
       ],
     },
     {
-      name: "Tools & DevOps",
+      name: m['skills_tree.tools'](),
       icon: Terminal,
       color: "text-orange-500",
       skills: [
@@ -467,6 +486,24 @@ export const skill_tree = {
     },
   ],
 };
+
+// placeholder set — swap in Adrian's real places when provided
+export const travelPlaces = [
+  { id: 1, city: "Tübingen", country: "Germany", year: "2024–now", note: "Home base. Studio, coffee, most of the work happens here.", lat: 48.5216, lng: 9.0576 },
+  { id: 2, city: "Berlin", country: "Germany", year: "2022", note: "Six months on-site with a small product team.", lat: 52.52, lng: 13.405 },
+  { id: 3, city: "Lisbon", country: "Portugal", year: "2021", note: "A slower stretch of remote work by the water.", lat: 38.7223, lng: -9.1393 },
+  { id: 4, city: "Zürich", country: "Switzerland", year: "2020", note: "Short-term systems contract, first taste of fintech.", lat: 47.3769, lng: 8.5417 },
+  { id: 5, city: "Prague", country: "Czechia", year: "2019", note: "Where the freelance chapter properly began.", lat: 50.0755, lng: 14.4378 },
+];
+
+// placeholder set — swap in Adrian's real favorites when provided
+export const favoriteMovies = [
+  { id: 1, title: "Blade Runner 2049", year: "2017", director: "Denis Villeneuve" },
+  { id: 2, title: "Spirited Away", year: "2001", director: "Hayao Miyazaki" },
+  { id: 3, title: "The Grand Budapest Hotel", year: "2014", director: "Wes Anderson" },
+  { id: 4, title: "Whiplash", year: "2014", director: "Damien Chazelle" },
+  { id: 5, title: "Parasite", year: "2019", director: "Bong Joon-ho" },
+];
 
 export const music = [
   {

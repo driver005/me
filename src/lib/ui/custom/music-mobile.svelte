@@ -33,7 +33,7 @@
 		class="group block no-underline {!manual_override && 'md:hidden'}"
 	>
 		<Card.Root
-			class="relative overflow-hidden rounded-xl border-4 border-black bg-background brutal-shadow transition-all group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none"
+			class="relative overflow-hidden rounded-xl border-4 border-black bg-background brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none"
 		>
 			<div
 				class="absolute top-0 left-6 flex h-6 w-24 items-center justify-center rounded-b-md bg-black"
@@ -81,12 +81,12 @@
 					</div>
 				</div>
 			</Card.Content>
-			<Card.Footer class="flex items-center justify-between bg-black px-6 py-3 text-yellow-400">
+			<div class="flex items-center justify-between bg-black px-6 py-3 text-yellow-400">
 				<span class="text-xs font-black tracking-[0.2em] uppercase">
 					{m['music_mobile.vault']()}
 				</span>
 				<span class="text-2xl transition-transform group-hover:translate-x-2">→</span>
-			</Card.Footer>
+			</div>
 			<div class="absolute right-4 bottom-16 flex h-10 items-end gap-1 opacity-20">
 				{#each [40, 70, 45, 90, 65, 80, 30, 50] as height}
 					<div class="w-1.5 bg-black" style="height: {height}%"></div>

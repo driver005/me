@@ -39,7 +39,7 @@
 	class="relative min-h-screen border-b border-black overflow-hidden bg-black text-[#E1E0CC]"
 >
 	<!-- Background video -->
-	<video
+		<video
 		src={HERO_VIDEO}
 		autoplay
 		loop
@@ -47,21 +47,21 @@
 		playsinline
 		class="absolute inset-0 w-full h-full object-cover z-0"
 		style:transform="translate({mx}px, {my}px) scale(1.06)"
-		style:transition="transform 0.6s cubic-bezier(0.22,1,0.36,1)"
+		style:transition="transform 0.6s var(--ease-out-expo)"
 	></video>
 
 	<!-- Noise overlay — parallax-shifted with video -->
 	<div
 		class="absolute -inset-12 z-10 noise-overlay opacity-[0.7] mix-blend-overlay pointer-events-none"
 		style:transform="translate({mx}px, {my}px)"
-		style:transition="transform 0.6s cubic-bezier(0.22,1,0.36,1)"
+		style:transition="transform 0.6s var(--ease-out-expo)"
 	></div>
 
 	<!-- Cinematic gradient overlay -->
 	<div class="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none"></div>
 
 	<!-- Meta strip -->
-	<div class="relative z-20 grid grid-cols-12 border-b border-[#E1E0CC]/15">
+	<div class="relative z-20 grid grid-cols-12 border-b border-[#E1E0CC]/15 hero-fade-in" style:animation-delay="0.3s">
 		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-3 border-r border-[#E1E0CC]/15">
 			<span class="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70">
 				{m['hero.meta_portfolio']()}
@@ -87,7 +87,7 @@
 	<!-- Hero title block -->
 	<div class="relative z-20 px-4 sm:px-8 pt-10 sm:pt-16">
 		<div class="flex items-start justify-between gap-6">
-			<div data-testid="hero-eyebrow" class="pt-2">
+			<div data-testid="hero-eyebrow" class="pt-2 hero-fade-in" style:animation-delay="0.5s">
 				<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#E1E0CC]/70">
 					{m['hero.eyebrow_a']()}<br />
 					{m['hero.eyebrow_b']()}<br />
@@ -110,32 +110,32 @@
 			class="font-display text-[18vw] sm:text-[15vw] uppercase leading-[0.82] tracking-[-0.05em] mt-6"
 			style:color="#E1E0CC"
 		>
-			<!-- Line 1: Adrian — outer div clips the slide-up, inner span applies scaleY -->
-			<div class="overflow-hidden">
-				<div class="slide-up">
-					<span class="block" style:transform="scaleY({stretch.value})" style:transform-origin="50% 50%">
-						Adrian
-					</span>
-				</div>
+		<!-- Line 1: Adrian — outer div clips the slide-up, inner span applies scaleY -->
+		<div class="overflow-hidden">
+			<div class="slide-up">
+				<span class="block" style:transform="scaleY({stretch.value})" style:transform-origin="50% 50%">
+					{m['name.first']()}
+				</span>
 			</div>
-			<!-- Line 2: Fernández -->
-			<div class="overflow-hidden">
-				<div class="slide-up-delay">
-					<span
-						class="block"
-						style:transform="scaleY({stretch.value})"
-						style:transform-origin="50% 50%"
-						style:-webkit-text-stroke="2px #E1E0CC"
-						style:color="transparent"
-					>
-						Fern<span class="text-[#FF3B00]" style:-webkit-text-stroke="0">á</span>ndez
-					</span>
-				</div>
+		</div>
+		<!-- Line 2: Fernández -->
+		<div class="overflow-hidden">
+			<div class="slide-up-delay">
+				<span
+					class="block"
+					style:transform="scaleY({stretch.value})"
+					style:transform-origin="50% 50%"
+					style:-webkit-text-stroke="2px #E1E0CC"
+					style:color="transparent"
+				>
+					{@html m['name.last']()}
+				</span>
 			</div>
+		</div>
 		</h1>
 
 		<!-- Bio paragraph -->
-		<div class="mt-10 sm:mt-14 grid grid-cols-12 gap-4">
+		<div class="mt-10 sm:mt-14 grid grid-cols-12 gap-4 hero-fade-in" style:animation-delay="0.7s">
 			<p
 				data-testid="hero-bio"
 				class="col-span-12 md:col-span-6 md:col-start-7 font-mono text-base sm:text-lg leading-relaxed"
@@ -147,8 +147,8 @@
 	</div>
 
 	<!-- Marquee -->
-	<div class="relative z-20 mt-16 sm:mt-24 border-t border-b border-[#E1E0CC]/20 py-4 sm:py-6 bg-black/40 backdrop-blur-sm overflow-hidden">
-		<div class="marquee-track flex items-center gap-10 sm:gap-16 whitespace-nowrap" style="--gap: 2.5rem;">
+	<div class="group/marquee relative z-20 mt-16 sm:mt-24 border-t border-b border-[#E1E0CC]/20 py-4 sm:py-6 bg-black/40 backdrop-blur-sm overflow-hidden hero-fade-in" style:animation-delay="0.9s">
+		<div class="marquee-track flex items-center gap-10 sm:gap-16 whitespace-nowrap group-hover/marquee:[animation-play-state:paused]" style="--gap: 2.5rem;">
 			{#each [...marqueeItems, ...marqueeItems] as item}
 				<span
 					class={[
@@ -169,13 +169,17 @@
 
 <style>
 	.slide-up {
-		animation: slideUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: slideUp 0.9s var(--ease-out-expo) both;
 		display: block;
 	}
 
 	.slide-up-delay {
-		animation: slideUp 0.9s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: slideUp 0.9s 0.1s var(--ease-out-expo) both;
 		display: block;
+	}
+
+	.hero-fade-in {
+		animation: heroFadeIn 0.7s var(--ease-out-back) both;
 	}
 
 	@keyframes slideUp {
@@ -187,8 +191,19 @@
 		}
 	}
 
+	@keyframes heroFadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
 	.marquee-track {
-		animation: marquee 25s linear infinite;
+		animation: marquee 25s linear infinite reverse;
 	}
 
 	@keyframes marquee {

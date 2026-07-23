@@ -10,7 +10,8 @@
 		"open": "Offen",
 		"cta": "Lass uns reden →",
 		"menu": "Menü",
-		"close": "Schließen"
+		"close": "Schließen",
+		"back": "Zurück"
 	},
 	"hero": {
 		"meta_portfolio": "Portfolio / 2025—26",
@@ -31,7 +32,7 @@
 		"bio": "▌ Freiberuflich & mein C++ verbessernd, aktuell auf der Suche nach Arbeit. Ich baue Dinge, weil ich die Herausforderung liebe — ob die feinen Details unter der Haube oder das große Ganze."
 	},
 	"about": {
-		"meta": "§ 02 — Über mich",
+		"meta": "Über mich",
 		"meta_sub": "Eine kurze, unzuverlässige Biografie",
 		"headline_1": "Ich mache Dinge,",
 		"headline_2": "die sich <span class=\"italic\">laut <span class=\"text-[#FF3B00]\">anfühlen</span></span>,",
@@ -52,7 +53,7 @@
 		"portrait_caption": "Adrian Fernández"
 	},
 	"works": {
-		"meta": "§ 03 — Ausgewählt",
+		"meta": "Ausgewählt",
 		"meta_sub": "Index aktueller Expeditionen, 2023 — heute",
 		"meta_hint": "Hover ↳ Bild",
 		"title_selected": "Ausgewählte",
@@ -62,13 +63,12 @@
 		"footer_cta": "Vollständiges Archiv anfordern →"
 	},
 	"spiral": {
-		"meta": "§ 04.5 — Spirale",
+		"meta": "Spirale",
 		"meta_sub": "Projektarchiv, durch die Tiefe treibend",
-		"meta_hint": "◴ scrollen zum erkunden",
-		"title": "Spirale"
+		"meta_hint": "GRESV scrollen zum erkunden"
 	},
 	"services": {
-		"meta": "§ 04 — Leistungen",
+		"meta": "Leistungen",
 		"marquee": "Fähigkeiten ✷ Fähigkeiten ✷ Fähigkeiten ✷",
 		"headline_1": "Was ich",
 		"headline_2": "wirklich mache.",
@@ -83,7 +83,7 @@
 		"systems_desc": "Backend-Dienste, Tooling, Deployment. Rust, Go, Docker, Kubernetes."
 	},
 	"process": {
-		"meta": "§ 05.5 — Denkweise",
+		"meta": "Denkweise",
 		"meta_sub": "Wie ich arbeite, was mich antreibt",
 		"step_1_title": "Lernen",
 		"step_1_sub": "Neugier",
@@ -99,7 +99,7 @@
 		"step_4_desc": "Jedes Projekt lehrt mich etwas. Ich verfeinere, iteriere und liefere weiter aus. Wachstum vor Perfektion."
 	},
 	"contact": {
-		"meta": "§ 06 — Kontakt",
+		"meta": "Kontakt",
 		"meta_sub": "Ein Posteingang, zwei Zeitzonen, keine Retainer",
 		"meta_rec": "●REC — 2026",
 		"marquee": "Lass uns reden ✷ ",
@@ -130,11 +130,26 @@
 		"credit": "Von Hand entworfen und gebaut. Keine Vorlagen.",
 		"end": "Ende des Scrollens — Vol. 001"
 	},
+	"activity": {
+		"meta": "Letzte Aktivität",
+		"meta_sub": "Live von GitHub",
+		"username": "@driver005",
+		"pushed": "{n} Commit(s) an {repo} gepusht",
+		"created": "{type} in {repo} erstellt",
+		"starred": "{repo} gestarrt",
+		"forked": "{repo} geforkt",
+		"issue": "{action} ein Issue in {repo}",
+		"pr": "{action} einen Pull Request in {repo}",
+		"release": "eine Release in {repo} veröffentlicht",
+		"time_ago": "vor {value}{unit}",
+		"just_now": "gerade eben"
+	},
+	"skills_tree": {
+		"frontend": "Frontend",
+		"backend": "Backend & Sprachen",
+		"tools": "Tools & DevOps"
+	},
 	"tagline": "Ich bin {age} Jahre alt und aktuell auf der Suche nach neuen Herausforderungen.",
-	"member": "Mitglied seit",
-	"catchline": "MEIN_ZUHAUSE",
-	"enter": "Eintreten",
-	"loading": "Lädt...",
 	"email": "contact@a42n.com",
 	"url": "https://www.a42n.com",
 	"story": {
@@ -260,7 +275,7 @@
 	"gallery": {
 		"title": "Asset-Index",
 		"description": "Direkte Links zu den Projekt-Quelldateien.",
-		"meta": "\u00a7 06 \u2014 Galerie",
+		"meta": "Galerie",
 		"meta_sub": "Ausgew\u00e4hlte Arbeiten 2023\u20132026",
 		"meta_hint": "Scrollen \u21B3 erkunden",
 		"title_visual": "Visuelles",
@@ -301,8 +316,10 @@
 	},
   "app_nav": {
     "home": "Start",
+    "me": "Ich",
     "room": "Raum",
-    "skills": "Skills",
+    "spiral": "Spirale",
+    "motion_path": "Bewegungspfad",
     "music": "Musik",
     "imprint": "Impressum",
     "privacy": "Datenschutz"
@@ -345,9 +362,13 @@
       "title": "Adrians Musik | Persönliches Portfolio",
       "description": "Entdecke die Musik, die Adrian inspiriert – seine Lieblingstracks und Künstler in einer interaktiven Erfahrung."
     },
-    "skills": {
-      "title": "Adrians Skills | Persönliches Portfolio",
-      "description": "Erfahre mehr über Adrians technische Fähigkeiten und Expertise als Softwareentwickler, von Frontend bis Backend."
+    "me": {
+      "title": "Ich | Adrian Fernández",
+      "description": "Wie ich arbeite, was mich antreibt — Lernen, Bauen, Teilen, Wiederholen."
+    },
+    "spiral": {
+      "title": "Spirale | Adrian Fernández",
+      "description": "Visuelles Archiv — alle Galeriebilder in einer 3D-Spirale."
     },
     "imprint": {
       "title": "Impressum | Adrian Fernández",
@@ -361,5 +382,47 @@
     "author": "Adrian",
     "og_image_alt": "Vorschau von Adrians Portfolio",
     "twitter_handle": "@real4drian"
+  },
+  "penguin_curtain": {
+    "marquee": "Das Team × AnimatedGOATs",
+    "subtitle": "Warum ernst sein wenn man Zeichentrick schauen kann",
+    "footer": "Pause — Bitte genießen"
+  },
+  "penguin_slide": {
+    "marquee": "Osterei × Skipper wäre stolz",
+    "classified": "Geheim",
+    "operation": "Operation: Goldtresor",
+    "division": "DSM-VI — Madagaskar Abteilung",
+    "alt": "Pinguine die Gold in einem Tresor finden"
+  },
+  "faq_section": {
+    "marquee": "FAQ × Häufige Fragen, klar beantwortet",
+    "q_1": "Machen Sie auch kurze Einsätze?",
+    "a_1": "Ja. Alles von einer einwöchigen Prüfung bis zu einem zwölfwöchigen Projekt — keine Mindestvertragslaufzeiten.",
+    "q_2": "Wie sieht der Tech-Stack normalerweise aus?",
+    "a_2": "SvelteKit, React oder Next.js im Frontend; Three.js und WebGL für interaktive Elemente; Rust, Go oder Python im Backend, je nach Aufgabe.",
+    "q_3": "Arbeiten Sie mit Agenturen zusammen?",
+    "a_3": "Nein — direkt mit den Leuten die das Projekt bauen. Kein Agenturaufwand, keine Templates.",
+    "q_4": "Wo sind Sie ansässig?",
+    "a_4": "Tübingen, Deutschland. Remote-freundlich, Zeitzone MEZ.",
+    "q_5": "Wie fangen wir an?",
+    "a_5": "Senden Sie eine E-Mail mit einer kurzen Beschreibung, einer halben Idee oder einem Problem — das reicht meistens um loszulegen."
+  },
+  "journey": {
+    "marquee": "Reise × Wie dieses Studio entstand"
+  },
+  "status_strip": {
+    "local_time": "Ortszeit — Tubingen",
+    "repos": "Öffentliche Repos",
+    "followers": "Follower",
+    "since": "Auf GitHub seit"
+  },
+  "name": {
+    "first": "Adrian",
+    "last": "Fern<span class='text-[#FF3B00]' style='-webkit-text-stroke: 0'>á</span>ndez",
+    "last_plain": "Fernández"
+  },
+  "terminal": {
+    "deploy": "§ deploy"
   }
 }

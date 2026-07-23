@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import { useIntersectionObserver } from '$lib/util/intersection.svelte';
-	import SectionHeader from './section-header.svelte';
+	import { useScrollReveal } from '$lib/util/scroll-reveal.svelte';
+	import { useParallax } from '$lib/util/parallax.svelte';
+	import SectionHeaderMarquee from './section-header-marquee.svelte';
 	import RevealText from './reveal-text.svelte';
 	import CountUp from './count-up.svelte';
 
@@ -18,6 +20,12 @@
 
 	// ── Stats reveal ─────────────────────────────────────────────────────────
 	const statsObs = useIntersectionObserver({ threshold: 0.2 });
+
+	// ── Scroll reveal for headline ──────────────────────────────────────────
+	const headlineReveal = useScrollReveal({ threshold: 0.1, amount: 60 });
+
+	// ── Portrait parallax ───────────────────────────────────────────────────
+	const portraitParallax = useParallax({ speed: 0.15 });
 
 	// ── Portrait 3-D card ────────────────────────────────────────────────────
 	let rx = $state(0);
@@ -49,19 +57,20 @@
 	data-testid="about-section"
 >
 	<!-- Header strip -->
-	<SectionHeader items={[
-		{ label: m['about.meta'], span: 'col-span-12 sm:col-span-6', cellClass: 'border-r-0 sm:border-r' },
-		{ label: m['about.meta_sub'], span: 'col-span-12 sm:col-span-6', cellClass: 'border-t sm:border-t-0' },
-	]} />
+	<SectionHeaderMarquee text="{m['about.meta']()} × {m['about.meta_sub']()}" reverse separator="■" />
 
 	<!-- Main grid: 7 col text | 5 col portrait -->
 	<div class="grid grid-cols-12 gap-0">
 		<!-- ── Text column (7 cols) ───────────────────────────────────────── -->
 		<div class="col-span-12 md:col-span-7 px-4 sm:px-8 py-12 sm:py-20 md:border-r border-black">
-			<!-- Headline with line-by-line slide-up reveal -->
+			<!-- Headline with scroll-driven parallax reveal -->
 			<h2
+				bind:this={headlineReveal.element}
 				data-testid="about-headline"
 				class="font-display uppercase text-5xl sm:text-7xl lg:text-8xl leading-[0.9] tracking-tighter text-black"
+				style:opacity={headlineReveal.progress}
+				style:transform="translateY({(1 - headlineReveal.progress) * 30}px)"
+				style:transition="opacity 0.1s linear, transform 0.1s linear"
 			>
 				<RevealText delay={0}>{@html m['about.headline_1']()}</RevealText>
 				<RevealText delay={80}>{@html m['about.headline_2']()}</RevealText>
@@ -71,26 +80,26 @@
 			<!-- Bio paragraphs -->
 			<div bind:this={bioObs.element} class="mt-10 max-w-xl font-mono text-sm sm:text-base leading-relaxed text-[#0A0A0A]">
 				<p
-					class="transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+					class="transition-opacity transition-transform duration-500 ease-[var(--ease-out-expo)]"
 					style:opacity={bioObs.isIntersecting ? '1' : '0'}
 					style:transform={bioObs.isIntersecting ? 'translateY(0)' : 'translateY(24px)'}
 				>
 					{m['about.bio_1']()}
 				</p>
 				<p
-					class="mt-4 text-[#555] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+					class="mt-4 text-[#555] transition-opacity transition-transform duration-500 ease-[var(--ease-out-expo)]"
 					style:opacity={bioObs.isIntersecting ? '1' : '0'}
 					style:transform={bioObs.isIntersecting ? 'translateY(0)' : 'translateY(24px)'}
-					style:transition-delay="120ms"
+					style:transition-delay="60ms"
 				>
 					{m['about.bio_2']()}
 				</p>
 				<!-- Currently block -->
 				<div
-					class="mt-6 pt-5 border-t border-black/10 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+					class="mt-6 pt-5 border-t border-black/10 transition-opacity transition-transform duration-500 ease-[var(--ease-out-expo)]"
 					style:opacity={bioObs.isIntersecting ? '1' : '0'}
 					style:transform={bioObs.isIntersecting ? 'translateY(0)' : 'translateY(24px)'}
-					style:transition-delay="240ms"
+					style:transition-delay="120ms"
 				>
 					<span class="font-mono text-[10px] uppercase tracking-[0.3em] text-[#555]">{m['about.current_label']()}</span>
 					<p class="mt-2 font-mono text-sm text-[#0A0A0A]">
@@ -108,10 +117,10 @@
 				{#each stats as s, i}
 					<div
 						data-testid="about-stat-{i}"
-						class="border-r border-b border-black p-4 sm:p-5 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+						class="border-r border-b border-black p-4 sm:p-5 transition-opacity transition-transform duration-500 ease-[var(--ease-out-expo)]"
 						style:opacity={statsObs.isIntersecting ? '1' : '0'}
 						style:transform={statsObs.isIntersecting ? 'translateY(0)' : 'translateY(20px)'}
-						style:transition-delay="{i * 80}ms"
+						style:transition-delay="{i * 60}ms"
 					>
 						<div class="font-display text-4xl sm:text-5xl">
 							<CountUp value={s.v} suffix={String(s.v).match(/\D+$/)?.[0] || ''} />
@@ -126,24 +135,26 @@
 
 		<!-- ── Portrait column (5 cols) — inline sub-component ──────────── -->
 		<div class="col-span-12 md:col-span-5 relative border-t md:border-t-0 border-black">
+			<a href="/me" class="block">
 			<div class="sticky top-20" style:perspective="1200px">
 				<!-- 3-D card wrapper -->
 				<div
 				role="img"
-				aria-label="Portrait of Adrian Fernández"
+				aria-label="Portrait of {m['name.first']()} {m['name.last_plain']()}"
 					onmousemove={onMove}
 					onmouseleave={onLeave}
-					style:transform="rotateX({rx}deg) rotateY({ry}deg)"
+					bind:this={portraitParallax.element}
+					style:transform="rotateX({rx}deg) rotateY({ry}deg) translateY({portraitParallax.y}px)"
 					style:transform-style="preserve-3d"
-					style:transition="transform 0.35s cubic-bezier(0.22,1,0.36,1)"
+					style:transition="transform 0.35s var(--ease-out-expo)"
 					class="relative aspect-[4/5] w-full cursor-none overflow-hidden border-b border-black bg-[#0A0A0A]"
 				>
 					<!-- Portrait image with inner parallax -->
 					<img
 						src="https://images.pexels.com/photos/33675021/pexels-photo-33675021.jpeg"
-						alt="Portrait — Adrian Fernández"
+						alt="Portrait — {m['name.first']()} {m['name.last_plain']()}"
 						style:transform="translate({px}px, {py}px) scale(1.08)"
-						style:transition="transform 0.4s cubic-bezier(0.22,1,0.36,1)"
+						style:transition="transform 0.4s var(--ease-out-expo)"
 						class="absolute inset-0 h-full w-full object-cover grayscale contrast-[1.1]"
 						draggable="false"
 					/>
@@ -190,6 +201,7 @@
 					</span>
 				</div>
 			</div>
+			</a>
 		</div>
 	</div>
 </section>

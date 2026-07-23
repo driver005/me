@@ -1,4 +1,382 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from es!"
+	"hello_world": "Hello, {name} from es!",
+	"headline": "👋 Hola, soy Adrian",
+	"nav": {
+		"work": "Trabajo",
+		"about": "Sobre mí",
+		"services": "Servicios",
+		"gallery": "Galería",
+		"contact": "Contacto",
+		"open": "Abierto",
+		"cta": "Hablemos →",
+		"menu": "Menú",
+		"close": "Cerrar",
+		"back": "Volver"
+	},
+	"hero": {
+		"meta_portfolio": "Portafolio / 2025—26",
+		"meta_index": "Índice № 001 / 12",
+		"meta_studio": "Estudio: Tübingen / Remoto",
+		"meta_available": "✷ Disponible para trabajo",
+		"eyebrow_a": "(A) Diseñador",
+		"eyebrow_b": "(B) Desarrollador",
+		"eyebrow_c": "(C) Director",
+		"status": "Disponible para Q3 2026",
+		"scroll": "Scroll<br />\u2193",
+		"marquee_1": "Trabajos seleccionados 2018\u20132026",
+		"marquee_2": "Sistemas de marca",
+		"marquee_3": "Experiencias web",
+		"marquee_4": "Dirección de arte",
+		"marquee_5": "Type Driven",
+		"marquee_6": "Awwwards Honoree",
+		"bio": "▌ Freelance y perfeccionando mi C++, actualmente buscando trabajo. Construyo cosas porque amo el desafío — ya sean los detalles finos bajo el capó o el panorama general."
+	},
+	"about": {
+		"meta": "§ 02 — Sobre mí",
+		"meta_sub": "Una biografía corta y poco fiable",
+		"headline_1": "Hago cosas",
+		"headline_2": "que <span class=\"italic\">suenan <span class=\"text-[#FF3B00]\">fuerte</span></span>",
+		"headline_3": "en habitaciones silenciosas.",
+		"bio_1": "Soy Adrian — construyo cosas porque amo el desafío. Me impulsa la curiosidad y la pasión por hacer un buen trabajo.",
+		"bio_2": "Freelance y mejorando mi C++. Basado en Tübingen, Alemania.",
+		"current_label": "Actualmente —",
+		"current_text": "Perfeccionando mis habilidades de C++. Abierto a nuevas oportunidades.",
+		"current_open": "Disponible para trabajo.",
+		"stat_years": "Años",
+		"stat_projects": "Proyectos",
+		"stat_awards": "Premios",
+		"stat_countries": "Países",
+		"portrait_label": "▌Retrato",
+		"portrait_number": "01 / 01",
+		"portrait_iso": "ISO 800",
+		"portrait_rec": "●REC",
+		"portrait_caption": "Adrian Fernández"
+	},
+	"works": {
+		"meta": "§ 03 — Seleccionado",
+		"meta_sub": "Índice de expediciones recientes, 2023 — presente",
+		"meta_hint": "Hover ↳ imagen",
+		"title_selected": "Seleccionados",
+		"title_works": "Trabajos.",
+		"row_view": "Ver →",
+		"footer_end": "Fin del índice — 06 de 42",
+		"footer_cta": "Solicitar archivo completo →"
+	},
+	"spiral": {
+		"meta": "§ 04.5 — Espiral",
+		"meta_sub": "Archivo de proyectos, derivando por la profundidad",
+		"meta_hint": "GRESV desplázate para explorar"
+	},
+	"services": {
+		"meta": "§ 04 — Servicios",
+		"marquee": "Capacidades ✷ Capacidades ✷ Capacidades ✷",
+		"headline_1": "Lo que",
+		"headline_2": "realmente hago.",
+		"description": "Cuatro prácticas, un estudio. Los compromisos van desde auditorías de una semana hasta desarrollos de doce semanas. Sin retenciones, sin relleno, sin sobrecostes de agencia.",
+		"ai_title": "IA & ML",
+		"ai_desc": "Modelos personalizados, simulaciones, tuberías de datos. Convirtiendo investigación en sistemas funcionales.",
+		"web_title": "Ingeniería Web",
+		"web_desc": "Portafolios, dashboards, apps full-stack — SvelteKit, React, Three.js.",
+		"creative_title": "Tech Creativo",
+		"creative_desc": "3D, movimiento, experiencias interactivas. Blender, Flutter, WebGL, Figma.",
+		"systems_title": "Sistemas & Infra",
+		"systems_desc": "Servicios backend, herramientas, despliegue. Rust, Go, Docker, Kubernetes."
+	},
+	"process": {
+		"meta": "§ 05.5 — Mentalidad",
+		"meta_sub": "Cómo trabajo, qué me impulsa",
+		"step_1_title": "Aprender",
+		"step_1_sub": "Curiosidad",
+		"step_1_desc": "Impulsado por la curiosidad — me sumerjo en lo que me interesa. Desde sistemas C++ hasta modelos de IA, aprendo construyendo.",
+		"step_2_title": "Construir",
+		"step_2_sub": "Ingeniería",
+		"step_2_desc": "Las ideas se vuelven cosas. SvelteKit, React, Flutter, Three.js — elijo la herramienta correcta y entrego trabajo de calidad.",
+		"step_3_title": "Compartir",
+		"step_3_sub": "Publicación",
+		"step_3_desc": "Escribo sobre tecnología, computación cuántica, IA y herramientas como Zed. Bloguear me ayuda a pensar con claridad.",
+		"step_4_title": "Repetir",
+		"step_4_sub": "Evolución",
+		"step_4_desc": "Cada proyecto me enseña algo. Refino, itero y sigo entregando. Crecimiento sobre perfección."
+	},
+	"contact": {
+		"meta": "§ 06 — Contacto",
+		"meta_sub": "Un buzón, dos zonas horarias, sin retenciones",
+		"meta_rec": "●REC — 2026",
+		"marquee": "Hablemos ✷ ",
+		"headline_1": "¿Tienes un briefing,",
+		"headline_2": "una idea a medias,",
+		"headline_3": "o un problema?",
+		"title": "Contáctame",
+		"description": "No dudes en escribirme por email o conectarte conmigo en redes sociales. ¡Siempre estoy abierto a nuevas oportunidades y colaboraciones!",
+		"email_cta": "contact@a42n.com →",
+		"call_cta": "Hablemos ↗",
+		"sidebar_studio": "Ubicación",
+		"sidebar_address_1": "Tübingen",
+		"sidebar_address_2": "Alemania",
+		"sidebar_press": "Email",
+		"sidebar_press_email_1": "contact@a42n.",
+		"sidebar_press_email_2": "com",
+		"sidebar_elsewhere": "En otros lugares"
+	},
+	"footer": {
+		"copyright": "Adrian Fernández",
+		"rights": "Todos los derechos reservados.",
+		"berlin_time": "Hora local",
+		"clock_suffix": "CET",
+		"built_with": "Hecho con",
+		"tech_stack": "SvelteKit · Svelte 5 · Lenis · Testarudez",
+		"top": "Arriba",
+		"back_to_start": "↑ Volver al inicio",
+		"credit": "Diseñado y construido a mano. Sin plantillas.",
+		"end": "Fin del scroll — Vol. 001"
+	},
+	"tagline": "Tengo {age} años y actualmente busco nuevos desafíos.",
+	"email": "contact@a42n.com",
+	"url": "https://www.a42n.com",
+	"story": {
+		"title": "Mi historia",
+		"description": "Me encanta desarrollar sistemas multifuncionales y ampliables que al mismo tiempo maximizan el rendimiento. Utilizo el poder puro de Rust y C++, la elegante concurrencia de Go o la probada simplicidad de Java."
+	},
+	"status": {
+		"title": "Estado",
+		"description": "Freelance y mejorando mi C++"
+	},
+	"location": {
+		"tile": "Ubicación",
+		"description": "Residente en Tübingen, Alemania"
+	},
+	"resume": {
+		"title": "Currículum",
+		"update": "Última actualización: {date}",
+		"button": "Descargar PDF"
+	},
+	"letter": {
+		"title": "¿Por qué yo?",
+		"button": "Carta de presentación",
+		"pitch": "Aquí para aprender|Un paso a la vez|Por favor pregúntame por la contraseña"
+	},
+	"image": "/images/me.jpeg",
+	"dock": {
+		"navbar": {
+			"home": "Inicio",
+			"journey": "Viaje",
+			"projects": "Hub de conocimiento",
+			"skills": "Habilidades"
+		},
+		"contact": {
+			"github": "Github",
+			"linkedin": "LinkedIn",
+			"x": "X",
+			"blog": "Blog",
+			"instagram": "Instagram",
+			"email": "Email"
+		}
+	},
+	"project_labels": {
+		"projects": "Proyectos",
+		"link": "Enlace"
+	},
+	"music_mobile": {
+		"top_lable": "Feed en vivo",
+		"title": "Música favorita / Artistas",
+		"description": "No todos pero algunos favoritos seleccionados",
+		"music": "Seleccionado",
+		"update": "Actualizado",
+		"vault": "Entrar al vault",
+		"update_time": "Hoy"
+	},
+	"music": {
+		"title": "Favoritos de todos los tiempos",
+		"artist": "Artista",
+		"song": "Canción",
+		"playlist": "Playlist",
+		"description": "artistas, canciones, álbumes y playlists"
+	},
+	"skills": {
+		"title": "Arquitectura de habilidades",
+		"subtitle": "Una selección curada de mis habilidades principales y adicionales",
+		"core": "Principal",
+		"other": "Adicional",
+		"button": "Ver habilidades"
+	},
+	"activity": {
+		"meta": "Actividad reciente",
+		"meta_sub": "En vivo desde GitHub",
+		"username": "@driver005",
+		"pushed": "pusheó {n} commit(s) a {repo}",
+		"created": "creó {type} en {repo}",
+		"starred": "stareó {repo}",
+		"forked": "forkeó {repo}",
+		"issue": "{action} un issue en {repo}",
+		"pr": "{action} un pull request en {repo}",
+		"release": "publicó un release en {repo}",
+		"time_ago": "hace {value}{unit}",
+		"just_now": "ahora mismo"
+	},
+	"skills_tree": {
+		"frontend": "Frontend",
+		"backend": "Backend & Lenguajes",
+		"tools": "Herramientas & DevOps"
+	},
+	"app_nav": {
+		"home": "Inicio",
+		"me": "Yo",
+		"room": "Habitación",
+		"spiral": "Espiral",
+		"motion_path": "Ruta de movimiento",
+		"music": "Música",
+		"imprint": "Aviso legal",
+		"privacy": "Privacidad"
+	},
+	"imprint": {
+		"title": "Aviso legal",
+		"description": "Divulgación legal según § 5 TMG",
+		"responsible": "Responsable del contenido",
+		"address_line1": "Adrian Fernández",
+		"address_line2": "Tübingen, Alemania",
+		"contact": "Contacto",
+		"email": "contact@a42n.com",
+		"disclaimer_title": "Descargo de responsabilidad",
+		"disclaimer_liability": "Responsabilidad por contenidos",
+		"disclaimer_liability_text": "Los contenidos de este sitio web han sido creados con el máximo cuidado. Sin embargo, no podemos garantizar la exactitud, completitud o actualidad del contenido.",
+		"disclaimer_links": "Responsabilidad por enlaces",
+		"disclaimer_links_text": "Este sitio web contiene enlaces a sitios web externos de terceros. No tenemos influencia sobre el contenido de esos sitios web enlazados y no podemos asumir responsabilidad por ellos.",
+		"disclaimer_copyright": "Derechos de autor",
+		"disclaimer_copyright_text": "Todos los contenidos y obras de este sitio web están sujetos a la ley de derechos de autor alemana. La reproducción, edición, distribución o cualquier forma de comercialización requiere el consentimiento escrito del autor."
+	},
+	"privacy": {
+		"title": "Política de privacidad",
+		"description": "Información sobre protección de datos y privacidad",
+		"intro": "Esta política de privacidad explica cómo recopilamos, usamos y protegemos sus datos personales cuando visita este sitio web.",
+		"data_collection_title": "Recopilación de datos",
+		"data_collection_text": "Este sitio web no utiliza cookies ni scripts de rastreo. No recopilamos datos personales a menos que usted los proporcione voluntariamente por correo electrónico.",
+		"data_storage_title": "Almacenamiento de datos",
+		"data_storage_text": "Cualquier dato personal que proporcione (por ejemplo, por correo electrónico) se almacena de forma segura y se utiliza solo para responder a su consulta. Los datos no se comparten con terceros.",
+		"rights_title": "Sus derechos",
+		"rights_text": "Usted tiene derecho a solicitar información sobre sus datos almacenados, su corrección, eliminación o restricción del procesamiento en cualquier momento.",
+		"contact_title": "Contacto",
+		"contact_text": "Para cualquier pregunta sobre protección de datos, por favor contáctenos en:"
+	},
+	"seo": {
+		"home": {
+			"title": "Portafolio personal de Adrian",
+			"description": "Explora el portafolio personal único de Adrian — una experiencia 3D interactiva de sus proyectos, habilidades y música."
+		},
+		"music": {
+			"title": "Música de Adrian | Portafolio personal",
+			"description": "Descubre la música que inspira a Adrian, con sus pistas y artistas favoritos en una experiencia interactiva."
+		},
+		"me": {
+			"title": "Yo | Adrian Fernández",
+			"description": "Cómo trabajo, qué me impulsa — Aprender, Construir, Compartir, Repetir."
+		},
+		"spiral": {
+			"title": "Espiral | Adrian Fernández",
+			"description": "Archivo visual — todas las imágenes de la galería en una espiral 3D."
+		},
+		"imprint": {
+			"title": "Aviso legal | Adrian Fernández",
+			"description": "Divulgación legal e información de contacto de Adrian Fernández."
+		},
+		"privacy": {
+			"title": "Política de privacidad | Adrian Fernández",
+			"description": "Política de privacidad e información de protección de datos del portafolio de Adrian Fernández."
+		},
+		"keywords": "Adrian, portafolio personal, desarrollador de software, proyectos, habilidades, música, 3D interactivo",
+		"author": "Adrian",
+		"og_image_alt": "Vista previa del portafolio de Adrian",
+		"twitter_handle": "@real4drian"
+	},
+	"gallery": {
+		"title": "Índice de assets",
+		"description": "Enlaces directos a archivos fuente del proyecto.",
+		"meta": "§ 06 — Galería",
+		"meta_sub": "Trabajos seleccionados 2023—2026",
+		"meta_hint": "Scroll ↳ explorar",
+		"title_visual": "Visual",
+		"title_archive": "Archivo<span class=\"text-[#FF3B00] not-italic\">.</span>",
+		"links": {
+			"teclab": "archivos fuente de teclab",
+			"assets": "Algunos assets son de este tutorial, que recomiendo mucho",
+			"slides": "slides Gucci",
+			"space": "Speaker / casete / jugo / leche / poción espacial",
+			"sofa": "Generador de sofá paramétrico",
+			"printer": "Modelo de impresora 3D",
+			"ams": "Modelo 3D AMS",
+			"animated": "Componentes UI animados",
+			"house": "Casa de playa",
+			"meme": "Foto de meme"
+		},
+		"category": {
+			"file": "Archivo",
+			"photo": "Foto",
+			"model": "Modelo 3D"
+		}
+	},
+	"friendlymode": {
+		"title_friendly": "¿Volver a la seguridad?",
+		"title_rougue": "¿Ir al modo rogue?",
+		"name": "Modo SEGURO",
+		"disabled": "Toca para restaurar",
+		"enabled": "Toca para desactivar",
+		"field": "Ingresa contraseña ...",
+		"locked": "bloqueado",
+		"wrong": "Contraseña incorrecta, intenta de nuevo.",
+		"label": "Desactiva el modo seguro para acceder",
+		"message": "🔒 La página solo se puede acceder si el <span class='underline decoration-yellow-400 decoration-2'>Modo Seguro</span> está desactivado."
+	},
+	"tip": {
+		"first": "Click izquierdo para girar",
+		"second": "Click derecho para interactuar"
+	},
+	"help": {
+		"title": "¿Necesitas ayuda?",
+		"catchline": "Guía rápida de supervivencia.",
+		"header_nav": "Navegación",
+		"header_key": "Atajos",
+		"description": "Haz clic en los iconos de la barra lateral para navegar. Haz doble clic en cualquier tarjeta para editar su contenido directamente.",
+		"nav": {
+			"home": "Haz clic en el MONITOR, LA LECHE o EL JUGO para ver un vistazo a mi vida",
+			"wheel": "Rueda del MOUSE hacia abajo para despejar el humo",
+			"music": "El modo seguro debe estar desactivado — Haz clic en la CASETA, AUX o ALTAVOZ para descubrir más sobre mi gusto musical.",
+			"skills": "Haz clic en mi PORTÁTIL o POCIÓN para conocer mis habilidades y experiencia.",
+			"mouse": "Presiona el botón IZQUIERDO del mouse para mover la cámara y el DERECHO para interactuar con objetos y abrir enlaces de proyectos.",
+			"close": "Haz clic fuera del diálogo para cerrarlo y volver a la interfaz principal."
+		},
+		"key": {
+			"help": "Ayuda",
+			"home": "Inicio",
+			"music": "Música",
+			"skills": "Habilidades",
+			"close": "Cerrar"
+		}
+	},
+	"lang": {
+		"title": "Seleccionar idioma",
+		"description": "Elige tu idioma preferido para la interfaz.",
+		"active": "Seleccionado",
+		"button": "Idioma"
+	},
+	"webgl": {
+		"title": "3D no soportado",
+		"description": "Tu navegador o dispositivo tiene la aceleración de hardware desactivada.",
+		"link": "Aprende cómo activarla.",
+		"button": "Continuar de todos modos →"
+	},
+	"error": {
+		"title": "No encontrado",
+		"description": "¡Ups! Algo salió mal al cargar la página. Por favor, intenta de nuevo más tarde.",
+		"link": "Volver al inicio"
+	},
+	"dust": {
+		"insult": "¿Qué estás mirando?",
+		"help": "Por favor, deja de hacerlo.",
+		"button": "Está bien, dejaré de hacerlo."
+	},
+	"slides": {
+		"title": "Por favor lee esto cuidadosamente.",
+		"description": "¡Por favor contrátame para poder comprarme unas Gucci slides!",
+		"button": "¡Cuento contigo!"
+	}
 }

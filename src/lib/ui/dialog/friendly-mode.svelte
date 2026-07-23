@@ -41,7 +41,7 @@
 	<Button
 		variant="outline"
 		onclick={() => (open = true)}
-		class="h-12 rounded-xl border-4 border-black px-6 font-black uppercase transition-all 
+		class="h-12 rounded-xl border-4 border-black px-6 font-black uppercase transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] 
     {friendly.value
 			? 'bg-yellow-400 shadow-[4px_4px_0px_0px_#000] hover:bg-yellow-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-yellow-400 dark:hover:bg-yellow-400'
 			: 'cursor-default bg-zinc-400 text-zinc-800 italic line-through decoration-black decoration-2 shadow-none hover:bg-zinc-400 dark:bg-zinc-400 dark:hover:bg-zinc-400'}"
@@ -118,13 +118,13 @@
 					{/if}
 				{/if}
 
-				<Button
-					onclick={handleSubmit}
-					class="h-14 w-full rounded-xl border-4 border-black font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none
-						{friendly.value
-						? 'bg-red-500 text-black hover:bg-red-500'
-						: 'bg-green-500 text-black hover:bg-green-500'}"
-				>
+			<Button
+				onclick={handleSubmit}
+				class="h-14 w-full rounded-xl border-4 border-black font-black tracking-widest uppercase shadow-[4px_4px_0px_0px_#000] transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none
+					{friendly.value
+					? 'bg-red-500 text-black hover:bg-red-500'
+					: 'bg-green-500 text-black hover:bg-green-500'}"
+			>
 					{friendly.value ? m['friendlymode.enabled']() : m['friendlymode.disabled']()}
 				</Button>
 			</div>

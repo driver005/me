@@ -9,7 +9,7 @@
 
 {#if as === 'div'}
   <div bind:this={obs.element} class="block overflow-hidden {className}">
-    <div class="block transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+    <div class="block transition-transform duration-500 ease-[var(--ease-out-expo)]"
       style:transition-delay="{delay}ms"
       style:transform={obs.isIntersecting ? 'translateY(0)' : 'translateY(110%)'}>
       {@render children()}
@@ -17,7 +17,7 @@
   </div>
 {:else}
   <span bind:this={obs.element} class="block overflow-hidden {className}">
-    <span class="block transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+    <span class="block transition-transform duration-500 ease-[var(--ease-out-expo)]"
       style:transition-delay="{delay}ms"
       style:transform={obs.isIntersecting ? 'translateY(0)' : 'translateY(110%)'}>
       {@render children()}

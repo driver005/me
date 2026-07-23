@@ -10,7 +10,8 @@
     "open": "Open",
     "cta": "Let's Talk →",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "back": "Back"
   },
   "hero": {
     "meta_portfolio": "Portfolio / 2025—26",
@@ -31,7 +32,7 @@
     "bio": "▌ Freelancing & sharpening my C++, currently searching for work. I build things because I love the challenge — whether it's the fine details under the hood or the big picture."
   },
   "about": {
-    "meta": "§ 02 — About",
+    "meta": "About",
     "meta_sub": "A short, unreliable biography",
     "headline_1": "I make things",
     "headline_2": "that <span class=\"italic\">feel <span class=\"text-[#FF3B00]\">loud</span></span>",
@@ -52,7 +53,7 @@
     "portrait_caption": "Adrian Fernández"
   },
   "works": {
-    "meta": "§ 03 — Selected",
+    "meta": "Selected",
     "meta_sub": "Index of recent expeditions, 2023 — present",
     "meta_hint": "Hover ↳ image",
     "title_selected": "Selected",
@@ -62,13 +63,12 @@
     "footer_cta": "Request Full Archive →"
   },
   "spiral": {
-    "meta": "§ 04.5 — Spiral",
+    "meta": "Spiral",
     "meta_sub": "Project archive, drifting through depth",
-    "meta_hint": "◴ scroll to explore",
-    "title": "Spiral"
+    "meta_hint": "◴ scroll to explore"
   },
   "services": {
-    "meta": "§ 04 — Services",
+    "meta": "Services",
     "marquee": "Capabilities ✷ Capabilities ✷ Capabilities ✷",
     "headline_1": "What I",
     "headline_2": "actually do.",
@@ -83,7 +83,7 @@
     "systems_desc": "Backend services, tooling, deployment. Rust, Go, Docker, Kubernetes."
   },
   "process": {
-    "meta": "§ 05.5 — Mindset",
+    "meta": "Mindset",
     "meta_sub": "How I work, what drives me",
     "step_1_title": "Learn",
     "step_1_sub": "Curiosity",
@@ -99,7 +99,7 @@
     "step_4_desc": "Every project teaches me something. I refine, iterate, and keep shipping. Growth over perfection."
   },
   "contact": {
-    "meta": "§ 06 — Contact",
+    "meta": "Contact",
     "meta_sub": "One inbox, two timezones, zero retainers",
     "meta_rec": "●REC — 2026",
     "marquee": "Let's Talk ✷ ",
@@ -130,11 +130,26 @@
     "credit": "Designed & built by hand in Berlin. No templates. No agency overhead.",
     "end": "End of scroll — Vol. 001"
   },
+  "activity": {
+    "meta": "Recent Activity",
+    "meta_sub": "Live from GitHub",
+    "username": "@driver005",
+    "pushed": "pushed {n} commit(s) to {repo}",
+    "created": "created {type} in {repo}",
+    "starred": "starred {repo}",
+    "forked": "forked {repo}",
+    "issue": "{action} an issue in {repo}",
+    "pr": "{action} a pull request in {repo}",
+    "release": "published a release in {repo}",
+    "time_ago": "{value}{unit} ago",
+    "just_now": "just now"
+  },
+  "skills_tree": {
+    "frontend": "Frontend",
+    "backend": "Backend & Languages",
+    "tools": "Tools & DevOps"
+  },
   "tagline": "I am {age} years old and currently searching for work.",
-  "member": "member since",
-  "catchline": "MY_HOME",
-  "enter": "Enter",
-  "loading": "Loading...",
   "email": "contact@a42n.com",
   "url": "https://www.a42n.com",
   "story": {
@@ -260,7 +275,7 @@
   "gallery": {
     "title": "Asset Index",
     "description": "Direct links to project source files.",
-    "meta": "§ 06 \u2014 Gallery",
+    "meta": "Gallery",
     "meta_sub": "Selected works 2023\u20142026",
     "meta_hint": "Scroll \u21B3 explore",
     "title_visual": "Visual",
@@ -302,8 +317,10 @@
   },
   "app_nav": {
     "home": "Home",
+    "me": "Me",
     "room": "Room",
-    "skills": "Skills",
+    "spiral": "Spiral",
+    "motion_path": "Motion Path",
     "music": "Music",
     "imprint": "Imprint",
     "privacy": "Privacy"
@@ -346,9 +363,13 @@
       "title": "Adrian's Music | Personal Portfolio",
       "description": "Discover the music that inspires Adrian, featuring his favorite tracks and artists in an interactive experience."
     },
-    "skills": {
-      "title": "Adrian's Skills | Personal Portfolio",
-      "description": "Explore Adrian's technical skills and expertise as a software developer, from frontend to backend and everything in between."
+    "me": {
+      "title": "Me | Adrian Fernández",
+      "description": "How I work, what drives me — Learn, Build, Share, Repeat."
+    },
+    "spiral": {
+      "title": "Spiral | Adrian Fernández",
+      "description": "Visual archive — all gallery images in a 3D spiral."
     },
     "imprint": {
       "title": "Imprint | Adrian Fernández",
@@ -362,5 +383,47 @@
     "author": "Adrian",
     "og_image_alt": "Adrian's Portfolio Preview",
     "twitter_handle": "@real4drian"
+  },
+  "penguin_curtain": {
+    "marquee": "The Roster × AnimatedGOATs",
+    "subtitle": "Why So Serious When You Can Watch Cartoons",
+    "footer": "Intermission — Please Enjoy"
+  },
+  "penguin_slide": {
+    "marquee": "Easter Egg × Skipper Would Be Proud",
+    "classified": "Classified",
+    "operation": "Operation: Gold Vault",
+    "division": "DSM-VI — Madagascar Division",
+    "alt": "Penguins finding gold in a vault"
+  },
+  "faq_section": {
+    "marquee": "FAQ × Common Questions, Answered Plainly",
+    "q_1": "Do you take short engagements?",
+    "a_1": "Yes. Anything from a one-week audit to a twelve-week buildout — no minimum-length retainers.",
+    "q_2": "What does the stack usually look like?",
+    "a_2": "SvelteKit, React, or Next.js on the front end; Three.js and WebGL for anything interactive; Rust, Go, or Python on the backend, depending on the job.",
+    "q_3": "Do you work through agencies?",
+    "a_3": "No — direct with the people building the thing. No agency overhead, no templates.",
+    "q_4": "Where are you based?",
+    "a_4": "Tübingen, Germany. Remote-friendly, timezone CET.",
+    "q_5": "How do we start?",
+    "a_5": "Send an email with a brief, a half-idea, or a problem — that's usually enough to get going."
+  },
+  "journey": {
+    "marquee": "Journey × How This Studio Came To Be"
+  },
+  "status_strip": {
+    "local_time": "Local time — Tubingen",
+    "repos": "Public repos",
+    "followers": "Followers",
+    "since": "On GitHub since"
+  },
+  "name": {
+    "first": "Adrian",
+    "last": "Fern<span class='text-[#FF3B00]' style='-webkit-text-stroke: 0'>á</span>ndez",
+    "last_plain": "Fernández"
+  },
+  "terminal": {
+    "deploy": "§ deploy"
   }
 }

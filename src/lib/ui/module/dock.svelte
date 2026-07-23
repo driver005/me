@@ -15,7 +15,7 @@
 		distance?: number;
 		direction?: 'top' | 'middle' | 'bottom';
 		class?: string;
-		children: Snippet;
+		children: Snippet<[number, number, number]>;
 	} = $props();
 
 	const dockVariants = cva(
@@ -23,7 +23,7 @@
 	);
 
 	let dockElement: HTMLDivElement;
-	let mouseX = Infinity;
+	let mouseX = $state(Infinity);
 	function handleMouseMove(e: MouseEvent) {
 		mouseX = e.pageY;
 	}
@@ -32,16 +32,16 @@
 		mouseX = Infinity;
 	}
 
-	let dockClass = cn(dockVariants({ className }), {
+	const dockClass = $derived(cn(dockVariants({ className }), {
 		'items-start': direction === 'top',
 		'items-center': direction === 'middle',
 		'items-end': direction === 'bottom'
-	});
+	}));
 </script>
 
 <Motion let:motion>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
+		role="presentation"
 		use:motion
 		bind:this={dockElement}
 		onmousemove={(e) => handleMouseMove(e)}
@@ -54,6 +54,6 @@
 		}}
 		class={dockClass}
 	>
-		{@render children({ mouseX, magnification, distance })}
+		{@render children(mouseX, magnification, distance)}
 	</div>
 </Motion>

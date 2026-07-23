@@ -40,18 +40,38 @@
 
 	let scrollYProgress = $state(0);
 
+	const AUTO_SCROLL_SPEED = 0.0005;
+	let accScroll = 0;
+	let velocity = 0;
+	let lastWheelTime = 0;
+
 	$effect(() => {
 		if (!browser) return;
 		const el = document.getElementById('process');
 		if (!el) return;
-		const onScroll = () => {
-			const rect = el.getBoundingClientRect();
-			const total = rect.height;
-			const scrolled = Math.max(0, -rect.top);
-			scrollYProgress = Math.max(0, Math.min(1, scrolled / (total - window.innerHeight)));
+
+		const onWheel = (e: WheelEvent) => {
+			velocity += e.deltaY * 0.000015;
+			lastWheelTime = performance.now();
 		};
-		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => window.removeEventListener('scroll', onScroll);
+		el.addEventListener('wheel', onWheel, { passive: true });
+
+		let rafId: number;
+		const tick = () => {
+			rafId = requestAnimationFrame(tick);
+
+			const idle = performance.now() - lastWheelTime > 800;
+			if (idle) velocity += (AUTO_SCROLL_SPEED - velocity) * 0.01;
+			velocity *= 0.95;
+			accScroll += velocity;
+			scrollYProgress = Math.max(0, accScroll);
+		};
+		rafId = requestAnimationFrame(tick);
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			el.removeEventListener('wheel', onWheel);
+		};
 	});
 
 	let windowWidth = $state(0);
@@ -64,7 +84,10 @@
 		return () => window.removeEventListener('resize', update);
 	});
 
-	let x = $derived(-scrollYProgress * (steps.length - 1) * windowWidth);
+	const cyclePos = $derived(scrollYProgress % 1);
+	const currentStep = $derived(Math.floor(scrollYProgress * steps.length) % steps.length);
+
+	let x = $derived(-cyclePos * (steps.length - 1) * windowWidth);
 
 	function mapRange(v: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
 		if (inMax === inMin) return outMin;
@@ -75,7 +98,7 @@
 	function cardStyle(i: number): string {
 		const center = i / (steps.length - 1);
 		const half = 0.28;
-		const p = scrollYProgress;
+		const p = cyclePos;
 
 		// rotateY: linearly maps 18→0→-18 through [center-half, center, center+half]
 		const fromRotY = i === 0 ? 0 : 18;
@@ -107,6 +130,7 @@
 	}
 
 	let vincentCanvas: HTMLCanvasElement | null = $state(null);
+	let webglFailed = $state(false);
 
 	const SEEDS = ['alpine', 'coastal', 'forest', 'urban', 'desert', 'aurora', 'moon', 'canyon'];
 
@@ -167,6 +191,7 @@ void main() {
 
 		let cancelled = false;
 
+		try {
 		const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
 		renderer.setClearColor(0x0F172A, 1);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -259,7 +284,7 @@ void main() {
 		const loop = () => {
 			rafId = requestAnimationFrame(loop);
 
-			const progress = scrollYProgress;
+			const progress = cyclePos;
 			const scrollY = -progress * SEEDS.length * h;
 			const totalH = SEEDS.length * h;
 
@@ -297,6 +322,11 @@ void main() {
 			rt.dispose();
 			renderer.dispose();
 		};
+		} catch (e) {
+			console.warn('WebGL not supported for horizontal-scroll:', e);
+			webglFailed = true;
+			return () => { cancelled = true; };
+		}
 	});
 </script>
 
@@ -304,43 +334,19 @@ void main() {
 	id="process"
 	data-testid="process-section"
 	class="relative text-[#F3F2EE]"
-	style="height: {steps.length * 100}vh;"
+	style="height: 10000vh;"
 >
 	<div class="sticky top-0 h-screen overflow-hidden">
-		<canvas bind:this={vincentCanvas} class="absolute inset-0 w-full h-full" style="z-index: 0;"></canvas>
-
-		<!-- Header strip -->
-		<div class="absolute top-0 left-0 right-0 z-20 grid grid-cols-12 border-b border-[#F3F2EE]/20">
-			<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
-				<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-					{m['process.meta']()}
-				</span>
-			</div>
-			<div class="col-span-6 sm:col-span-6 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
-				<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-					{m['process.meta_sub']()}
-				</span>
-			</div>
-			<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-4">
-				<div class="flex items-center gap-3 h-full">
-					<span class="font-mono text-[10px] uppercase tracking-[0.25em] text-[#FF3B00] flex">
-						{#each steps as _, i}
-							<span
-								class="inline-block mx-1"
-								style="opacity: {Math.max(0.3, 1 - Math.abs(scrollYProgress * (steps.length - 1) - i) / 2)};"
-							>
-								{String(i + 1).padStart(2, '0')}
-							</span>
-						{/each}
-					</span>
-				</div>
-			</div>
-		</div>
+		{#if webglFailed}
+			<div class="absolute inset-0 bg-[#0F172A]"></div>
+		{:else}
+			<canvas bind:this={vincentCanvas} class="absolute inset-0 w-full h-full" style="z-index: 0;"></canvas>
+		{/if}
 
 		<!-- Horizontal track -->
 		<div
 			class="flex h-full"
-			style="padding-top: 53px; transform: translateX({x}px);"
+			style="transform: translateX({x}px); will-change: transform;"
 		>
 			{#each steps as step, i}
 				<div

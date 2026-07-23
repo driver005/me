@@ -12,7 +12,7 @@
 
 <button
 	onclick={toggleTheme}
-	class="h-12 rounded-xl border-4 border-black bg-violet-400 px-4 brutal-shadow transition-all
+	class="h-12 rounded-xl border-4 border-black bg-violet-400 px-4 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)]
 	hover:bg-violet-400 active:translate-x-0.5 active:translate-y-0.5
 	active:shadow-none"
 >

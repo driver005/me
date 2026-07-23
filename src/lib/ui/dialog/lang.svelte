@@ -18,7 +18,7 @@
 		<Button
 			variant="outline"
 			onclick={() => (open = true)}
-			class="h-12 rounded-xl border-4 border-black bg-yellow-400 brutal-shadow transition-all hover:bg-yellow-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-yellow-400 dark:text-black dark:hover:bg-yellow-400"
+			class="h-12 rounded-xl border-4 border-black bg-yellow-400 brutal-shadow transition-transform transition-shadow duration-500 ease-[var(--ease-out-expo)] hover:bg-yellow-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none dark:bg-yellow-400 dark:text-black dark:hover:bg-yellow-400"
 		>
 			<span>{getLocale().toUpperCase()}</span>
 			<span class="text-xs">▼</span>
@@ -42,7 +42,7 @@
 				<button
 					onclick={() => handleSwitch(lang.id)}
 					class="
-						flex items-center justify-between rounded-xl border-4 border-black p-2 font-black transition-all
+						flex items-center justify-between rounded-xl border-4 border-black p-2 font-black transition-transform transition-shadow transition-colors duration-500 ease-[var(--ease-out-expo)]
 						{getLocale() === lang.id
 						? 'translate-x-1 translate-y-1 bg-yellow-400 shadow-none dark:text-black'
 						: 'bg-background brutal-shadow hover:bg-pink-200 active:translate-x-1 active:translate-y-1 active:shadow-none dark:hover:bg-zinc-900'}

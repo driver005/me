@@ -2,21 +2,23 @@
 	import { m } from '$lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import * as THREE from 'three';
+	import { buildGalleryImages } from '$lib/data/gallery-images';
 
-	// TODO: replace hardcoded PROJECTS with dynamic data from works[]
-	const PROJECTS = [
-		{ title: 'Ethereal Waves', year: 2024, categories: ['Creative Dev', 'WebGL'], img: 'https://images.unsplash.com/photo-1761083261633-5aa782b6ddfc' },
-		{ title: 'Neural Bloom', year: 2024, categories: ['Data Viz', 'Installation'], img: 'https://images.unsplash.com/photo-1760476943801-59ea26b13c3c' },
-		{ title: 'Chromatic Shift', year: 2023, categories: ['Creative Dev', 'Immersive Web'], img: 'https://images.unsplash.com/photo-1761428961720-38db3883826b' },
-		{ title: 'Liquid Architecture', year: 2023, categories: ['Installation', 'Interactive'], img: 'https://images.pexels.com/photos/20874864/pexels-photo-20874864.jpeg' },
-		{ title: 'Photon Garden', year: 2023, categories: ['WebGL', 'Generative Art'], img: 'https://images.pexels.com/photos/32191170/pexels-photo-32191170.jpeg' },
-		{ title: 'Temporal Drift', year: 2022, categories: ['Creative Dev', 'Experimental'], img: 'https://images.unsplash.com/photo-1714765761465-e7a4974fa05b' },
-		{ title: 'Haptic Fields', year: 2022, categories: ['Installation', 'Physical'], img: 'https://images.pexels.com/photos/33675021/pexels-photo-33675021.jpeg' },
-		{ title: 'Coded Matter', year: 2022, categories: ['Generative Art', 'Print'], img: 'https://images.unsplash.com/photo-1761083261633-5aa782b6ddfc' },
-	];
-
-	const TOTAL = PROJECTS.length * 2;
+	const IMAGES = buildGalleryImages();
+	const TOTAL = IMAGES.length;
 	const CENTER = Math.floor(TOTAL / 2);
+
+	// Deterministically mark ~30% of images as clickable
+	const clickableSet = new Set<number>();
+	{
+		let seed = 99;
+		for (let i = 0; i < TOTAL; i++) {
+			seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+			let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+			t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+			if (((t ^ (t >>> 14)) >>> 0) / 4294967296 < 0.3) clickableSet.add(i);
+		}
+	}
 	const VERTICAL_GAP = 0.5;
 	const ANGLE_GAP = 0.85;
 	const BASE_RADIUS = 2;
@@ -24,6 +26,10 @@
 	const EASING = 0.1;
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
+	let webglFailed = $state(false);
+	const prefersReduced = typeof window !== 'undefined'
+		? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		: false;
 
 	const vertexShader = `
 		varying vec2 vUv;
@@ -125,6 +131,7 @@
 		const canvas = canvasRef;
 		if (!canvas?.parentElement) return;
 
+		try {
 		const container = canvas.parentElement;
 		const w = container.clientWidth;
 		const h = container.clientHeight;
@@ -201,6 +208,7 @@
 		tick();
 
 		const onWheel = (e: WheelEvent) => {
+			if (prefersReduced) return;
 			targetWheelDelta = THREE.MathUtils.clamp(
 				targetWheelDelta + e.deltaY * 15e-5,
 				-2, 2
@@ -235,13 +243,30 @@
 				if (hoveredIndex >= 0 && cardStates[hoveredIndex]) cardStates[hoveredIndex].hoverTarget = 0;
 				if (newHoveredIndex >= 0 && cardStates[newHoveredIndex]) cardStates[newHoveredIndex].hoverTarget = 1;
 				hoveredIndex = newHoveredIndex;
+			canvas.style.cursor = newHoveredIndex >= 0 && clickableSet.has(newHoveredIndex) ? 'pointer' : 'default';
 			}
 		};
 		canvas.addEventListener('pointermove', onPointerMove);
 
-		// Load all 8 project textures, then create 16 cards
+		const onPointerClick = (e: MouseEvent) => {
+			const rect = canvas.getBoundingClientRect();
+			mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+			mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+			raycaster.setFromCamera(mouse, camera);
+			const meshes = cardStates.map(cs => cs.mesh);
+			const hits = raycaster.intersectObjects(meshes);
+			if (hits.length > 0) {
+				const idx = meshes.indexOf(hits[0].object as THREE.Mesh);
+				if (idx >= 0 && idx < IMAGES.length && clickableSet.has(idx)) {
+					window.open(IMAGES[idx].src, '_blank', 'noopener,noreferrer');
+				}
+			}
+		};
+		canvas.addEventListener('click', onPointerClick);
+
+		// Load all gallery textures, then create cards
 		const loader = new THREE.TextureLoader();
-		const textures: THREE.Texture[] = new Array(PROJECTS.length);
+		const textures: THREE.Texture[] = new Array(IMAGES.length);
 		let loadedTextures: THREE.Texture[] = [];
 		let loadedCount = 0;
 		const timeoutIds: ReturnType<typeof setTimeout>[] = [];
@@ -250,7 +275,7 @@
 			if (!isMounted) return;
 			loadedTextures = textures;
 			for (let i = 0; i < TOTAL; i++) {
-				const tex = textures[i % PROJECTS.length];
+				const tex = textures[i % IMAGES.length];
 				const imgW = tex.image?.width ?? 1024;
 				const imgH = tex.image?.height ?? 683;
 				const mat = new THREE.ShaderMaterial({
@@ -286,12 +311,12 @@
 			}
 		};
 
-		PROJECTS.forEach((p, idx) => {
-			loader.load(p.img, (tex) => {
+		IMAGES.forEach((img, idx) => {
+			loader.load(img.src, (tex) => {
 				tex.colorSpace = THREE.SRGBColorSpace;
 				textures[idx] = tex;
 				loadedCount++;
-				if (loadedCount === PROJECTS.length) {
+				if (loadedCount === IMAGES.length) {
 					onAllTexturesLoaded();
 				}
 			});
@@ -303,6 +328,7 @@
 			timeoutIds.forEach(id => clearTimeout(id));
 			canvas.removeEventListener('wheel', onWheel);
 			canvas.removeEventListener('pointermove', onPointerMove);
+			canvas.removeEventListener('click', onPointerClick);
 			window.removeEventListener('resize', onResize);
 			cardStates.forEach(cs => {
 				cs.mat.dispose();
@@ -311,6 +337,11 @@
 			geo.dispose();
 			renderer.dispose();
 		};
+		} catch (e) {
+			console.warn('WebGL not supported, showing fallback:', e);
+			webglFailed = true;
+			return () => { isMounted = false; };
+		}
 	});
 </script>
 
@@ -319,35 +350,24 @@
 	data-testid="spiral-section"
 	class="relative bg-[#0A0A0A] text-[#F3F2EE] border-b border-black overflow-hidden"
 >
-	<div class="absolute top-0 left-0 right-0 z-40 grid grid-cols-12 border-b border-[#F3F2EE]/20">
-		<div class="col-span-6 sm:col-span-3 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
-			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-				{m['spiral.meta']()}
-			</span>
-		</div>
-		<div class="col-span-6 sm:col-span-6 px-4 sm:px-8 py-4 border-r border-[#F3F2EE]/20">
-			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#F3F2EE]/60">
-				{m['spiral.meta_sub']()}
-			</span>
-		</div>
-		<div class="hidden sm:block col-span-3 px-4 sm:px-8 py-4">
-			<span class="font-mono text-xs uppercase tracking-[0.25em] text-[#FF3B00]">
-				{m['spiral.meta_hint']()}
-			</span>
-		</div>
-	</div>
 
-	<div class="relative h-[120vh] sm:h-[140vh] w-full">
-		<div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-			<h2 class="font-display uppercase text-[14vw] sm:text-[12vw] tracking-tighter leading-none text-stroke" style="-webkit-text-stroke: 1.5px #F3F2EE; color: transparent;">
-				{m['spiral.title']()}
-			</h2>
-		</div>
-
-		<canvas
-			bind:this={canvasRef}
-			class="absolute inset-0 z-10 w-full h-full"
-		></canvas>
+	<div class="relative h-screen w-full">
+		{#if webglFailed}
+			<div class="absolute inset-0 z-0 flex items-center justify-center bg-[#0A0A0A]">
+				<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-8 max-w-4xl overflow-auto max-h-full">
+					{#each IMAGES as img}
+						<div class="border border-[#F3F2EE]/20 p-3">
+							<img src={img.src} alt="" class="w-full aspect-[3/2] object-cover mb-2" loading="lazy" />
+						</div>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<canvas
+				bind:this={canvasRef}
+				class="absolute inset-0 z-0 w-full h-full"
+			></canvas>
+		{/if}
 
 		<div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30">
 			<div class="font-mono text-[10px] uppercase tracking-[0.3em] px-4 py-2 border border-[#F3F2EE]/30 rounded-full text-[#F3F2EE]/80 backdrop-blur-sm">

@@ -26,3 +26,22 @@ export function shuffle_array<T>(array: T[]) {
     ];
   }
 }
+
+/**
+ * Shadcn-svelte utility types
+ */
+type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+type XOR<T, U> = T | U extends object
+  ? (Without<T, U> & U) | (Without<U, T> & T)
+  : T | U;
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
+  ? I
+  : never;
+
+export type WithElementRef<E extends Record<string, any>, R extends HTMLElement = HTMLElement> = Omit<E, 'ref'> & {
+  ref?: R | null;
+};
+
+export type WithoutChildren<T> = T & { children?: never };
+
+export type WithoutChildrenOrChild<T> = Omit<T, 'children' | 'child'>;

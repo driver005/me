@@ -20,6 +20,10 @@ import Gallery from "./gallery.svelte";
 import Spiral from "./spiral.svelte";
 import HorizontalScroll from "./horizontal-scroll.svelte";
 import Cube3D from "./cube-3d.svelte";
+import InfiniteCanvas from "./infinite-canvas.svelte";
+import ScrollExperience from "./scroll-experience.svelte";
+import LineTextHover from "./line-text-hover.svelte";
+import MotionPathGallery from "./motion-path-gallery.svelte";
 
 export {
   Dock,
@@ -44,4 +48,8 @@ export {
   Spiral,
   HorizontalScroll,
   Cube3D,
+  InfiniteCanvas,
+  ScrollExperience,
+  LineTextHover,
+  MotionPathGallery,
 };

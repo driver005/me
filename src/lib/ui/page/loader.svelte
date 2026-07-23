@@ -116,7 +116,8 @@
 {#if !hasEntered}
   <div class="absolute inset-0 top-0 left-0 z-100 bg-[#F3F2EE] grain">
     {#if !isLoaded}
-      <div class="flex h-full items-center justify-center" transition:fade={{ duration: 400 }}>
+      <div class="flex h-full flex-col items-center justify-center gap-6" transition:fade={{ duration: 400 }}>
+        <img src="/images/mascot/mascot-wave.png" alt="" class="w-20 sm:w-24" />
         <div class="relative flex items-center justify-center">
           <svg width="160" height="160" viewBox="0 0 120 120" class="rotate-[-90deg]">
             <circle cx="60" cy="60" r={radius} fill="none" stroke="#D9D9D6" stroke-width="5" />
@@ -126,7 +127,7 @@
               stroke-dasharray={circumference}
               stroke-dashoffset={offset}
               stroke-linecap="round"
-              class="transition-all duration-300 ease-out"
+				class="transition-[stroke-dashoffset] duration-300 ease-out"
             />
           </svg>
           <span class="absolute font-mono text-[22px] tracking-[0.05em] text-[#0A0A0A]">{percent}%</span>
@@ -134,7 +135,7 @@
       </div>
     {:else}
       <div
-        class="flex h-full flex-col items-center justify-center px-4 pointer-events-none select-none transition-all duration-700 ease-in"
+        class="flex h-full flex-col items-center justify-center px-4 pointer-events-none select-none transition-transform transition-opacity duration-700 ease-[var(--ease-out-expo)]"
         class:scale-[2]={shouldZoom}
         class:opacity-0={shouldZoom}
       >
@@ -160,7 +161,7 @@
 
       <canvas
         bind:this={canvasEl}
-        class="absolute inset-0 w-full h-full cursor-crosshair transition-opacity duration-700 ease-in touch-none"
+        class="absolute inset-0 w-full h-full cursor-crosshair transition-opacity transition-transform duration-700 ease-[var(--ease-out-expo)] touch-none"
         class:pointer-events-none={shouldZoom}
         class:opacity-0={shouldZoom}
         onpointermove={handleMove}
@@ -168,7 +169,7 @@
 
       <button
         onclick={handleAutoReveal}
-        class="absolute top-6 right-6 font-mono text-[9px] uppercase tracking-[0.3em] text-[#555] hover:text-[#FF3B00] border border-black/20 px-3 py-1.5 bg-[#F3F2EE]/80 backdrop-blur-sm cursor-pointer z-10 transition-[color,opacity] duration-700 ease-in"
+        class="absolute top-6 right-6 font-mono text-[9px] uppercase tracking-[0.3em] text-[#555] hover:text-[#FF3B00] border border-black/20 px-3 py-1.5 bg-[#F3F2EE]/80 backdrop-blur-sm cursor-pointer z-10 transition-colors transition-opacity duration-700 ease-[var(--ease-out-expo)]"
         class:pointer-events-none={shouldZoom}
         class:opacity-0={shouldZoom}
       >
