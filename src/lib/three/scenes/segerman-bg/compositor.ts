@@ -4,6 +4,7 @@ import type { Stars } from './stars';
 import type { Fog } from './fog';
 import type { FluidSim } from './fluid';
 import type { Planet } from './planet';
+import type { Front } from './front';
 import { createPlaceholderTexture } from './placeholder-textures';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import backFragment from '$lib/shaders/segerman-bg/compositor/back-fragment.glsl';
@@ -17,6 +18,7 @@ export interface CompositorLayers {
 	fog: Fog;
 	fluid: FluidSim;
 	planet: Planet;
+	front: Front;
 }
 
 export class Compositor {
@@ -28,10 +30,12 @@ export class Compositor {
 	private outputMesh: THREE.Mesh;
 	private placeholder = createPlaceholderTexture();
 	private fluidSim: FluidSim;
+	private frontLayer: Front;
 
 	constructor(scene: Scene, layers: CompositorLayers) {
 		this.scene = scene;
 		this.fluidSim = layers.fluid;
+		this.frontLayer = layers.front;
 		this.backRT = scene.createRenderTarget(scene.isMobile ? scene.dpr : Math.min(scene.dpr, 1.5));
 
 		this.backMaterial = new THREE.ShaderMaterial({
@@ -88,7 +92,14 @@ export class Compositor {
 		this.backMesh.frustumCulled = false;
 
 		this.outputMaterial = new THREE.ShaderMaterial({
-			uniforms: { tBack: { value: this.backRT.texture }, tFluid: { value: layers.fluid.texture } },
+			uniforms: {
+				tBack: { value: this.backRT.texture },
+				tFront: { value: layers.front.texture },
+				tFluid: { value: layers.fluid.texture },
+				uRes: scene.uniforms.uRes,
+				uTime: scene.uniforms.uTime,
+				uIsTouch: scene.uniforms.uIsTouch
+			},
 			vertexShader: fullscreenVertex,
 			fragmentShader: outputFragment
 		});
@@ -96,11 +107,11 @@ export class Compositor {
 		this.outputMesh.frustumCulled = false;
 	}
 
-	/** Always renders every frame in phase 1 — the scene is permanently in "back"/3D mode (uMode=0), which is the original's always-render branch (see spec Section 3). */
 	render(): void {
 		const renderer = this.scene.renderer;
 		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
+		this.outputMaterial.uniforms.tFront.value = this.frontLayer.texture;
 		renderer.setRenderTarget(this.backRT);
 		renderer.render(this.backMesh, this.scene.camera);
 

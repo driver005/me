@@ -5,6 +5,7 @@ export interface SceneUniforms {
 	uRes: { value: THREE.Vector2 };
 	uDpr: { value: number };
 	uMode: { value: number };
+	uIsTouch: { value: number };
 }
 
 export interface PointerState {

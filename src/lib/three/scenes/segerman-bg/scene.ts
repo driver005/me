@@ -44,8 +44,10 @@ export class Scene {
 			uTime: { value: 0 },
 			uRes: { value: new THREE.Vector2() },
 			uDpr: { value: this.dpr },
-			uMode: { value: 0 }
+			uMode: { value: 1 },
+			uIsTouch: { value: 0 }
 		};
+		this.uniforms.uIsTouch.value = this.isTouch ? 1 : 0;
 
 		window.addEventListener('resize', this.handleWindowResize);
 		canvas.addEventListener('pointermove', this.onPointerMove, { passive: true });
