@@ -45,7 +45,9 @@ export class Scene {
 			uRes: { value: new THREE.Vector2() },
 			uDpr: { value: this.dpr },
 			uMode: { value: 1 },
-			uIsTouch: { value: 0 }
+			uIsTouch: { value: 0 },
+			uCurveX: { value: 0.00005 },
+			uCurveZ: { value: 0.01 }
 		};
 		this.uniforms.uIsTouch.value = this.isTouch ? 1 : 0;
 

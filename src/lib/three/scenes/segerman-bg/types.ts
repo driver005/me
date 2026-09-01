@@ -6,6 +6,8 @@ export interface SceneUniforms {
 	uDpr: { value: number };
 	uMode: { value: number };
 	uIsTouch: { value: number };
+	uCurveX: { value: number };
+	uCurveZ: { value: number };
 }
 
 export interface PointerState {
