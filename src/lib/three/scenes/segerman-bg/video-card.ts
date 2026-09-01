@@ -46,7 +46,13 @@ export class VideoCard {
 				uPlaneSizes: { value: new THREE.Vector2(options.width, options.height) },
 				uOffsetY: { value: 1 },
 				uBackMode: { value: 0 },
-				uLoad: { value: 1 }
+				uLoad: { value: 1 },
+				uMode: scene.uniforms.uMode,
+				uCurveX: scene.uniforms.uCurveX,
+				uCurveZ: scene.uniforms.uCurveZ,
+				uSpeed: { value: 0 },
+				uHover: { value: 0 },
+				uProgress: { value: 1 }
 			},
 			vertexShader: cardVertex,
 			fragmentShader: videoFragment,
