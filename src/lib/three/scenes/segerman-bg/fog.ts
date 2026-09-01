@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Layer } from './layer';
 import type { Scene } from './scene';
+import type { FluidSim } from './fluid';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import fogFragment from '$lib/shaders/segerman-bg/fog/fragment.glsl';
 // @ts-ignore
@@ -11,6 +12,7 @@ export class Fog extends Layer {
 	private mesh: THREE.Mesh;
 	private material: THREE.ShaderMaterial;
 	private scene: Scene;
+	private fluidSim: FluidSim | null = null;
 
 	constructor(scene: Scene, noiseTexture: THREE.Texture) {
 		super(scene.isTouch);
@@ -47,9 +49,14 @@ export class Fog extends Layer {
 		this.mesh.frustumCulled = false;
 	}
 
-	/** Called by the Fluid layer's owner once fluid exists (Task 6) so fog can distort around the pointer trail. */
-	setFluidTexture(texture: THREE.Texture): void {
-		this.material.uniforms.tFluid.value = texture;
+	/**
+	 * Called by the Fluid layer's owner once fluid exists (Task 6) so fog can distort around the pointer trail.
+	 * Stores the FluidSim instance rather than a texture: FluidSim's render targets ping-pong every frame
+	 * (RTPair.swap() swaps object references, not buffer contents), so a texture captured once here would go
+	 * stale as soon as the sim swaps. render() re-reads fluidSim.texture fresh every frame instead (Task 9 fix).
+	 */
+	setFluidSim(fluidSim: FluidSim): void {
+		this.fluidSim = fluidSim;
 	}
 
 	get texture(): THREE.Texture {
@@ -57,6 +64,9 @@ export class Fog extends Layer {
 	}
 
 	render(): void {
+		if (this.fluidSim) {
+			this.material.uniforms.tFluid.value = this.fluidSim.texture;
+		}
 		this.scene.renderer.setRenderTarget(this.renderTarget);
 		this.scene.renderer.render(this.mesh, this.scene.camera);
 	}
