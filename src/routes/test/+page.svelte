@@ -60,6 +60,12 @@
 			});
 			scene.addLayer(planet);
 
+			canvasRef?.addEventListener('pointermove', (event) => {
+				const nx = (event.clientX / window.innerWidth) * 2 - 1;
+				const ny = -(event.clientY / window.innerHeight) * 2 + 1;
+				planet.setPointerNDC(nx, ny);
+			});
+
 			scene.setOutput(() => {
 				const blitMaterial = new THREE.ShaderMaterial({
 					uniforms: { tMap: { value: planet.texture } },

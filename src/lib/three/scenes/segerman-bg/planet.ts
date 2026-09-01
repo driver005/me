@@ -6,6 +6,10 @@ import { Blur } from './blur';
 import planetVertex from '$lib/shaders/segerman-bg/planet/vertex.glsl';
 // @ts-ignore
 import planetFragment from '$lib/shaders/segerman-bg/planet/fragment.glsl';
+// @ts-ignore
+import trailVertex from '$lib/shaders/segerman-bg/planet/trail-vertex.glsl';
+// @ts-ignore
+import trailFragment from '$lib/shaders/segerman-bg/planet/trail-fragment.glsl';
 
 export interface PlanetTextures {
 	map: THREE.Texture;
@@ -23,6 +27,19 @@ export class Planet extends Layer {
 	private blurRTA: THREE.WebGLRenderTarget;
 	private blurRTB: THREE.WebGLRenderTarget;
 	private blurTextureValue: THREE.Texture | null = null;
+	private raycaster = new THREE.Raycaster();
+	private pointerNDC = new THREE.Vector2();
+	private mouseWorldTarget = new THREE.Vector3();
+	private mouseUVTarget = new THREE.Vector2();
+	private mouseHoverTarget = 0;
+	private mouseHover = 0;
+	private crackMode = 0;
+	private trailRTA: THREE.WebGLRenderTarget;
+	private trailRTB: THREE.WebGLRenderTarget;
+	private trailMaterial: THREE.ShaderMaterial;
+	private trailMesh: THREE.Mesh;
+	private trailScene = new THREE.Scene();
+	private trailCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
 	constructor(scene: Scene, textures: PlanetTextures) {
 		super(scene.isTouch);
@@ -80,6 +97,23 @@ export class Planet extends Layer {
 		this.mesh = new THREE.Mesh(geometry, this.material);
 		this.mesh.position.set(62, -26, -10);
 		this.innerScene.add(this.mesh);
+
+		this.trailRTA = new THREE.WebGLRenderTarget(512, 256, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RedFormat, type: THREE.HalfFloatType });
+		this.trailRTB = this.trailRTA.clone();
+		this.trailMaterial = new THREE.ShaderMaterial({
+			uniforms: {
+				tTrail: { value: null },
+				uRes: { value: new THREE.Vector2(512, 256) },
+				uMouseUV: { value: new THREE.Vector2(0.5, 0.5) },
+				uDecay: { value: 0.995 },
+				uStampRadius: { value: 0.06 },
+				uActive: { value: 0 }
+			},
+			vertexShader: trailVertex,
+			fragmentShader: trailFragment
+		});
+		this.trailMesh = new THREE.Mesh(scene.fullScreenTriangle, this.trailMaterial);
+		this.trailScene.add(this.trailMesh);
 	}
 
 	get texture(): THREE.Texture {
@@ -95,9 +129,40 @@ export class Planet extends Layer {
 		return this.material.uniforms;
 	}
 
+	setPointerNDC(nx: number, ny: number): void {
+		this.pointerNDC.set(nx, ny);
+		this.raycaster.setFromCamera(this.pointerNDC, this.scene.camera);
+		const hits = this.raycaster.intersectObject(this.mesh);
+		if (hits.length > 0 && hits[0].uv) {
+			this.mouseWorldTarget.copy(hits[0].point);
+			this.mouseUVTarget.copy(hits[0].uv);
+			this.mouseHoverTarget = 1;
+		} else {
+			this.mouseHoverTarget = 0;
+		}
+	}
+
 	render(): void {
 		this.material.uniforms.uTerrainTime.value += (1 / 60) * 0.1;
 		this.mesh.rotation.y += 0.0008;
+
+		this.crackMode += (1 - this.crackMode) * 0.03;
+		this.mouseHover += (this.mouseHoverTarget - this.mouseHover) * 0.04;
+		if (this.mouseHoverTarget === 1) {
+			this.material.uniforms.uMouseWorld.value.lerp(this.mouseWorldTarget, 0.06);
+		}
+		this.material.uniforms.uMouseStrength.value = this.mouseHover * this.crackMode * 0.9;
+		this.material.uniforms.uCrackActive.value = this.crackMode;
+
+		if (this.crackMode > 0.001) {
+			this.trailMaterial.uniforms.tTrail.value = this.trailRTA.texture;
+			this.trailMaterial.uniforms.uActive.value = this.mouseHoverTarget * this.crackMode;
+			this.trailMaterial.uniforms.uMouseUV.value.copy(this.mouseUVTarget);
+			this.scene.renderer.setRenderTarget(this.trailRTB);
+			this.scene.renderer.render(this.trailScene, this.trailCamera);
+			[this.trailRTA, this.trailRTB] = [this.trailRTB, this.trailRTA];
+			this.material.uniforms.uTrailMap.value = this.trailRTA.texture;
+		}
 
 		this.scene.renderer.setRenderTarget(this.renderTarget);
 		this.scene.renderer.render(this.innerScene, this.scene.camera);
@@ -113,5 +178,8 @@ export class Planet extends Layer {
 		this.mesh.geometry.dispose();
 		this.material.dispose();
 		this.blur.dispose();
+		this.trailRTA.dispose();
+		this.trailRTB.dispose();
+		this.trailMaterial.dispose();
 	}
 }
