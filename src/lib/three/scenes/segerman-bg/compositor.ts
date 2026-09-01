@@ -88,7 +88,7 @@ export class Compositor {
 		this.backMesh.frustumCulled = false;
 
 		this.outputMaterial = new THREE.ShaderMaterial({
-			uniforms: { tBack: { value: this.backRT.texture } },
+			uniforms: { tBack: { value: this.backRT.texture }, tFluid: { value: layers.fluid.texture } },
 			vertexShader: fullscreenVertex,
 			fragmentShader: outputFragment
 		});
@@ -100,6 +100,7 @@ export class Compositor {
 	render(): void {
 		const renderer = this.scene.renderer;
 		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
+		this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		renderer.setRenderTarget(this.backRT);
 		renderer.render(this.backMesh, this.scene.camera);
 
