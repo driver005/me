@@ -7,6 +7,7 @@
 	import { Stars } from '$lib/three/scenes/segerman-bg/stars';
 	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
 	import { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
+	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -51,9 +52,17 @@
 				}
 			});
 
+			const textureLoader = new THREE.TextureLoader();
+			const planet = new Planet(scene, {
+				map: textureLoader.load('/textures/segerman-bg/planet.webp'),
+				cracked: textureLoader.load('/textures/segerman-bg/cracked.webp'),
+				crackedNormal: textureLoader.load('/textures/segerman-bg/cracked-normal.webp')
+			});
+			scene.addLayer(planet);
+
 			scene.setOutput(() => {
 				const blitMaterial = new THREE.ShaderMaterial({
-					uniforms: { tMap: { value: fluid.texture } },
+					uniforms: { tMap: { value: planet.texture } },
 					vertexShader:
 						'varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position,1.0);}',
 					fragmentShader:

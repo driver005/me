@@ -15,6 +15,7 @@ export class Scene {
 
 	isTouch: boolean;
 	isLowDpr: boolean;
+	isMobile: boolean;
 	dpr: number;
 
 	private layers: Layer[] = [];
@@ -29,6 +30,7 @@ export class Scene {
 		this.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
 		this.dpr = Math.min(window.devicePixelRatio, 2);
 		this.isLowDpr = window.devicePixelRatio <= 1.5;
+		this.isMobile = window.matchMedia('(max-width: 767px)').matches;
 
 		this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, powerPreference: 'high-performance' });
 		this.renderer.autoClear = false;
