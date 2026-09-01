@@ -8,6 +8,7 @@
 	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
 	import { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
 	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
+	import { Front } from '$lib/three/scenes/segerman-bg/front';
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
@@ -17,6 +18,7 @@
 	let fog: Fog | null = null;
 	let fluid: FluidSim | null = null;
 	let planet: Planet | null = null;
+	let front: Front | null = null;
 	let compositor: Compositor | null = null;
 	let noiseTexture: THREE.Texture | null = null;
 	let planetMapTexture: THREE.Texture | null = null;
@@ -48,11 +50,13 @@
 				cracked: crackedTexture,
 				crackedNormal: crackedNormalTexture
 			});
+			front = new Front(scene);
 
 			scene.addLayer(stars);
 			scene.addLayer(fog);
 			scene.addLayer(fluid);
 			scene.addLayer(planet);
+			scene.addLayer(front);
 
 			fog.setFluidSim(fluid);
 			fluid.setAspect(window.innerWidth / window.innerHeight);
@@ -78,7 +82,7 @@
 				planet?.setPointerNDC(nx, ny);
 			});
 
-			compositor = new Compositor(scene, { stars, fog, fluid, planet });
+			compositor = new Compositor(scene, { stars, fog, fluid, planet, front });
 			scene.setOutput(() => compositor?.render());
 
 			scene.start();
@@ -101,6 +105,7 @@
 		fog = null;
 		fluid = null;
 		planet = null;
+		front = null;
 		compositor = null;
 		noiseTexture = null;
 		planetMapTexture = null;
