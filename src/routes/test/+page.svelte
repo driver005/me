@@ -18,6 +18,11 @@
 	let fluid: FluidSim | null = null;
 	let planet: Planet | null = null;
 	let compositor: Compositor | null = null;
+	let noiseTexture: THREE.Texture | null = null;
+	let planetMapTexture: THREE.Texture | null = null;
+	let crackedTexture: THREE.Texture | null = null;
+	let crackedNormalTexture: THREE.Texture | null = null;
+	let handleFluidResize: (() => void) | null = null;
 
 	onMount(() => {
 		const testCanvas = document.createElement('canvas');
@@ -29,16 +34,19 @@
 		if (canvasRef) {
 			scene = new Scene(canvasRef);
 
-			const noiseTexture = new THREE.TextureLoader().load('/textures/segerman-bg/noise.png');
 			const textureLoader = new THREE.TextureLoader();
+			noiseTexture = textureLoader.load('/textures/segerman-bg/noise.png');
+			planetMapTexture = textureLoader.load('/textures/segerman-bg/planet.webp');
+			crackedTexture = textureLoader.load('/textures/segerman-bg/cracked.webp');
+			crackedNormalTexture = textureLoader.load('/textures/segerman-bg/cracked-normal.webp');
 
 			stars = new Stars(scene);
 			fog = new Fog(scene, noiseTexture);
 			fluid = new FluidSim(scene);
 			planet = new Planet(scene, {
-				map: textureLoader.load('/textures/segerman-bg/planet.webp'),
-				cracked: textureLoader.load('/textures/segerman-bg/cracked.webp'),
-				crackedNormal: textureLoader.load('/textures/segerman-bg/cracked-normal.webp')
+				map: planetMapTexture,
+				cracked: crackedTexture,
+				crackedNormal: crackedNormalTexture
 			});
 
 			scene.addLayer(stars);
@@ -48,7 +56,8 @@
 
 			fog.setFluidSim(fluid);
 			fluid.setAspect(window.innerWidth / window.innerHeight);
-			window.addEventListener('resize', () => fluid?.setAspect(window.innerWidth / window.innerHeight));
+			handleFluidResize = () => fluid?.setAspect(window.innerWidth / window.innerHeight);
+			window.addEventListener('resize', handleFluidResize);
 
 			canvasRef.addEventListener('pointermove', () => {
 				if (!scene || !fluid) return;
@@ -77,14 +86,26 @@
 	});
 
 	onDestroy(() => {
+		if (handleFluidResize) {
+			window.removeEventListener('resize', handleFluidResize);
+			handleFluidResize = null;
+		}
 		compositor?.dispose();
 		scene?.dispose();
+		noiseTexture?.dispose();
+		planetMapTexture?.dispose();
+		crackedTexture?.dispose();
+		crackedNormalTexture?.dispose();
 		scene = null;
 		stars = null;
 		fog = null;
 		fluid = null;
 		planet = null;
 		compositor = null;
+		noiseTexture = null;
+		planetMapTexture = null;
+		crackedTexture = null;
+		crackedNormalTexture = null;
 	});
 </script>
 
