@@ -6,6 +6,7 @@
 	import { Scene } from '$lib/three/scenes/segerman-bg/scene';
 	import { Stars } from '$lib/three/scenes/segerman-bg/stars';
 	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
+	import { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -31,9 +32,28 @@
 			const noiseTexture = new THREE.TextureLoader().load('/textures/segerman-bg/noise.png');
 			const fog = new Fog(scene, noiseTexture);
 			scene.addLayer(fog);
+
+			const fluid = new FluidSim(scene);
+			scene.addLayer(fluid);
+			fog.setFluidTexture(fluid.texture);
+			fluid.setAspect(window.innerWidth / window.innerHeight);
+			window.addEventListener('resize', () => fluid.setAspect(window.innerWidth / window.innerHeight));
+
+			canvasRef?.addEventListener('pointermove', () => {
+				fluid.updateRadiusFromSpeed(scene!.pointer.speed);
+				if (Math.abs(scene!.pointer.dx) > 0.2 || Math.abs(scene!.pointer.dy) > 0.2) {
+					fluid.pushSplat(
+						scene!.pointer.x / window.innerWidth,
+						1 - scene!.pointer.y / window.innerHeight,
+						scene!.pointer.dx * 5,
+						scene!.pointer.dy * -5
+					);
+				}
+			});
+
 			scene.setOutput(() => {
 				const blitMaterial = new THREE.ShaderMaterial({
-					uniforms: { tMap: { value: fog.texture } },
+					uniforms: { tMap: { value: fluid.texture } },
 					vertexShader:
 						'varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position,1.0);}',
 					fragmentShader:
