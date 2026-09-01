@@ -60,7 +60,7 @@ Each `.glsl` file is a straight copy of the corresponding template-string body a
 4. `compositor.ts`'s output pass draws a fullscreen triangle sampling the composited RT to the actual canvas (`setRenderTarget(null)`).
 5. Shared uniforms (`uTime`, `uRes`, `uDpr`, `uMode`) live on `scene.ts` and are handed by reference to every layer's material uniforms, same as original's `e.W.uniforms` singleton pattern — avoids per-frame uniform copying.
 
-`uMode` in the original toggles between "front" (DOM/2D-ish) and "back" (3D/immersive) states via a page-transition button; phase 1 has no such toggle, so `uMode` is a fixed constant (`1`, "back" mode — the immersive state that shows the full 3D scene) rather than an animatable value. Wire it as a real uniform (not inlined) so phase 2's toggle can drive it later without touching this code.
+`uMode` in the original toggles between "front" (DOM/2D-ish, `uMode=1`) and "back" (3D/immersive, `uMode=0`) states via a page-transition button; phase 1 has no such toggle, so `uMode` is a fixed constant (`0` — the immersive state that shows the full 3D scene) rather than an animatable value. Wire it as a real uniform (not inlined) so phase 2's toggle can drive it later without touching this code.
 
 ---
 
