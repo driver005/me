@@ -48,6 +48,7 @@ export class Gallery {
 	private _v = new THREE.Vector3();
 	private _hitV = new THREE.Vector3();
 	private _camMV = new THREE.Matrix4();
+	private entranceTimelines: gsap.core.Timeline[] = [];
 
 	constructor(scene: Scene, projects: ProjectDef[]) {
 		this.scene = scene;
@@ -140,7 +141,8 @@ export class Gallery {
 			const planeDist = Math.abs(this._camMV.elements[13]);
 			const curved = planeDist * planeDist;
 			const curveXOffset = curved * curveX * frontness;
-			const curveZBase = crtStrength * 2 * frontness - curved * curveZ * frontness;
+			const curveZCentre = -curved * curveZ * frontness;
+			const curveZBase = crtStrength * 2 * frontness + curveZCentre;
 
 			let minX = Infinity;
 			let maxX = -Infinity;
@@ -164,7 +166,7 @@ export class Gallery {
 			}
 
 			if (mouseNX >= minX && mouseNX <= maxX && mouseNY >= minY && mouseNY <= maxY) {
-				this._hitV.set(curveXOffset, 0, curveZBase).applyMatrix4(mesh.matrixWorld).project(camera);
+				this._hitV.set(curveXOffset, 0, curveZCentre).applyMatrix4(mesh.matrixWorld).project(camera);
 				if (this._hitV.x < -1.2 || this._hitV.x > 1.2 || this._hitV.y < -1.2 || this._hitV.y > 1.2 || this._hitV.z >= 1) continue;
 				if (this._hitV.z < closestZ) {
 					closestZ = this._hitV.z;
@@ -190,12 +192,15 @@ export class Gallery {
 			const card = this.cards[i];
 			card.material.uniforms.uProgress.value = 0;
 			card.material.uniforms.uWarp.value = 0;
-			card.mesh.scale.multiplyScalar(0.001);
-			gsap
+			const targetX = card.mesh.scale.x;
+			const targetY = card.mesh.scale.y;
+			card.mesh.scale.set(targetX * 0.001, targetY * 0.001, 1);
+			const timeline = gsap
 				.timeline({ delay: i * 0.1 })
-				.to(card.mesh.scale, { x: card.mesh.scale.x * 1000, y: card.mesh.scale.y * 1000, duration: 1.2, ease: 'expo.out' }, 0)
+				.to(card.mesh.scale, { x: targetX, y: targetY, duration: 1.2, ease: 'expo.out', overwrite: 'auto' }, 0)
 				.to(card.material.uniforms.uProgress, { value: 1, duration: 1.6, ease: 'power2.out' }, 0)
 				.to(card.material.uniforms.uWarp, { value: 1, duration: 1.4 }, 0.2);
+			this.entranceTimelines.push(timeline);
 		}
 	}
 
@@ -222,6 +227,8 @@ export class Gallery {
 
 	dispose(): void {
 		this.detachScrollListener();
+		for (const timeline of this.entranceTimelines) timeline.kill();
+		this.entranceTimelines = [];
 		for (const card of this.cards) card.dispose();
 		for (const videoCard of this.videoCards) videoCard.dispose();
 	}

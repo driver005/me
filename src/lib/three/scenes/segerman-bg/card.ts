@@ -72,7 +72,11 @@ export class Card {
 		this.hoverTween?.kill();
 		this.hoverTween = gsap
 			.timeline()
-			.to(this.mesh.scale, { x: this.baseScale.x * 1.08, y: this.baseScale.y * 1.08, duration: 0.8, ease: 'power3.out' }, 0)
+			.to(
+				this.mesh.scale,
+				{ x: this.baseScale.x * 1.08, y: this.baseScale.y * 1.08, duration: 0.8, ease: 'power3.out', overwrite: 'auto' },
+				0
+			)
 			.to(this.material.uniforms.uHover, { value: 1, duration: 3, ease: 'expo.out' }, 0);
 	}
 
@@ -80,7 +84,11 @@ export class Card {
 		this.hoverTween?.kill();
 		this.hoverTween = gsap
 			.timeline()
-			.to(this.mesh.scale, { x: this.baseScale.x, y: this.baseScale.y, duration: 0.8, ease: 'power3.out' }, 0)
+			.to(
+				this.mesh.scale,
+				{ x: this.baseScale.x, y: this.baseScale.y, duration: 0.8, ease: 'power3.out', overwrite: 'auto' },
+				0
+			)
 			.to(this.material.uniforms.uHover, { value: 0, duration: 1, ease: 'expo.out' }, 0);
 	}
 
