@@ -27,9 +27,11 @@ export class Compositor {
 	private outputMaterial: THREE.ShaderMaterial;
 	private outputMesh: THREE.Mesh;
 	private placeholder = createPlaceholderTexture();
+	private fluidSim: FluidSim;
 
 	constructor(scene: Scene, layers: CompositorLayers) {
 		this.scene = scene;
+		this.fluidSim = layers.fluid;
 		this.backRT = scene.createRenderTarget(scene.isMobile ? scene.dpr : Math.min(scene.dpr, 1.5));
 
 		this.backMaterial = new THREE.ShaderMaterial({
@@ -97,6 +99,7 @@ export class Compositor {
 	/** Always renders every frame in phase 1 — the scene is permanently in "back"/3D mode (uMode=0), which is the original's always-render branch (see spec Section 3). */
 	render(): void {
 		const renderer = this.scene.renderer;
+		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		renderer.setRenderTarget(this.backRT);
 		renderer.render(this.backMesh, this.scene.camera);
 

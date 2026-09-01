@@ -165,6 +165,7 @@ export class Planet extends Layer {
 		}
 
 		this.scene.renderer.setRenderTarget(this.renderTarget);
+		this.scene.renderer.clear();
 		this.scene.renderer.render(this.innerScene, this.scene.camera);
 
 		this.blurTextureValue = this.blur.apply(this.renderTarget.texture, this.blurRTA, this.blurRTB, 1);
