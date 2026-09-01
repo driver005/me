@@ -107,5 +107,6 @@ export class Compositor {
 	dispose(): void {
 		this.backMaterial.dispose();
 		this.outputMaterial.dispose();
+		this.placeholder.dispose();
 	}
 }
