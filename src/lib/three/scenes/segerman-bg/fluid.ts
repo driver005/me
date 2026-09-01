@@ -127,6 +127,10 @@ export class FluidSim extends Layer {
 		this.update(1 / 60);
 	}
 
+	loop(): void {
+		this.render();
+	}
+
 	update(dtSeconds: number): void {
 		const renderer = this.scene.renderer;
 		const prevTarget = renderer.getRenderTarget();

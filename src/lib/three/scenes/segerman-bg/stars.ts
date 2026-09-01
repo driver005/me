@@ -46,6 +46,10 @@ export class Stars extends Layer {
 		this.scene.renderer.render(this.mesh, this.scene.camera);
 	}
 
+	loop(): void {
+		this.render();
+	}
+
 	dispose(): void {
 		this.material.dispose();
 	}
