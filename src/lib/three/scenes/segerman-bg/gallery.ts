@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 import type { Scene } from './scene';
 import { Card } from './card';
 import { VideoCard } from './video-card';
@@ -42,6 +43,11 @@ export class Gallery {
 	scrollPosition = 0;
 	private mouseOffset = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 	private mouseTarget = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
+
+	private hoveredIndex: number | null = null;
+	private _v = new THREE.Vector3();
+	private _hitV = new THREE.Vector3();
+	private _camMV = new THREE.Matrix4();
 
 	constructor(scene: Scene, projects: ProjectDef[]) {
 		this.scene = scene;
@@ -110,13 +116,112 @@ export class Gallery {
 		this.groupPivot.rotation.y = this.mouseOffset.rotY * frontness;
 	}
 
-	/** Called once per frame by Images/Video layers before rendering — Task 5 adds handleHover() to this same method. */
-	update(): void {
+	handleHover(mouseNX: number, mouseNY: number): void {
+		this.groupPivot.updateMatrixWorld(true);
+		const camera = this.scene.camera;
+		const uMode = this.scene.uniforms.uMode.value;
+		const curveX = this.scene.uniforms.uCurveX.value;
+		const curveZ = this.scene.uniforms.uCurveZ.value;
+		const frontness = Math.abs(1 - uMode);
+		const crtStrength = -1.85;
+
+		let closestIndex: number | null = null;
+		let closestZ = Infinity;
+
+		for (let i = 0; i < this.cards.length; i++) {
+			const mesh = this.cards[i].mesh;
+			if (!mesh.visible) continue;
+
+			const geometry = mesh.geometry;
+			geometry.computeBoundingBox();
+			const box = geometry.boundingBox!;
+
+			this._camMV.multiplyMatrices(camera.matrixWorldInverse, mesh.matrixWorld);
+			const planeDist = Math.abs(this._camMV.elements[13]);
+			const curved = planeDist * planeDist;
+			const curveXOffset = curved * curveX * frontness;
+			const curveZBase = crtStrength * 2 * frontness - curved * curveZ * frontness;
+
+			let minX = Infinity;
+			let maxX = -Infinity;
+			let minY = Infinity;
+			let maxY = -Infinity;
+
+			const corners: [number, number][] = [
+				[box.min.x, box.min.y],
+				[box.max.x, box.min.y],
+				[box.min.x, box.max.y],
+				[box.max.x, box.max.y]
+			];
+			for (const [cx, cy] of corners) {
+				this._v.set(cx + curveXOffset, cy, curveZBase);
+				this._v.applyMatrix4(mesh.matrixWorld);
+				this._v.project(camera);
+				if (this._v.x < minX) minX = this._v.x;
+				if (this._v.x > maxX) maxX = this._v.x;
+				if (this._v.y < minY) minY = this._v.y;
+				if (this._v.y > maxY) maxY = this._v.y;
+			}
+
+			if (mouseNX >= minX && mouseNX <= maxX && mouseNY >= minY && mouseNY <= maxY) {
+				this._hitV.set(curveXOffset, 0, curveZBase).applyMatrix4(mesh.matrixWorld).project(camera);
+				if (this._hitV.x < -1.2 || this._hitV.x > 1.2 || this._hitV.y < -1.2 || this._hitV.y > 1.2 || this._hitV.z >= 1) continue;
+				if (this._hitV.z < closestZ) {
+					closestZ = this._hitV.z;
+					closestIndex = i;
+				}
+			}
+		}
+
+		if (closestIndex === this.hoveredIndex) return;
+		if (this.hoveredIndex !== null) {
+			this.cards[this.hoveredIndex].setInactive();
+			this.videoCards[this.hoveredIndex].setOffsetOut();
+		}
+		this.hoveredIndex = closestIndex;
+		if (this.hoveredIndex !== null) {
+			this.cards[this.hoveredIndex].setActive();
+			this.videoCards[this.hoveredIndex].setOffsetIn();
+		}
+	}
+
+	playEntrance(): void {
+		for (let i = 0; i < this.cards.length; i++) {
+			const card = this.cards[i];
+			card.material.uniforms.uProgress.value = 0;
+			card.material.uniforms.uWarp.value = 0;
+			card.mesh.scale.multiplyScalar(0.001);
+			gsap
+				.timeline({ delay: i * 0.1 })
+				.to(card.mesh.scale, { x: card.mesh.scale.x * 1000, y: card.mesh.scale.y * 1000, duration: 1.2, ease: 'expo.out' }, 0)
+				.to(card.material.uniforms.uProgress, { value: 1, duration: 1.6, ease: 'power2.out' }, 0)
+				.to(card.material.uniforms.uWarp, { value: 1, duration: 1.4 }, 0.2);
+		}
+	}
+
+	private onWheel = (event: WheelEvent): void => {
+		this.scrollPosition += event.deltaY * 0.05;
+	};
+
+	/** TEMPORARY substitute for Lenis-driven scroll (not built yet). A future phase replaces this
+	 *  entire method with real smooth-scroll input — do not extend this, replace it wholesale. */
+	attachScrollListener(): void {
+		window.addEventListener('wheel', this.onWheel, { passive: true });
+	}
+
+	detachScrollListener(): void {
+		window.removeEventListener('wheel', this.onWheel);
+	}
+
+	/** Called once per frame by Images/Video layers before rendering. */
+	update(mouseNX: number, mouseNY: number): void {
 		this.updateItems();
 		this.updateGroup();
+		this.handleHover(mouseNX, mouseNY);
 	}
 
 	dispose(): void {
+		this.detachScrollListener();
 		for (const card of this.cards) card.dispose();
 		for (const videoCard of this.videoCards) videoCard.dispose();
 	}
