@@ -44,6 +44,7 @@ export class Images extends Layer {
 	}
 
 	render(): void {
+		this.gallery.update(this.scene.pointer.nx, this.scene.pointer.ny);
 		const renderer = this.scene.renderer;
 
 		// Back pass (uImageMode=0): direct color, bloom-composited — feeds the immersive back compositor.

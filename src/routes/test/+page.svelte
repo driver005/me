@@ -10,6 +10,9 @@
 	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
 	import { Front } from '$lib/three/scenes/segerman-bg/front';
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
+	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
+	import { Images } from '$lib/three/scenes/segerman-bg/images';
+	import { Video } from '$lib/three/scenes/segerman-bg/video';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -20,6 +23,9 @@
 	let planet: Planet | null = null;
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
+	let gallery: Gallery | null = null;
+	let images: Images | null = null;
+	let video: Video | null = null;
 	let noiseTexture: THREE.Texture | null = null;
 	let planetMapTexture: THREE.Texture | null = null;
 	let crackedTexture: THREE.Texture | null = null;
@@ -50,7 +56,22 @@
 				cracked: crackedTexture,
 				crackedNormal: crackedNormalTexture
 			});
-			front = new Front(scene);
+
+			const projects = ['estrela', 'payjustnow', 'vineyard', 'yucca', 'zulik'].map((slug) => ({
+				slug,
+				textureUrl: `/textures/segerman-bg/work/${slug}.webp`,
+				videoUrl: `/videos/segerman-bg/work/${slug}.mp4`
+			}));
+			gallery = new Gallery(scene, projects);
+			gallery.playEntrance();
+			gallery.attachScrollListener();
+
+			images = new Images(scene, gallery);
+			scene.addLayer(images);
+			video = new Video(scene, gallery);
+			scene.addLayer(video);
+
+			front = new Front(scene, images, video);
 
 			scene.addLayer(stars);
 			scene.addLayer(fog);
@@ -80,9 +101,10 @@
 				const nx = (event.clientX / window.innerWidth) * 2 - 1;
 				const ny = -(event.clientY / window.innerHeight) * 2 + 1;
 				planet?.setPointerNDC(nx, ny);
+				gallery?.setMouseTarget(nx, ny);
 			});
 
-			compositor = new Compositor(scene, { stars, fog, fluid, planet, front });
+			compositor = new Compositor(scene, { stars, fog, fluid, planet, front, images, video });
 			scene.setOutput(() => compositor?.render());
 
 			scene.start();
@@ -95,6 +117,7 @@
 			handleFluidResize = null;
 		}
 		compositor?.dispose();
+		gallery?.dispose();
 		scene?.dispose();
 		noiseTexture?.dispose();
 		planetMapTexture?.dispose();
@@ -107,6 +130,9 @@
 		planet = null;
 		front = null;
 		compositor = null;
+		gallery = null;
+		images = null;
+		video = null;
 		noiseTexture = null;
 		planetMapTexture = null;
 		crackedTexture = null;

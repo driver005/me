@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { Layer } from './layer';
 import type { Scene } from './scene';
+import type { Images } from './images';
+import type { Video } from './video';
 import { createPlaceholderTexture } from './placeholder-textures';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import frontFragment from '$lib/shaders/segerman-bg/front/fragment.glsl';
@@ -13,20 +15,24 @@ export class Front extends Layer {
 	private material: THREE.ShaderMaterial;
 	private scene: Scene;
 	private placeholder = createPlaceholderTexture();
+	private imagesLayer: Images;
+	private videoLayer: Video;
 
-	constructor(scene: Scene) {
+	constructor(scene: Scene, images: Images, video: Video) {
 		super(scene.isTouch);
 		this.scene = scene;
+		this.imagesLayer = images;
+		this.videoLayer = video;
 		this.renderTarget = scene.createRenderTarget(scene.dpr);
 
 		this.material = new THREE.ShaderMaterial({
 			uniforms: {
-				// tTitles/tTexts/tImagesFront/tVideo are deliberate placeholders — real content lands in a future
+				// tTitles/tTexts are deliberate placeholders — real content lands in a future
 				// gallery-content phase, not this one.
 				tTitles: { value: this.placeholder },
 				tTexts: { value: this.placeholder },
-				tImagesFront: { value: this.placeholder },
-				tVideo: { value: this.placeholder },
+				tImagesFront: { value: images.frontTexture },
+				tVideo: { value: video.texture },
 				uTime: scene.uniforms.uTime,
 				uRes: scene.uniforms.uRes,
 				uTextColor: { value: new THREE.Color('#00031f').convertLinearToSRGB() },
@@ -51,6 +57,8 @@ export class Front extends Layer {
 	}
 
 	render(): void {
+		this.material.uniforms.tImagesFront.value = this.imagesLayer.frontTexture;
+		this.material.uniforms.tVideo.value = this.videoLayer.texture;
 		this.scene.renderer.setRenderTarget(this.renderTarget);
 		this.scene.renderer.render(this.mesh, this.scene.camera);
 	}

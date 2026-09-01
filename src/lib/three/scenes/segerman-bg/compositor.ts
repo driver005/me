@@ -5,6 +5,8 @@ import type { Fog } from './fog';
 import type { FluidSim } from './fluid';
 import type { Planet } from './planet';
 import type { Front } from './front';
+import type { Images } from './images';
+import type { Video } from './video';
 import { createPlaceholderTexture } from './placeholder-textures';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import backFragment from '$lib/shaders/segerman-bg/compositor/back-fragment.glsl';
@@ -19,6 +21,8 @@ export interface CompositorLayers {
 	fluid: FluidSim;
 	planet: Planet;
 	front: Front;
+	images: Images;
+	video: Video;
 }
 
 export class Compositor {
@@ -32,12 +36,16 @@ export class Compositor {
 	private fluidSim: FluidSim;
 	private frontLayer: Front;
 	private planetLayer: Planet;
+	private imagesLayer: Images;
+	private videoLayer: Video;
 
 	constructor(scene: Scene, layers: CompositorLayers) {
 		this.scene = scene;
 		this.fluidSim = layers.fluid;
 		this.frontLayer = layers.front;
 		this.planetLayer = layers.planet;
+		this.imagesLayer = layers.images;
+		this.videoLayer = layers.video;
 		this.backRT = scene.createRenderTarget(scene.isMobile ? scene.dpr : Math.min(scene.dpr, 1.5));
 
 		this.backMaterial = new THREE.ShaderMaterial({
@@ -51,9 +59,9 @@ export class Compositor {
 				tTexts: { value: this.placeholder },
 				tTitlesSoft: { value: this.placeholder },
 				tTitlesBlur: { value: this.placeholder },
-				tImagesBack: { value: this.placeholder },
-				tImagesBackBloom: { value: this.placeholder },
-				tVideo: { value: this.placeholder },
+				tImagesBack: { value: layers.images.backTexture },
+				tImagesBackBloom: { value: layers.images.backBloomTexture },
+				tVideo: { value: layers.video.texture },
 				uTime: scene.uniforms.uTime,
 				uRes: scene.uniforms.uRes,
 				uDpr: scene.uniforms.uDpr,
@@ -112,6 +120,9 @@ export class Compositor {
 		const renderer = this.scene.renderer;
 		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		this.backMaterial.uniforms.tPlanetBlur.value = this.planetLayer.blurTexture;
+		this.backMaterial.uniforms.tImagesBack.value = this.imagesLayer.backTexture;
+		this.backMaterial.uniforms.tImagesBackBloom.value = this.imagesLayer.backBloomTexture;
+		this.backMaterial.uniforms.tVideo.value = this.videoLayer.texture;
 		this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		// tFront's texture identity is actually stable frame-to-frame (unlike tFluid's ping-pong swap) — this
 		// live-read isn't strictly required today, but it mirrors the original site's own per-frame assignment
