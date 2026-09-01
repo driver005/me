@@ -21,6 +21,8 @@ export class Front extends Layer {
 
 		this.material = new THREE.ShaderMaterial({
 			uniforms: {
+				// tTitles/tTexts/tImagesFront/tVideo are deliberate placeholders — real content lands in a future
+				// gallery-content phase, not this one.
 				tTitles: { value: this.placeholder },
 				tTexts: { value: this.placeholder },
 				tImagesFront: { value: this.placeholder },
@@ -29,6 +31,8 @@ export class Front extends Layer {
 				uRes: scene.uniforms.uRes,
 				uTextColor: { value: new THREE.Color('#00031f').convertLinearToSRGB() },
 				uLabelColor: { value: new THREE.Color('#93949f').convertLinearToSRGB() },
+				// Settled post-intro-loader value; the original site animates this from 0 during its loader,
+				// which this port doesn't have yet.
 				uBgOffset: { value: 1 }
 			},
 			vertexShader: fullscreenVertex,

@@ -31,11 +31,13 @@ export class Compositor {
 	private placeholder = createPlaceholderTexture();
 	private fluidSim: FluidSim;
 	private frontLayer: Front;
+	private planetLayer: Planet;
 
 	constructor(scene: Scene, layers: CompositorLayers) {
 		this.scene = scene;
 		this.fluidSim = layers.fluid;
 		this.frontLayer = layers.front;
+		this.planetLayer = layers.planet;
 		this.backRT = scene.createRenderTarget(scene.isMobile ? scene.dpr : Math.min(scene.dpr, 1.5));
 
 		this.backMaterial = new THREE.ShaderMaterial({
@@ -96,7 +98,6 @@ export class Compositor {
 				tBack: { value: this.backRT.texture },
 				tFront: { value: layers.front.texture },
 				tFluid: { value: layers.fluid.texture },
-				uRes: scene.uniforms.uRes,
 				uTime: scene.uniforms.uTime,
 				uIsTouch: scene.uniforms.uIsTouch
 			},
@@ -110,7 +111,11 @@ export class Compositor {
 	render(): void {
 		const renderer = this.scene.renderer;
 		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
+		this.backMaterial.uniforms.tPlanetBlur.value = this.planetLayer.blurTexture;
 		this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
+		// tFront's texture identity is actually stable frame-to-frame (unlike tFluid's ping-pong swap) — this
+		// live-read isn't strictly required today, but it mirrors the original site's own per-frame assignment
+		// and costs one property write, so it's kept for fidelity and to stay correct if Front's RT strategy changes.
 		this.outputMaterial.uniforms.tFront.value = this.frontLayer.texture;
 		renderer.setRenderTarget(this.backRT);
 		renderer.render(this.backMesh, this.scene.camera);

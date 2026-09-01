@@ -67,7 +67,6 @@ float snoise(vec3 v){
 uniform sampler2D tFront;
 uniform sampler2D tBack;
 uniform sampler2D tFluid;
-uniform vec2 uRes;
 uniform float uTime;
 uniform float uIsTouch;
 
