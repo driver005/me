@@ -5,6 +5,7 @@
 	import { m } from '$lib/paraglide/messages';
 	import { Scene } from '$lib/three/scenes/segerman-bg/scene';
 	import { Stars } from '$lib/three/scenes/segerman-bg/stars';
+	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -21,13 +22,18 @@
 			scene = new Scene(canvasRef);
 			scene.start();
 
-			// TEMPORARY: direct preview of the Stars layer, independently verifiable
-			// before the real multi-layer compositor lands in Task 9.
+			// TEMPORARY: direct preview of a single layer, independently verifiable
+			// before the real multi-layer compositor lands in Task 9. Both layers
+			// render to their own RTs every frame regardless of which is blitted here.
 			const stars = new Stars(scene);
 			scene.addLayer(stars);
+
+			const noiseTexture = new THREE.TextureLoader().load('/textures/segerman-bg/noise.png');
+			const fog = new Fog(scene, noiseTexture);
+			scene.addLayer(fog);
 			scene.setOutput(() => {
 				const blitMaterial = new THREE.ShaderMaterial({
-					uniforms: { tMap: { value: stars.texture } },
+					uniforms: { tMap: { value: fog.texture } },
 					vertexShader:
 						'varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position,1.0);}',
 					fragmentShader:
