@@ -163,7 +163,7 @@
 	</div>
 {:else}
 	<canvas bind:this={canvasRef} class="fixed inset-0 h-full w-full"></canvas>
-	{#if webglReady && scene && fluid}
-		<Toggle {scene} {fluid} />
+	{#if webglReady && scene && fluid && texts}
+		<Toggle {scene} {fluid} {texts} />
 	{/if}
 {/if}
