@@ -69,6 +69,10 @@ uniform sampler2D tBack;
 uniform sampler2D tFluid;
 uniform float uTime;
 uniform float uIsTouch;
+uniform float uMode;
+uniform vec2 uRes;
+uniform vec2 uToggleCoords;
+uniform float uToggleProgress;
 
 void main() {
     vec2 uv0 = vUv;
@@ -94,6 +98,27 @@ void main() {
     float fluidMask = 1.0 - smoothstep(0.001, 0.003, intensity);
 
     vec4 final = mix(back, front, edgeFront * fluidMask);
+
+    if (uToggleProgress * uMode > 0.0) {
+        float aspect = uRes.x / uRes.y;
+        vec2 toToggle = vUv - uToggleCoords;
+        toToggle.x *= aspect;
+        float distToToggle = length(toToggle);
+
+        float blobRadius = (0.085 + n * 0.014) * uToggleProgress * uMode;
+        float toggleMask = 1.0 - smoothstep(blobRadius - 0.001, blobRadius + 0.001, distToToggle);
+
+        vec2 windowUV = uv0 + n * 0.0015 * toggleMask;
+        float windowChroma = toggleMask * 0.001 + n * .0001;
+        vec4 windowBack = vec4(
+            texture2D(tBack, windowUV + vec2(windowChroma, 0.0)).r,
+            texture2D(tBack, windowUV).g,
+            texture2D(tBack, windowUV - vec2(windowChroma, 0.0)).b,
+            1.0
+        );
+
+        final = mix(final, windowBack, toggleMask);
+    }
 
     gl_FragColor = vec4(final.rgb, 1.0);
 }

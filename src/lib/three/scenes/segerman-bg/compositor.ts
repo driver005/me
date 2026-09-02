@@ -107,7 +107,11 @@ export class Compositor {
 				tFront: { value: layers.front.texture },
 				tFluid: { value: layers.fluid.texture },
 				uTime: scene.uniforms.uTime,
-				uIsTouch: scene.uniforms.uIsTouch
+				uIsTouch: scene.uniforms.uIsTouch,
+				uMode: scene.uniforms.uMode,
+				uRes: scene.uniforms.uRes,
+				uToggleCoords: scene.uniforms.uToggleCoords,
+				uToggleProgress: scene.uniforms.uToggleProgress
 			},
 			vertexShader: fullscreenVertex,
 			fragmentShader: outputFragment
