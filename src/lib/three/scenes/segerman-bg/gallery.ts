@@ -44,6 +44,7 @@ export class Gallery {
 	cards: Card[] = [];
 	videoCards: VideoCard[] = [];
 	titles: Title[] = [];
+	projects: ProjectDef[];
 
 	private scene: Scene;
 	private group = new THREE.Group();
@@ -55,7 +56,7 @@ export class Gallery {
 	private mouseOffset = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 	private mouseTarget = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 
-	private hoveredIndex: number | null = null;
+	private _hoveredIndex: number | null = null;
 	private _v = new THREE.Vector3();
 	private _hitV = new THREE.Vector3();
 	private _camMV = new THREE.Matrix4();
@@ -63,6 +64,7 @@ export class Gallery {
 
 	constructor(scene: Scene, projects: ProjectDef[]) {
 		this.scene = scene;
+		this.projects = projects;
 		this.groupPivot.add(this.group);
 		this.imageScene.add(this.groupPivot);
 
@@ -85,6 +87,10 @@ export class Gallery {
 			this.cards[i].material.uniforms.uProgress.value = 1;
 			this.cards[i].material.uniforms.uWarp.value = 1;
 		}
+	}
+
+	get hoveredIndex(): number | null {
+		return this._hoveredIndex;
 	}
 
 	setMouseTarget(nx: number, ny: number): void {
@@ -199,15 +205,15 @@ export class Gallery {
 			}
 		}
 
-		if (closestIndex === this.hoveredIndex) return;
-		if (this.hoveredIndex !== null) {
-			this.cards[this.hoveredIndex].setInactive();
-			this.videoCards[this.hoveredIndex].setOffsetOut();
+		if (closestIndex === this._hoveredIndex) return;
+		if (this._hoveredIndex !== null) {
+			this.cards[this._hoveredIndex].setInactive();
+			this.videoCards[this._hoveredIndex].setOffsetOut();
 		}
-		this.hoveredIndex = closestIndex;
-		if (this.hoveredIndex !== null) {
-			this.cards[this.hoveredIndex].setActive();
-			this.videoCards[this.hoveredIndex].setOffsetIn();
+		this._hoveredIndex = closestIndex;
+		if (this._hoveredIndex !== null) {
+			this.cards[this._hoveredIndex].setActive();
+			this.videoCards[this._hoveredIndex].setOffsetIn();
 		}
 	}
 
