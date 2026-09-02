@@ -12,8 +12,12 @@ export interface ProjectDef {
 
 const CARD_WIDTH = 52;
 const CARD_HEIGHT = 32;
-const GAP_FRONT = 26.7;
-const GAP_BACK = 89;
+// Derived at the same ~0.95 units/rem ratio CARD_WIDTH itself uses (52 units for the original's 54.8rem
+// card element) — the original gaps are 2.4rem/8rem. Phase 2b's final review flagged the previous values
+// (26.7/89) as using an ~11.1 units/rem ratio instead, an ~11.7x mismatch that spread the strip out far
+// more than the source (only ~2 cards visible on screen at 16:9 instead of several).
+const GAP_FRONT = 2.28;
+const GAP_BACK = 7.59;
 
 const BACK_STATE = {
 	rotationX: 0,
@@ -39,8 +43,9 @@ export class Gallery {
 	private group = new THREE.Group();
 	private groupPivot = new THREE.Group();
 	private gap = GAP_FRONT;
-	/** Raw wheel-accumulated scroll position — see Task 5's temporary scroll-input substitute. */
+	/** Written every frame by the `Scroll` layer (real Lenis-driven input, phase 4). */
 	scrollPosition = 0;
+	private previousScrollPosition = 0;
 	private mouseOffset = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 	private mouseTarget = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 
@@ -86,13 +91,20 @@ export class Gallery {
 		const totalWidth = step * this.cards.length;
 		const wrapped = ((this.scrollPosition % totalWidth) + totalWidth) % totalWidth;
 
+		// Gallery-wide scroll speed (simplified from the original's per-mesh tracked speed) drives each
+		// card's warp shader — see card/vertex.glsl's `mix(-.00015, -(uSpeed*.2), uProgress)`.
+		const speed = this.scrollPosition - this.previousScrollPosition;
+		this.previousScrollPosition = this.scrollPosition;
+
 		for (let i = 0; i < this.cards.length; i++) {
 			let x = step * i - wrapped;
 			x = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
 			this.cards[i].mesh.position.x = x;
+			this.cards[i].material.uniforms.uSpeed.value = speed;
 			this.videoCards[i].mesh.position.x = x;
 			this.videoCards[i].mesh.position.y = this.cards[i].mesh.position.y;
 			this.videoCards[i].mesh.position.z = this.cards[i].mesh.position.z + 0.01;
+			this.videoCards[i].material.uniforms.uSpeed.value = speed;
 		}
 	}
 

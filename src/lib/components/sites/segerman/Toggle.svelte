@@ -53,7 +53,11 @@
 	}
 
 	// The mouseenter/mouseleave dispatch is inverted by mode — see the spec's Section 5.
+	// Skipped on touch (matches the original's `isTouch || (...)` guard around these listeners) — touch
+	// devices don't have a real hover phase, and simulated mouseenter/mouseleave from taps would otherwise
+	// fire the peek-preview animation right before (or instead of) the click transition.
 	function handleMouseEnter(): void {
+		if (scene.isTouch) return;
 		if (isBackMode) {
 			texts.handleOut(isBackMode);
 		} else {
@@ -62,6 +66,7 @@
 	}
 
 	function handleMouseLeave(): void {
+		if (scene.isTouch) return;
 		if (isBackMode) {
 			texts.handleIn(isBackMode);
 		} else {

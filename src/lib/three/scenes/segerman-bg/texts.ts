@@ -33,6 +33,10 @@ export class Texts extends Layer {
 		this.iconMaterial = new THREE.ShaderMaterial({
 			uniforms: {
 				uMode: scene.uniforms.uMode,
+				// Only .r is ever sampled downstream (Front/back-fragment tint the icon via texts.r * uTextColor +
+				// texts.g * uLabelColor) — with straight-alpha blending over a zero-cleared RT, texts.r === alpha,
+				// so this red channel IS the icon's effective alpha. Changing it to white would leak uLabelColor
+				// into the tint via the green channel — don't "clean up" this color without re-deriving that.
 				uColor: { value: new THREE.Color('red') },
 				uRadius: { value: 0.5 },
 				uSize: { value: SIZE_BASE },
@@ -64,12 +68,13 @@ export class Texts extends Layer {
 	private applyTransform(): void {
 		this.iconMesh.scale.set(this.baseWidth * this.scaleMultiplier, this.baseHeight * this.scaleMultiplier, 1);
 		this.iconMesh.position.set(this.baseX, this.baseY, 0);
+		this.dirty();
 	}
 
 	/** Ported from Ha.in() — isBackMode is the CURRENT mode (hover never flips it). */
 	handleIn(isBackMode: boolean): void {
 		this.hoverTimeline?.kill();
-		this.hoverTimeline = gsap.timeline();
+		this.hoverTimeline = gsap.timeline({ onUpdate: () => this.dirty() });
 		this.hoverTimeline.to(this.iconMaterial.uniforms.uProgress, { value: 1, duration: 0.8, ease: 'power3.inOut' }, 0);
 		this.hoverTimeline.to(this.iconMaterial.uniforms.uSize, { value: SIZE_FULL, duration: 0.4, ease: 'power3.in' }, 0);
 		this.hoverTimeline.to(this.iconMaterial.uniforms.uSize, { value: SIZE_BASE, duration: 0.4, ease: 'power3.out' }, 0.4);
@@ -85,7 +90,7 @@ export class Texts extends Layer {
 	/** Ported from Ha.out() — isBackMode is the CURRENT mode (hover never flips it). */
 	handleOut(isBackMode: boolean): void {
 		this.hoverTimeline?.kill();
-		this.hoverTimeline = gsap.timeline();
+		this.hoverTimeline = gsap.timeline({ onUpdate: () => this.dirty() });
 		this.hoverTimeline.to(this.iconMaterial.uniforms.uProgress, { value: 0, duration: 0.8, ease: 'power3.inOut' }, 0);
 		this.hoverTimeline.to(this.iconMaterial.uniforms.uSize, { value: SIZE_FULL, duration: 0.4, ease: 'power3.in' }, 0);
 		this.hoverTimeline.to(this.iconMaterial.uniforms.uSize, { value: SIZE_BASE, duration: 0.4, ease: 'power3.out' }, 0.4);
@@ -113,10 +118,6 @@ export class Texts extends Layer {
 			},
 			0
 		);
-	}
-
-	loop(): void {
-		this.render();
 	}
 
 	render(): void {
