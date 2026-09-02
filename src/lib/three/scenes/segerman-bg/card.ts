@@ -13,6 +13,13 @@ export interface CardOptions {
 	/** Per-card dome curve strength — see card/vertex.glsl's own comment. Default -1.85 (the source's
 	 *  own value); pass 0 for a flat card. */
 	crtStrength?: number;
+	/** World-space arc strength (card/vertex.glsl's `pos.x += curved*uCurveX*...`/`pos.z -=
+	 *  curved*uCurveZ*...`) — bends a strip's cards sideways/in-depth the farther they scroll from
+	 *  centre, on top of (and independent from) the per-card dome above. Omit to track the scene's own
+	 *  shared uCurveX/uCurveZ uniforms (today's behavior, live-updating with them); pass explicit
+	 *  numbers (0 for none) to fix this card's strip to its own value regardless of the scene's. */
+	curveX?: number;
+	curveZ?: number;
 }
 
 export class Card {
@@ -38,8 +45,8 @@ export class Card {
 				uWarp: { value: 0 },
 				uAxis: { value: 0 },
 				uCrtStrength: { value: options.crtStrength ?? -1.85 },
-				uCurveZ: scene.uniforms.uCurveZ,
-				uCurveX: scene.uniforms.uCurveX,
+				uCurveZ: options.curveZ != null ? { value: options.curveZ } : scene.uniforms.uCurveZ,
+				uCurveX: options.curveX != null ? { value: options.curveX } : scene.uniforms.uCurveX,
 				uMode: scene.uniforms.uMode,
 				tMap: { value: texture },
 				uSizes: { value: new THREE.Vector2(1, 1) },

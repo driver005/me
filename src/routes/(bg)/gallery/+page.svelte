@@ -45,6 +45,11 @@
 				depthCurve: 0,
 				// Flat cards too, not the per-card dome every other strip implicitly gets in back mode.
 				cardCurve: 0,
+				// No sideways/in-depth arc either — cards move in a straight line top to bottom instead of
+				// curving away as they scroll from centre (the scene's shared uCurveX/uCurveZ, which every
+				// other strip still tracks live).
+				worldCurveX: 0,
+				worldCurveZ: 0,
 				gapFront: 4,
 				gapBack: 4,
 				center: { x: 0, y: 0, z: 5 },

@@ -14,6 +14,10 @@ export interface VideoCardOptions {
 	/** Per-card dome curve strength — see card/vertex.glsl's own comment. Default -1.85 (the source's
 	 *  own value); pass 0 for a flat card. */
 	crtStrength?: number;
+	/** World-space arc strength — see Card's own CardOptions.curveX/curveZ comment. Omit to track the
+	 *  scene's shared uCurveX/uCurveZ; pass explicit numbers (0 for none) to fix this card to them. */
+	curveX?: number;
+	curveZ?: number;
 }
 
 export class VideoCard {
@@ -51,8 +55,8 @@ export class VideoCard {
 				uBackMode: { value: 0 },
 				uLoad: { value: 1 },
 				uMode: scene.uniforms.uMode,
-				uCurveX: scene.uniforms.uCurveX,
-				uCurveZ: scene.uniforms.uCurveZ,
+				uCurveX: options.curveX != null ? { value: options.curveX } : scene.uniforms.uCurveX,
+				uCurveZ: options.curveZ != null ? { value: options.curveZ } : scene.uniforms.uCurveZ,
 				uSpeed: { value: 0 },
 				uHover: { value: 0 },
 				uProgress: { value: 1 },

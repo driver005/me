@@ -63,6 +63,12 @@ export interface GalleryOptions {
 	 *  crtStrength option / card/vertex.glsl's comment). Default -1.85 (the source's own value, and
 	 *  every existing strip's implicit behavior); pass 0 for flat, un-rounded cards. */
 	cardCurve?: number;
+	/** World-space arc strength, passed straight through to each Card/VideoCard (Card's own
+	 *  curveX/curveZ option). Omit to track the scene's shared uCurveX/uCurveZ (default, unchanged
+	 *  behavior); pass explicit numbers (0 for none) so this strip's cards move in a straight line
+	 *  along the scroll axis instead of arcing sideways/in-depth as they scroll away from centre. */
+	worldCurveX?: number;
+	worldCurveZ?: number;
 	itemWidth?: number;
 	itemHeight?: number;
 	/** Splits the items into this many parallel strips side by side (spaced along the cross axis —
@@ -224,7 +230,9 @@ export class Gallery implements Scrollable {
 					textureUrl: project.textureUrl,
 					width: itemWidth,
 					height: itemHeight,
-					crtStrength: options.cardCurve
+					crtStrength: options.cardCurve,
+					curveX: options.worldCurveX,
+					curveZ: options.worldCurveZ
 				});
 				card.material.uniforms.uAxis.value = uAxis;
 				this.group.add(card.mesh);
@@ -236,7 +244,9 @@ export class Gallery implements Scrollable {
 					videoUrl: project.videoUrl,
 					width: itemWidth,
 					height: itemHeight,
-					crtStrength: options.cardCurve
+					crtStrength: options.cardCurve,
+					curveX: options.worldCurveX,
+					curveZ: options.worldCurveZ
 				});
 				videoCard.material.uniforms.uAxis.value = uAxis;
 				this.videoGroup.add(videoCard.mesh);
