@@ -19,6 +19,8 @@
 	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
 	import { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
 	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
+	import { RaymarchPlanet, PLANET_LOOKS } from '$lib/three/scenes/segerman-bg/raymarch-planet';
+	import { PlanetSwitcher } from '$lib/three/scenes/segerman-bg/planet-switcher';
 	import { Front } from '$lib/three/scenes/segerman-bg/front';
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
 	import type { PlanetPageId } from '$lib/three/scenes/segerman-bg/planet';
@@ -63,6 +65,14 @@
 	let fog: Fog | null = null;
 	let fluid: FluidSim | null = null;
 	let planet: Planet | null = null;
+	/** jsulpis/realtime-planet-shader planets (GPL-3.0 — see the shader files' own header comments and
+	 *  CREDITS.md) — one instance per look this site uses, swapped in via planetSwitcher per route.
+	 *  Home gets Earth; /works/ keeps the mesh-based `planet` above; every other route gets one of
+	 *  these instead. */
+	let planetSwitcher: PlanetSwitcher | null = null;
+	let earthPlanet: RaymarchPlanet | null = null;
+	let moonPlanet: RaymarchPlanet | null = null;
+	let marsPlanet: RaymarchPlanet | null = null;
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
 	let gallery: Gallery | null = null;
@@ -134,7 +144,19 @@
 		// webglReady is a real $state — reading it here (unlike the plain scene/gallery/planet/compositor/
 		// fog vars below, which create no reactive dependency) makes this effect re-run once EngineRoot's
 		// onReady finishes populating them, even if this effect's first run raced ahead of that.
-		if (!webglReady || !scene || !gallery || !planet || !compositor || !fog) return;
+		if (
+			!webglReady ||
+			!scene ||
+			!gallery ||
+			!planet ||
+			!compositor ||
+			!fog ||
+			!planetSwitcher ||
+			!earthPlanet ||
+			!moonPlanet ||
+			!marsPlanet
+		)
+			return;
 		isBackMode = !isHome;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
@@ -152,7 +174,22 @@
 		// should ever hit it.
 		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : 'info';
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
-		planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
+
+		// Which planet shows: the mesh-based one (still tweened per-project via .animate(), unchanged)
+		// on /works/, one of the raymarched jsulpis planets everywhere else — home always gets Earth,
+		// other routes get a different one each (moon for /about, mars for /gallery and anything not
+		// otherwise recognized) so "other sub-paths get other planets" actually varies.
+		if (pageId === 'work') {
+			planetSwitcher.setActive(planet);
+			planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
+		} else if (isHome) {
+			planetSwitcher.setActive(earthPlanet);
+		} else if (pathname === '/about') {
+			planetSwitcher.setActive(moonPlanet);
+		} else {
+			planetSwitcher.setActive(marsPlanet);
+		}
+
 		compositor.setPage(pageId);
 		fog.setColor(project ? project.darkColor : FOG_COLOR_DEFAULT);
 		fog.setEnabled(isHome);
@@ -192,6 +229,33 @@
 			crackedNormal: crackedNormalTexture
 		});
 
+		// jsulpis/realtime-planet-shader planets (GPL-3.0) — one shared stars texture, one set of real
+		// NASA/USGS textures per planet. Home's Earth needs 5; the others just need their own color map.
+		const starsTexture = textureLoader.load('/textures/planets/4k_stars.jpg');
+		earthPlanet = new RaymarchPlanet(scene, {
+			type: 'earth',
+			textures: {
+				color: textureLoader.load('/textures/planets/2k_earth_color.jpeg'),
+				clouds: textureLoader.load('/textures/planets/2k_earth_clouds.jpeg'),
+				specular: textureLoader.load('/textures/planets/2k_earth_specular.jpeg'),
+				bump: textureLoader.load('/textures/planets/2k_earth_bump.jpg'),
+				night: textureLoader.load('/textures/planets/2k_earth_night.jpeg'),
+				stars: starsTexture
+			}
+		});
+		moonPlanet = new RaymarchPlanet(scene, {
+			type: 'planet',
+			textures: { color: textureLoader.load('/textures/planets/2k_moon.jpeg'), stars: starsTexture },
+			look: PLANET_LOOKS.moon
+		});
+		marsPlanet = new RaymarchPlanet(scene, {
+			type: 'planet',
+			textures: { color: textureLoader.load('/textures/planets/2k_mars.jpg'), stars: starsTexture },
+			look: PLANET_LOOKS.mars
+		});
+		planetSwitcher = new PlanetSwitcher(scene.isTouch);
+		planetSwitcher.setActive(earthPlanet);
+
 		const projects = Object.values(WORK_PROJECTS).map((p) => ({
 			slug: p.slug,
 			title: p.title,
@@ -205,6 +269,14 @@
 				'/textures/segerman-bg/planet.webp',
 				'/textures/segerman-bg/cracked.webp',
 				'/textures/segerman-bg/cracked-normal.webp',
+				'/textures/planets/4k_stars.jpg',
+				'/textures/planets/2k_earth_color.jpeg',
+				'/textures/planets/2k_earth_clouds.jpeg',
+				'/textures/planets/2k_earth_specular.jpeg',
+				'/textures/planets/2k_earth_bump.jpg',
+				'/textures/planets/2k_earth_night.jpeg',
+				'/textures/planets/2k_moon.jpeg',
+				'/textures/planets/2k_mars.jpg',
 				...projects.map((p) => p.textureUrl)
 			],
 			videos: projects.map((p) => p.videoUrl)
@@ -229,7 +301,9 @@
 		scene.addLayer(stars);
 		scene.addLayer(fog);
 		scene.addLayer(fluid);
-		scene.addLayer(planet);
+		// planetSwitcher, not `planet` directly — it delegates to whichever planet (mesh or raymarched)
+		// the route effect has set active, so only the currently-visible one actually renders each frame.
+		scene.addLayer(planetSwitcher);
 		scene.addLayer(front);
 
 		fog.setFluidSim(fluid);
@@ -268,7 +342,7 @@
 			window.removeEventListener('resize', onResize);
 		};
 
-		compositor = new Compositor(scene, { stars, fog, fluid, planet, front, images, video, texts });
+		compositor = new Compositor(scene, { stars, fog, fluid, planet: planetSwitcher, front, images, video, texts });
 		scene.setOutput(() => compositor?.render());
 
 		webglReady = true;
@@ -279,6 +353,14 @@
 		routeModeTimeline?.kill();
 		compositor?.dispose();
 		gallery?.dispose();
+		// planetSwitcher is registered with scene.addLayer(), so scene.dispose() below disposes IT — but
+		// it only owns its own placeholder texture (see its own comment), not whichever planet is/was
+		// active, since the mesh `planet` persists across route changes rather than being scoped to one.
+		// All four real planet instances need disposing explicitly here.
+		planet?.dispose();
+		earthPlanet?.dispose();
+		moonPlanet?.dispose();
+		marsPlanet?.dispose();
 		scene?.dispose();
 		noiseTexture?.dispose();
 		planetMapTexture?.dispose();
@@ -290,6 +372,10 @@
 		fog = null;
 		fluid = null;
 		planet = null;
+		planetSwitcher = null;
+		earthPlanet = null;
+		moonPlanet = null;
+		marsPlanet = null;
 		front = null;
 		compositor = null;
 		gallery = null;
