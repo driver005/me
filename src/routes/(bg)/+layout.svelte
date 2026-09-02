@@ -25,6 +25,7 @@
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
 	import type { PlanetPageId } from '$lib/three/scenes/segerman-bg/planet';
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
+	import { NameText } from '$lib/three/scenes/segerman-bg/name-text';
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
 	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
@@ -76,6 +77,7 @@
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
 	let gallery: Gallery | null = null;
+	let nameText: NameText | null = null;
 	let scroll: Scroll | null = null;
 	let images: Images | null = null;
 	let video: Video | null = null;
@@ -303,8 +305,12 @@
 		// Shifted right so the Home strip doesn't sit dead-center over the Earth (see raymarch-planet.ts
 		// — that planet renders centered by design now that it actually compiles). Same world units as
 		// the mesh Planet's own per-page offsets (planet.ts's PLANET_PAGES, e.g. home's x:62).
-		gallery = new Gallery(scene, projects, { center: { x: 30, y: 0, z: 0 } });
+		gallery = new Gallery(scene, projects, { center: { x: 42, y: 0, z: 0 } });
 		gallery.playEntrance();
+
+		// Big see-through "ADRIAN" on the opposite (left) half, over the Earth — dropped into the same
+		// imageScene/camera/render pass the gallery cards already use, rather than a new render target.
+		nameText = new NameText(gallery.imageScene, { x: -36, y: 0, z: -15 }, 'ADRIAN', 20);
 
 		scroll = new Scroll(scene, gallery);
 		scene.addLayer(scroll);
@@ -374,6 +380,7 @@
 		routeModeTimeline?.kill();
 		compositor?.dispose();
 		gallery?.dispose();
+		nameText?.dispose();
 		// planetSwitcher is registered with scene.addLayer(), so scene.dispose() below disposes IT — but
 		// it only owns its own placeholder texture (see its own comment), not whichever planet is/was
 		// active, since the mesh `planet` persists across route changes rather than being scoped to one.
@@ -400,6 +407,7 @@
 		front = null;
 		compositor = null;
 		gallery = null;
+		nameText = null;
 		scroll = null;
 		images = null;
 		video = null;
