@@ -1,6 +1,7 @@
 <!-- src/routes/test/+page.svelte -->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import * as THREE from 'three';
 	import { m } from '$lib/paraglide/messages';
 	import { Scene } from '$lib/three/scenes/segerman-bg/scene';
@@ -17,9 +18,13 @@
 	import { Texts } from '$lib/three/scenes/segerman-bg/texts';
 	import Toggle from '$lib/components/sites/segerman/Toggle.svelte';
 
+	const MIN_LOADER_DURATION = 1200;
+
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
 	let webglReady = $state(false);
+	let loaderVisible = $state(true);
+	let loaderPercent = $state(0);
 	let scene: Scene | null = null;
 	let stars: Stars | null = null;
 	let fog: Fog | null = null;
@@ -37,6 +42,44 @@
 	let crackedTexture: THREE.Texture | null = null;
 	let crackedNormalTexture: THREE.Texture | null = null;
 	let handleFluidResize: (() => void) | null = null;
+	let loaderStart = 0;
+
+	/** Real progress tracking (image/video preload), independent of Card/VideoCard's own loaders —
+	 *  a redundant fetch is fine (browser HTTP cache), simpler than threading a shared loader through them. */
+	function trackLoadProgress(assetUrls: { textures: string[]; videos: string[] }): void {
+		const total = assetUrls.textures.length + assetUrls.videos.length;
+		let loaded = 0;
+		const bump = () => {
+			loaded += 1;
+			loaderPercent = Math.round((loaded / total) * 100);
+		};
+		for (const url of assetUrls.textures) {
+			new THREE.TextureLoader().load(url, bump, undefined, bump);
+		}
+		for (const url of assetUrls.videos) {
+			const el = document.createElement('video');
+			el.muted = true;
+			el.preload = 'auto';
+			const done = () => {
+				el.removeEventListener('loadeddata', done);
+				el.removeEventListener('error', done);
+				bump();
+			};
+			el.addEventListener('loadeddata', done);
+			el.addEventListener('error', done);
+			el.src = url;
+			el.load();
+		}
+	}
+
+	$effect(() => {
+		if (loaderPercent < 100) return;
+		const remaining = Math.max(0, MIN_LOADER_DURATION - (performance.now() - loaderStart));
+		const timeout = setTimeout(() => {
+			loaderVisible = false;
+		}, remaining);
+		return () => clearTimeout(timeout);
+	});
 
 	onMount(() => {
 		const testCanvas = document.createElement('canvas');
@@ -46,6 +89,7 @@
 			return;
 		}
 		if (canvasRef) {
+			loaderStart = performance.now();
 			scene = new Scene(canvasRef);
 
 			const textureLoader = new THREE.TextureLoader();
@@ -75,6 +119,17 @@
 				textureUrl: `/textures/segerman-bg/work/${slug}.webp`,
 				videoUrl: `/videos/segerman-bg/work/${slug}.mp4`
 			}));
+			trackLoadProgress({
+				textures: [
+					'/textures/segerman-bg/noise.png',
+					'/textures/segerman-bg/planet.webp',
+					'/textures/segerman-bg/cracked.webp',
+					'/textures/segerman-bg/cracked-normal.webp',
+					...projects.map((p) => p.textureUrl)
+				],
+				videos: projects.map((p) => p.videoUrl)
+			});
+
 			gallery = new Gallery(scene, projects);
 			gallery.playEntrance();
 
@@ -177,5 +232,14 @@
 	<canvas bind:this={canvasRef} class="fixed inset-0 h-full w-full"></canvas>
 	{#if webglReady && scene && fluid && texts}
 		<Toggle {scene} {fluid} {texts} />
+	{/if}
+	{#if loaderVisible}
+		<div
+			class="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-[#00031f]"
+			out:fade={{ duration: 500 }}
+		>
+			<div class="h-10 w-10 animate-pulse rounded-full bg-white"></div>
+			<span class="font-mono text-sm tracking-widest text-white/80">{loaderPercent}%</span>
+		</div>
 	{/if}
 {/if}
