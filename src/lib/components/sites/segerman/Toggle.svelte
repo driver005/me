@@ -23,18 +23,20 @@
 		const targetMode = isBackMode ? 0 : 1;
 		fluid.setMode(isBackMode);
 
+		// uToggleProgress ramps toward the direction-appropriate endpoint (not always toward 1) so the
+		// blob-reveal gate (uToggleProgress * uMode, in the output shader) is the same symmetric
+		// pop-free bump in both directions and self-terminates at exactly 0 — no onComplete reset needed.
+		scene.uniforms.uToggleProgress.value = isBackMode ? 0 : 1;
+
 		timeline?.kill();
-		timeline = gsap.timeline({
-			onComplete: () => {
-				scene.uniforms.uToggleProgress.value = 0;
-			}
-		});
+		timeline = gsap.timeline();
 		timeline.to(scene.uniforms.uMode, { value: targetMode, duration: 1.2, ease: 'power2.inOut' }, 0);
-		timeline.to(scene.uniforms.uToggleProgress, { value: 1, duration: 1.2, ease: 'power2.inOut' }, 0);
+		timeline.to(scene.uniforms.uToggleProgress, { value: isBackMode ? 1 : 0, duration: 1.2, ease: 'power2.inOut' }, 0);
 	}
 
 	onDestroy(() => {
 		timeline?.kill();
+		scene.uniforms.uToggleProgress.value = 0;
 	});
 </script>
 
