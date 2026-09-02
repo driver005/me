@@ -37,10 +37,15 @@
 	 *  color (home/info/error). */
 	const FOG_COLOR_DEFAULT = '#20447e';
 
-	/** Whether the background is currently in front/white mode — home defaults here (matches the route
-	 *  effect's own `isHome` target), and Toggle's button can also flip it on any page. Drives DOM text
-	 *  overlaid on the canvas (the nav link below): white text over the white front plate is invisible. */
-	let isFrontMode = $state(true);
+	/** Single source of truth for front/back mode — bound two-way with Toggle.svelte (its button also
+	 *  flips this), and set here on every route change so a sub-page's forced back mode and Toggle's
+	 *  own state can never go stale relative to each other (that desync was the actual bug behind sub-
+	 *  page text going invisible — a click on Toggle while already in a route-forced back mode used to
+	 *  flip to front/white from a stale local `false`, and the sub-page's own text is hardcoded white).
+	 *  Also drives the nav link below: white text over the white front plate is invisible. */
+	let isBackMode = $state(false);
+
+	const isHomeRoute = $derived(page.url.pathname === '/test');
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -119,9 +124,9 @@
 	let routeModeTimeline: gsap.core.Timeline | null = null;
 	$effect(() => {
 		const pathname = page.url.pathname;
-		const isHome = pathname === '/test';
+		const isHome = isHomeRoute;
 		if (!scene || !gallery || !planet || !compositor || !fog) return;
-		isFrontMode = isHome;
+		isBackMode = !isHome;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
 		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
@@ -319,13 +324,13 @@
 	</div>
 {:else}
 	<canvas bind:this={canvasRef} class="fixed inset-0 h-full w-full"></canvas>
-	{#if webglReady && scene && fluid && texts}
-		<Toggle {scene} {fluid} {texts} onModeChange={(isBackMode) => (isFrontMode = !isBackMode)} />
+	{#if webglReady && scene && fluid && texts && isHomeRoute}
+		<Toggle {scene} {fluid} {texts} bind:isBackMode />
 	{/if}
 	<nav class="fixed top-6 left-6 z-20 text-sm">
 		<a
 			href="/test/info"
-			class="underline {isFrontMode ? 'text-black/70 hover:text-black' : 'text-white/70 hover:text-white'}"
+			class="underline {isBackMode ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black'}"
 		>
 			Info
 		</a>

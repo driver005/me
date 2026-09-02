@@ -6,15 +6,19 @@
 	import type { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
 	import type { Texts } from '$lib/three/scenes/segerman-bg/texts';
 
+	// isBackMode is bindable, not owned locally — the route layout also drives it (forcing back mode on
+	// every sub-route). A locally-owned copy here previously went stale on navigation: this button's
+	// own state stayed `false` regardless of route, so one click on a sub-page (already in back mode
+	// via the route effect) flipped the whole scene to front/white — with the sub-page's own DOM text
+	// hardcoded white, that made it vanish into the white plate.
 	let {
 		scene,
 		fluid,
 		texts,
-		onModeChange
-	}: { scene: Scene; fluid: FluidSim; texts: Texts; onModeChange?: (isBackMode: boolean) => void } = $props();
+		isBackMode = $bindable(false)
+	}: { scene: Scene; fluid: FluidSim; texts: Texts; isBackMode?: boolean } = $props();
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
-	let isBackMode = $state(false);
 	let isToggleTransitioning = false;
 	let timeline: gsap.core.Timeline | null = null;
 
@@ -31,7 +35,6 @@
 		if (isToggleTransitioning) return;
 		isToggleTransitioning = true;
 		isBackMode = !isBackMode;
-		onModeChange?.(isBackMode);
 		fluid.setMode(isBackMode);
 		syncRect();
 
