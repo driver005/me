@@ -127,7 +127,11 @@ void main() {
     // Only shows while the white front plate is hidden (mode = back-ness, 1 when fully immersive/back,
     // 0 when the front view is fully up) — previously always-on regardless of uMode, visible bleeding
     // through even while the white layer covered it.
-    col += (planetBlur.rgb * 1.5) * uPlanetBlurAmt * mode;
+    // Gentle breathing intensity on the bleed itself — adapted from a volumetric planet-glow shader's
+    // own animated wind term (its `0.4*sin(time*2.)+0.6`), scaled way down in both speed and depth to
+    // stay a subtle ambient drift rather than a visible pulse.
+    float glowBreath = 0.92 + 0.08 * sin(uTime * 0.35);
+    col += (planetBlur.rgb * 1.5) * uPlanetBlurAmt * mode * glowBreath;
     col = mix(col, planet.rgb, planet.a);
 
     
