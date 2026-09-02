@@ -1,9 +1,24 @@
 <!-- src/routes/test/work/[slug]/+page.svelte -->
 <script lang="ts">
+	import { getContext } from 'svelte';
 	import { page } from '$app/state';
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
+	import { WorkCarousel } from '$lib/three/scenes/segerman-bg/work-carousel';
+	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	const project = $derived(WORK_PROJECTS[page.params.slug ?? '']);
+	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
+
+	$effect(() => {
+		const slug = page.params.slug;
+		const scene = bgContext.getScene();
+		const gallery = bgContext.getGallery();
+		if (!slug || !scene || !gallery || !WORK_PROJECTS[slug]) return;
+
+		const mediaUrls = [1, 2, 3, 4, 5].map((i) => `/videos/segerman-bg/work-media/${slug}-${i}.mp4`);
+		const carousel = new WorkCarousel(scene, gallery, mediaUrls);
+		return () => carousel.dispose();
+	});
 </script>
 
 <svelte:head>

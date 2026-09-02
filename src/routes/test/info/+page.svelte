@@ -1,6 +1,20 @@
 <!-- src/routes/test/info/+page.svelte -->
 <script lang="ts">
+	import { getContext } from 'svelte';
 	import { SEGERMAN_INFO } from '$lib/components/sites/segerman/data';
+	import { InfoPortrait } from '$lib/three/scenes/segerman-bg/info-portrait';
+	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
+
+	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
+
+	$effect(() => {
+		const scene = bgContext.getScene();
+		const gallery = bgContext.getGallery();
+		if (!scene || !gallery) return;
+
+		const portrait = new InfoPortrait(scene, gallery);
+		return () => portrait.dispose();
+	});
 </script>
 
 <svelte:head>

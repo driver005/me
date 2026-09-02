@@ -1,6 +1,6 @@
 <!-- src/routes/test/+layout.svelte -->
 <script lang="ts">
-	import { onMount, onDestroy, type Snippet } from 'svelte';
+	import { onMount, onDestroy, setContext, type Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -20,8 +20,14 @@
 	import { Video } from '$lib/three/scenes/segerman-bg/video';
 	import { Texts } from '$lib/three/scenes/segerman-bg/texts';
 	import Toggle from '$lib/components/sites/segerman/Toggle.svelte';
+	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	let { children }: { children: Snippet } = $props();
+
+	setContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT, {
+		getScene: () => scene,
+		getGallery: () => gallery
+	});
 
 	const MIN_LOADER_DURATION = 1200;
 
