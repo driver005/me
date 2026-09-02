@@ -306,12 +306,12 @@
 		// Shifted right so the Home strip doesn't sit dead-center over the Earth (see raymarch-planet.ts
 		// — that planet renders centered by design now that it actually compiles). Same world units as
 		// the mesh Planet's own per-page offsets (planet.ts's PLANET_PAGES, e.g. home's x:62).
-		gallery = new Gallery(scene, projects, { center: { x: 42, y: 0, z: 0 } });
+		gallery = new Gallery(scene, projects, { center: { x: 58, y: 0, z: 0 } });
 		gallery.playEntrance();
 
 		// Big see-through "ADRIAN" on the opposite (left) half, over the Earth — dropped into the same
 		// imageScene/camera/render pass the gallery cards already use, rather than a new render target.
-		nameText = new NameText(scene, gallery.imageScene, { x: -42.5, y: 0, z: -30 }, ['AD', 'RI', 'AN'], 30, 85, 120);
+		nameText = new NameText(scene, gallery.imageScene, { x: -46, y: 0, z: -30 }, ['AD', 'RI', 'AN'], 30, 70, 120);
 
 		scroll = new Scroll(scene, gallery);
 		scene.addLayer(scroll);
