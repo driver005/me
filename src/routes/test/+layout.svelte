@@ -46,6 +46,7 @@
 	let isBackMode = $state(false);
 
 	const isHomeRoute = $derived(page.url.pathname === '/test');
+	const isInfoRoute = $derived(page.url.pathname === '/test/info');
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -327,14 +328,16 @@
 	{#if webglReady && scene && fluid && texts && isHomeRoute}
 		<Toggle {scene} {fluid} {texts} bind:isBackMode />
 	{/if}
-	<nav class="fixed top-6 left-6 z-20 text-sm">
-		<a
-			href="/test/info"
-			class="underline {isBackMode ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black'}"
-		>
-			Info
-		</a>
-	</nav>
+	{#if !isInfoRoute}
+		<nav class="fixed top-6 left-6 z-20 text-sm">
+			<a
+				href="/test/info"
+				class="underline {isBackMode ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black'}"
+			>
+				Info
+			</a>
+		</nav>
+	{/if}
 	{@render children()}
 	{#if loaderVisible}
 		<div
