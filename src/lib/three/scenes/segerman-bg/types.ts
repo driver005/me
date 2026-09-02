@@ -8,6 +8,8 @@ export interface SceneUniforms {
 	uIsTouch: { value: number };
 	uCurveX: { value: number };
 	uCurveZ: { value: number };
+	uToggleCoords: { value: THREE.Vector2 };
+	uToggleProgress: { value: number };
 }
 
 export interface PointerState {
