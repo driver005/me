@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 import { Layer } from './layer';
 import type { Scene } from './scene';
 import { Blur } from './blur';
@@ -10,6 +11,70 @@ import planetFragment from '$lib/shaders/segerman-bg/planet/fragment.glsl';
 import trailVertex from '$lib/shaders/segerman-bg/planet/trail-vertex.glsl';
 // @ts-ignore
 import trailFragment from '$lib/shaders/segerman-bg/planet/trail-fragment.glsl';
+
+/** Which route the planet is dressing — mirrors the source's own per-page config table
+ *  (world.js's `this.pages`), read verbatim off the live site (see planet-shaders.ts's own note on
+ *  where this class's shaders came from). 'error' exists for parity with the source but nothing in
+ *  this port currently routes to it. */
+export type PlanetPageId = 'home' | 'work' | 'info' | 'error';
+
+interface PlanetPageConfig {
+	position: { x: number; y: number; z: number };
+	/** World-space radius the source's own mesh uses for this page — see HOME_SCALE_UNIT below for
+	 *  how this port converts it into a scale multiplier against our already-tuned geometry. */
+	scale: number;
+	uniforms: {
+		uGlowBiasX: number;
+		uRimPow: number;
+		uGlowPow: number;
+		uGlowStr: number;
+		uRimStr: number;
+		uTerrainScale: number;
+	};
+}
+
+// Real per-page position/scale/uniform values, pulled verbatim from the live site's world.js
+// (`this.pages = {...}` in its Planet class) — position and the shader uniforms are unit-independent
+// and port 1:1 (home's own values here are exactly what this class already shipped with before this
+// per-page config existed, confirming the two scenes' world units already agree). `scale` is the one
+// exception: our geometry's radius (93, below) was tuned earlier by eye to match the source's home
+// view, not copied from it — 90 here is the source's own home `scale`, so HOME_SCALE_UNIT calibrates
+// every other page's radius against our 93 using the source's own ratios, rather than trusting 93 to
+// equal 90.
+const PLANET_PAGES: Record<PlanetPageId, PlanetPageConfig> = {
+	home: {
+		position: { x: 62, y: -26, z: -10 },
+		scale: 90,
+		uniforms: { uGlowBiasX: -0.6, uRimPow: 4.5, uGlowPow: 3.2, uGlowStr: 1, uRimStr: 0, uTerrainScale: 3.9 }
+	},
+	work: {
+		position: { x: 0, y: -32, z: -60 },
+		scale: 50,
+		uniforms: { uGlowBiasX: 0.6, uRimPow: 4.2, uGlowPow: 3.2, uGlowStr: 0.4, uRimStr: 1, uTerrainScale: 3.5 }
+	},
+	info: {
+		position: { x: -38, y: -40, z: -26.6 },
+		scale: 150,
+		uniforms: { uGlowBiasX: 0.6, uRimPow: 4.2, uGlowPow: 0.5, uGlowStr: 0.6, uRimStr: 1, uTerrainScale: 3.9 }
+	},
+	error: {
+		position: { x: 0, y: 0, z: -200 },
+		scale: 50,
+		uniforms: { uGlowBiasX: 0.6, uRimPow: 4.2, uGlowPow: 3.2, uGlowStr: 0.4, uRimStr: 1, uTerrainScale: 3.5 }
+	}
+};
+
+/** The source's home-page `scale` — see PLANET_PAGES's own comment. */
+const HOME_SCALE_UNIT = 90;
+
+// Base tint + default light/dark gradient colors, verbatim from world.js. Every page except Work
+// uses these; Work overrides them per-project (see animate()'s `projectColors` param and
+// WorkProject.lightColor/darkColor in work-content.ts, themselves pulled from the site's own
+// content.CFZxyfkA.js).
+const PLANET_COLOR_DEFAULT = new THREE.Color('#00060a').convertLinearToSRGB();
+const PLANET_COLOR_WORK = new THREE.Color('#0b0d0f').convertLinearToSRGB();
+const PLANET_LIGHT_DEFAULT = new THREE.Color('#81aeca');
+const PLANET_DARK_DEFAULT = new THREE.Color('#436eb1');
 
 export interface PlanetTextures {
 	map: THREE.Texture;
@@ -40,6 +105,7 @@ export class Planet extends Layer {
 	private trailMesh: THREE.Mesh;
 	private trailScene = new THREE.Scene();
 	private trailCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+	private pageTimeline: gsap.core.Timeline | null = null;
 
 	constructor(scene: Scene, textures: PlanetTextures) {
 		super(scene.isTouch);
@@ -142,6 +208,31 @@ export class Planet extends Layer {
 		}
 	}
 
+	/** Tweens position/scale/uniforms/color to the given page's config (PLANET_PAGES) — called by the
+	 *  route layout on every navigation, matching the source's own per-page planet recolor/reposition.
+	 *  `projectColors` (a Work project's lightColor/darkColor) only applies when pageId is 'work';
+	 *  ignored otherwise, and falls back to the default light/dark gradient if omitted on a work page
+	 *  (a slug the site doesn't recognize). */
+	animate(pageId: PlanetPageId, projectColors?: { light: string; dark: string }): void {
+		const config = PLANET_PAGES[pageId];
+		const scale = config.scale / HOME_SCALE_UNIT;
+
+		this.pageTimeline?.kill();
+		this.pageTimeline = gsap.timeline({ defaults: { duration: 2.3, ease: 'power3.inOut' } });
+		this.pageTimeline.to(this.mesh.position, { x: config.position.x, y: config.position.y, z: config.position.z }, 0);
+		this.pageTimeline.to(this.mesh.scale, { x: scale, y: scale, z: scale }, 0);
+		for (const [key, value] of Object.entries(config.uniforms)) {
+			this.pageTimeline.to(this.material.uniforms[key], { value }, 0);
+		}
+
+		const baseColor = pageId === 'work' ? PLANET_COLOR_WORK : PLANET_COLOR_DEFAULT;
+		const lightColor = pageId === 'work' && projectColors ? new THREE.Color(projectColors.light) : PLANET_LIGHT_DEFAULT;
+		const darkColor = pageId === 'work' && projectColors ? new THREE.Color(projectColors.dark) : PLANET_DARK_DEFAULT;
+		this.pageTimeline.to(this.material.uniforms.uColor.value, { r: baseColor.r, g: baseColor.g, b: baseColor.b }, 0);
+		this.pageTimeline.to(this.material.uniforms.uLightColor.value, { r: lightColor.r, g: lightColor.g, b: lightColor.b }, 0);
+		this.pageTimeline.to(this.material.uniforms.uDarkColor.value, { r: darkColor.r, g: darkColor.g, b: darkColor.b }, 0);
+	}
+
 	render(): void {
 		this.material.uniforms.uTerrainTime.value += (1 / 60) * 0.1;
 		this.mesh.rotation.y += 0.0008;
@@ -176,6 +267,7 @@ export class Planet extends Layer {
 	}
 
 	dispose(): void {
+		this.pageTimeline?.kill();
 		this.mesh.geometry.dispose();
 		this.material.dispose();
 		this.blur.dispose();

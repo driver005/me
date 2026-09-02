@@ -14,7 +14,9 @@
 	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
 	import { Front } from '$lib/three/scenes/segerman-bg/front';
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
+	import type { PlanetPageId } from '$lib/three/scenes/segerman-bg/planet';
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
+	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
 	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
 	import { Video } from '$lib/three/scenes/segerman-bg/video';
@@ -108,8 +110,9 @@
 	// of uMode — exactly why Work/Info page content added into the shared scene never became visible.
 	let routeModeTimeline: gsap.core.Timeline | null = null;
 	$effect(() => {
-		const isHome = page.url.pathname === '/test';
-		if (!scene || !gallery) return;
+		const pathname = page.url.pathname;
+		const isHome = pathname === '/test';
+		if (!scene || !gallery || !planet || !compositor) return;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
 		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
@@ -122,6 +125,15 @@
 		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
 		// underneath a project/info page's own content.
 		gallery.setHomeVisible(isHome);
+
+		// The source recolors/repositions its planet (and the back layer's glow strength) per page —
+		// each Work project even gets its own light/dark tint (Planet.animate()'s own comment has the
+		// full source-verified table). Ported here so sub-pages aren't all sharing home's single look.
+		const workSlug = pathname.startsWith('/test/work/') ? pathname.slice('/test/work/'.length) : null;
+		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : pathname === '/test/info' ? 'info' : 'error';
+		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
+		planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
+		compositor.setPage(pageId);
 	});
 
 	function handleCanvasClick(): void {

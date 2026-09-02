@@ -1,5 +1,7 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 import type { Scene } from './scene';
+import type { PlanetPageId } from './planet';
 import type { Stars } from './stars';
 import type { Fog } from './fog';
 import type { FluidSim } from './fluid';
@@ -27,6 +29,11 @@ export interface CompositorLayers {
 	texts: Texts;
 }
 
+// Real per-page glow strength, verbatim from world.js's own back-compositor class (`this.glowStr`) —
+// the strength of the bloom halo the back-fragment shader adds around media/planet edges. Home was
+// already ported as this class's uGlowStrength default (0.9); the other pages never were.
+const GLOW_STRENGTH_BY_PAGE: Record<PlanetPageId, number> = { home: 0.9, work: 0.4, info: 0.1, error: 0 };
+
 export class Compositor {
 	private scene: Scene;
 	private backRT: THREE.WebGLRenderTarget;
@@ -41,6 +48,7 @@ export class Compositor {
 	private imagesLayer: Images;
 	private videoLayer: Video;
 	private textsLayer: Texts;
+	private pageTimeline: gsap.core.Timeline | null = null;
 
 	constructor(scene: Scene, layers: CompositorLayers) {
 		this.scene = scene;
@@ -128,6 +136,18 @@ export class Compositor {
 		this.outputMesh.frustumCulled = false;
 	}
 
+	/** Tweens the back layer's glow strength to the given page's value (GLOW_STRENGTH_BY_PAGE) — called
+	 *  by the route layout alongside Planet.animate(), on every navigation. */
+	setPage(pageId: PlanetPageId): void {
+		this.pageTimeline?.kill();
+		this.pageTimeline = gsap.timeline();
+		this.pageTimeline.to(
+			this.backMaterial.uniforms.uGlowStrength,
+			{ value: GLOW_STRENGTH_BY_PAGE[pageId], duration: 2.3, ease: 'power3.inOut' },
+			0
+		);
+	}
+
 	render(): void {
 		const renderer = this.scene.renderer;
 		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
@@ -149,6 +169,7 @@ export class Compositor {
 	}
 
 	dispose(): void {
+		this.pageTimeline?.kill();
 		this.backMaterial.dispose();
 		this.outputMaterial.dispose();
 		this.placeholder.dispose();
