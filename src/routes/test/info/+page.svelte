@@ -1,7 +1,7 @@
 <!-- src/routes/test/info/+page.svelte -->
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import { SEGERMAN_INFO } from '$lib/components/sites/segerman/data';
+	import { INFO_CONTENT } from '$lib/three/scenes/segerman-bg/info-content';
 	import { InfoPortrait } from '$lib/three/scenes/segerman-bg/info-portrait';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
@@ -35,16 +35,16 @@
 	>
 		← Back
 	</a>
-	{#each SEGERMAN_INFO.paragraphs as paragraph (paragraph)}
+	{#each INFO_CONTENT.paragraphs as paragraph (paragraph)}
 		<p class="leading-relaxed text-black/90 md:text-white/90">{paragraph}</p>
 	{/each}
 	<div class="flex flex-wrap gap-2 text-xs text-black/60 md:text-white/60">
-		{#each SEGERMAN_INFO.tools as tool (tool)}
+		{#each INFO_CONTENT.tools as tool (tool)}
 			<span class="rounded-full border border-black/20 px-2 py-1 md:border-white/20">{tool}</span>
 		{/each}
 	</div>
 	<div class="flex flex-wrap gap-2 text-xs text-black/60 md:text-white/60">
-		{#each SEGERMAN_INFO.awards as award (award)}
+		{#each INFO_CONTENT.awards as award (award)}
 			<span>{award}</span>
 		{/each}
 	</div>

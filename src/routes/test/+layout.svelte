@@ -21,7 +21,7 @@
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
 	import { Video } from '$lib/three/scenes/segerman-bg/video';
 	import { Texts } from '$lib/three/scenes/segerman-bg/texts';
-	import Toggle from '$lib/components/sites/segerman/Toggle.svelte';
+	import Toggle from './Toggle.svelte';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	let { children }: { children: Snippet } = $props();
