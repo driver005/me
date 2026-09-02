@@ -168,7 +168,10 @@ export class Gallery {
 			const box = geometry.boundingBox!;
 
 			this._camMV.multiplyMatrices(camera.matrixWorldInverse, mesh.matrixWorld);
-			const planeDist = Math.abs(this._camMV.elements[13]);
+			// elements[12] is the modelView matrix's X-translation component (elements[13] would be Y) —
+			// matches card/vertex.glsl's same axis swap: this port scrolls horizontally, so "distance from
+			// screen centre" must key off X, not Y (see that file's comment for the full explanation).
+			const planeDist = Math.abs(this._camMV.elements[12]);
 			const curved = planeDist * planeDist;
 			const curveXOffset = curved * curveX * frontness;
 			const curveZCentre = -curved * curveZ * frontness;
