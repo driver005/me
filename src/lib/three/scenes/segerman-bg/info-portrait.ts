@@ -16,9 +16,6 @@ import portraitFragment from '$lib/shaders/segerman-bg/info-portrait/fragment.gl
  *  from full-width/overlaid to a left-half column at the same width, so the portrait needs to move
  *  in lockstep or the two would either overlap unintentionally or leave a gap. */
 const SPLIT_BREAKPOINT_PX = 768;
-/** The original fixed size's own proportions (20×26) — kept as the aspect ratio while the actual size
- *  becomes viewport-responsive. */
-const PORTRAIT_ASPECT = 26 / 20;
 
 export class InfoPortrait {
 	mesh: THREE.Mesh;
@@ -32,7 +29,9 @@ export class InfoPortrait {
 		this.scene = scene;
 		this.gallery = gallery;
 
-		this.texture = new THREE.TextureLoader().load('/textures/segerman-bg/rafi-info.webp');
+		this.texture = new THREE.TextureLoader().load('/textures/segerman-bg/rafi-info.webp', (loaded) => {
+			this.material.uniforms.uSizes.value.set(loaded.image.width, loaded.image.height);
+		});
 		this.texture.generateMipmaps = false;
 		this.texture.minFilter = THREE.LinearFilter;
 		this.texture.magFilter = THREE.LinearFilter;
@@ -43,7 +42,13 @@ export class InfoPortrait {
 				uMode: scene.uniforms.uMode,
 				uScale: { value: scene.isTouch ? 0 : 1 },
 				// 0, not the source's own CRT-style curve — flat instead of bulging in the middle.
-				uCurveStrength: { value: 0 }
+				uCurveStrength: { value: 0 },
+				// "Cover" UV mapping (fragment.glsl, same formula as Card's) — the plane now stretches to
+				// fill its half/full viewport exactly (updateLayout(), below), so without this the image
+				// would distort instead of cropping. uSizes is set once the real image dims load, above;
+				// uPlaneSizes is kept in sync with mesh.scale by updateLayout() itself.
+				uSizes: { value: new THREE.Vector2(1, 1) },
+				uPlaneSizes: { value: new THREE.Vector2(1, 1) }
 			},
 			vertexShader: portraitVertex,
 			fragmentShader: portraitFragment
@@ -63,26 +68,22 @@ export class InfoPortrait {
 		window.addEventListener('resize', this.handleResize);
 	}
 
-	/** Sizes the portrait to fill its half of the viewport (rather than a fixed 20×26) and repositions
-	 *  it to match: right half at/above SPLIT_BREAKPOINT_PX (pairs with the Info page's own text column,
-	 *  which occupies the left half there), centered and smaller below it, where the two merge and the
-	 *  text lays directly over the portrait instead (info/+page.svelte switches its text to black in
-	 *  that state, for legibility against the bright portrait instead of the dark space background). */
+	/** Sizes the portrait to exactly fill its zone (rather than a fixed 20×26) and repositions it to
+	 *  match: right HALF of the viewport, full height, at/above SPLIT_BREAKPOINT_PX (pairs with the Info
+	 *  page's own text column, which occupies the left half there); the FULL viewport below it, where
+	 *  the two merge and the text lays directly over the portrait instead (info/+page.svelte switches
+	 *  its text to black in that state, for legibility against the bright portrait instead of the dark
+	 *  space background). Filling exactly (not aspect-fit) relies on the fragment shader's own "cover"
+	 *  UV mapping to crop the image instead of stretching it — see uPlaneSizes below and fragment.glsl.
+	 */
 	private updateLayout(): void {
 		const isSplit = window.innerWidth >= SPLIT_BREAKPOINT_PX;
-		// Leaves a little breathing room within its half/three-quarters rather than touching edge to edge.
-		const targetWidth = (isSplit ? this.scene.widthAtZ / 2 : this.scene.widthAtZ * 0.75) * 0.85;
-		const maxHeight = this.scene.heightAtZ * 0.85;
-
-		let width = targetWidth;
-		let height = width * PORTRAIT_ASPECT;
-		if (height > maxHeight) {
-			height = maxHeight;
-			width = height / PORTRAIT_ASPECT;
-		}
+		const width = isSplit ? this.scene.widthAtZ / 2 : this.scene.widthAtZ;
+		const height = this.scene.heightAtZ;
 
 		this.mesh.scale.set(width, height, 1);
 		this.mesh.position.x = isSplit ? this.scene.widthAtZ / 4 : 0;
+		this.material.uniforms.uPlaneSizes.value.set(width, height);
 	}
 
 	dispose(): void {
