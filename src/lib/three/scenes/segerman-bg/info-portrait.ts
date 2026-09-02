@@ -16,6 +16,9 @@ import portraitFragment from '$lib/shaders/segerman-bg/info-portrait/fragment.gl
  *  from full-width/overlaid to a left-half column at the same width, so the portrait needs to move
  *  in lockstep or the two would either overlap unintentionally or leave a gap. */
 const SPLIT_BREAKPOINT_PX = 768;
+/** The original fixed size's own proportions (20×26) — kept as the aspect ratio while the actual size
+ *  becomes viewport-responsive. */
+const PORTRAIT_ASPECT = 26 / 20;
 
 export class InfoPortrait {
 	mesh: THREE.Mesh;
@@ -23,7 +26,7 @@ export class InfoPortrait {
 	private texture: THREE.Texture;
 	private gallery: Gallery;
 	private scene: Scene;
-	private handleResize = (): void => this.updatePosition();
+	private handleResize = (): void => this.updateLayout();
 
 	constructor(scene: Scene, gallery: Gallery) {
 		this.scene = scene;
@@ -48,7 +51,6 @@ export class InfoPortrait {
 
 		const geometry = new THREE.PlaneGeometry(1, 1, 30, 30);
 		this.mesh = new THREE.Mesh(geometry, this.material);
-		this.mesh.scale.set(20, 26, 1);
 		// Facing the camera head-on — the previous rotation.y:-0.42 (an approximated backState offset,
 		// per this class's own comment) turned it away from the camera instead.
 		this.mesh.position.set(0, 3, 0);
@@ -57,16 +59,29 @@ export class InfoPortrait {
 
 		this.gallery.imageScene.add(this.mesh);
 
-		this.updatePosition();
+		this.updateLayout();
 		window.addEventListener('resize', this.handleResize);
 	}
 
-	/** Right half of the viewport at/above SPLIT_BREAKPOINT_PX (pairs with the Info page's own text
-	 *  column, which occupies the left half there) — centered below it, where the two merge and the
+	/** Sizes the portrait to fill its half of the viewport (rather than a fixed 20×26) and repositions
+	 *  it to match: right half at/above SPLIT_BREAKPOINT_PX (pairs with the Info page's own text column,
+	 *  which occupies the left half there), centered and smaller below it, where the two merge and the
 	 *  text lays directly over the portrait instead (info/+page.svelte switches its text to black in
 	 *  that state, for legibility against the bright portrait instead of the dark space background). */
-	private updatePosition(): void {
+	private updateLayout(): void {
 		const isSplit = window.innerWidth >= SPLIT_BREAKPOINT_PX;
+		// Leaves a little breathing room within its half/three-quarters rather than touching edge to edge.
+		const targetWidth = (isSplit ? this.scene.widthAtZ / 2 : this.scene.widthAtZ * 0.75) * 0.85;
+		const maxHeight = this.scene.heightAtZ * 0.85;
+
+		let width = targetWidth;
+		let height = width * PORTRAIT_ASPECT;
+		if (height > maxHeight) {
+			height = maxHeight;
+			width = height / PORTRAIT_ASPECT;
+		}
+
+		this.mesh.scale.set(width, height, 1);
 		this.mesh.position.x = isSplit ? this.scene.widthAtZ / 4 : 0;
 	}
 
