@@ -160,6 +160,13 @@ export class Compositor {
 	render(): void {
 		const renderer = this.scene.renderer;
 		this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
+		// tPlanet, like tPlanetBlur below, must be re-read every frame, not just captured once at
+		// construction — `layers.planet` is a PlanetSwitcher now, not a single stable Planet instance,
+		// so which texture ".texture" resolves to changes as the route swaps the active planet
+		// (Earth/Moon/Mars/mesh). A stale reference here freezes on whichever planet was active when
+		// Compositor was constructed instead of following the switch, mismatching the (already
+		// per-frame) tPlanetBlur and reading as a half-transparent, wrong-planet composite.
+		this.backMaterial.uniforms.tPlanet.value = this.planetLayer.texture;
 		this.backMaterial.uniforms.tPlanetBlur.value = this.planetLayer.blurTexture;
 		this.backMaterial.uniforms.tImagesBack.value = this.imagesLayer.backTexture;
 		this.backMaterial.uniforms.tImagesBackBloom.value = this.imagesLayer.backBloomTexture;
