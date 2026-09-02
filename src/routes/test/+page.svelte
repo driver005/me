@@ -11,6 +11,7 @@
 	import { Front } from '$lib/three/scenes/segerman-bg/front';
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
+	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
 	import { Video } from '$lib/three/scenes/segerman-bg/video';
 	import { Texts } from '$lib/three/scenes/segerman-bg/texts';
@@ -27,6 +28,7 @@
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
 	let gallery: Gallery | null = null;
+	let scroll: Scroll | null = null;
 	let images: Images | null = null;
 	let video: Video | null = null;
 	let texts: Texts | null = null;
@@ -68,7 +70,9 @@
 			}));
 			gallery = new Gallery(scene, projects);
 			gallery.playEntrance();
-			gallery.attachScrollListener();
+
+			scroll = new Scroll(scene, gallery);
+			scene.addLayer(scroll);
 
 			images = new Images(scene, gallery);
 			scene.addLayer(images);
@@ -139,6 +143,7 @@
 		front = null;
 		compositor = null;
 		gallery = null;
+		scroll = null;
 		images = null;
 		video = null;
 		texts = null;

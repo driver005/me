@@ -204,20 +204,6 @@ export class Gallery {
 		}
 	}
 
-	private onWheel = (event: WheelEvent): void => {
-		this.scrollPosition += event.deltaY * 0.05;
-	};
-
-	/** TEMPORARY substitute for Lenis-driven scroll (not built yet). A future phase replaces this
-	 *  entire method with real smooth-scroll input — do not extend this, replace it wholesale. */
-	attachScrollListener(): void {
-		window.addEventListener('wheel', this.onWheel, { passive: true });
-	}
-
-	detachScrollListener(): void {
-		window.removeEventListener('wheel', this.onWheel);
-	}
-
 	/** Called once per frame by Images/Video layers before rendering. */
 	update(mouseNX: number, mouseNY: number): void {
 		this.updateItems();
@@ -226,7 +212,6 @@ export class Gallery {
 	}
 
 	dispose(): void {
-		this.detachScrollListener();
 		for (const timeline of this.entranceTimelines) timeline.kill();
 		this.entranceTimelines = [];
 		for (const card of this.cards) card.dispose();
