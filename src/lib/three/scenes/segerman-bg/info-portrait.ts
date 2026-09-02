@@ -31,7 +31,8 @@ export class InfoPortrait {
 				tMap: { value: this.texture },
 				uMode: scene.uniforms.uMode,
 				uScale: { value: scene.isTouch ? 0 : 1 },
-				uCurveStrength: { value: scene.isTouch ? 0 : 3.5 }
+				// 0, not the source's own CRT-style curve — flat instead of bulging in the middle.
+				uCurveStrength: { value: 0 }
 			},
 			vertexShader: portraitVertex,
 			fragmentShader: portraitFragment
