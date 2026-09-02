@@ -4,13 +4,60 @@ import type { Scene } from './scene';
 import { Card } from './card';
 import { VideoCard } from './video-card';
 import { Title } from './title';
-import { CARD_WIDTH, CARD_HEIGHT, GAP_FRONT, GAP_BACK, DEPTH_CURVE, computeDepthOffset } from './carousel-shared';
+import type { Scrollable } from './scroll';
+import {
+	CARD_WIDTH,
+	CARD_HEIGHT,
+	GAP_FRONT,
+	GAP_BACK,
+	CarouselLayout,
+	computeScrollSpeed,
+	type CarouselAxis
+} from './carousel-shared';
 
-export interface ProjectDef {
-	slug: string;
-	title: string;
-	textureUrl: string;
-	videoUrl: string;
+/** One strip item. `title`/`textureUrl` are only read when the instance's `titles`/`mediaType`
+ *  options ask for them — a video-only sub-page carousel item can omit both. */
+export interface GalleryItem {
+	slug?: string;
+	title?: string;
+	textureUrl?: string;
+	videoUrl?: string;
+}
+
+export interface GalleryOptions {
+	/** Side-by-side ('horizontal') or stacked ('vertical'). Default 'vertical' — the home strip's
+	 *  own layout, matching the source's actual scroll axis (see card/vertex.glsl's header comment). */
+	axis?: CarouselAxis;
+	/** Which card types this instance builds per item. Default 'both' (home strip: an image card
+	 *  plus a hover-revealed video card layered on top). A sub-page row is usually 'image' or
+	 *  'video' only. */
+	mediaType?: 'both' | 'image' | 'video';
+	/** Build a Title mesh beside each card. Default true (home strip only — a sub-page row has its
+	 *  own HTML caption, not a 3D title). */
+	titles?: boolean;
+	/** Hit-test cards under the cursor and expose `.hoveredIndex` (drives home's click-to-navigate
+	 *  and per-card hover reveal). Default true. A sub-page row that isn't clickable sets this false
+	 *  — its video cards are then revealed immediately at construction instead of on hover. */
+	hoverNav?: boolean;
+	/** Apply the home strip's back/front group tilt + mouse-parallax (BACK_STATE, updateGroup()).
+	 *  Default true. A sub-page row isn't part of the front/back toggle, so it sets this false and
+	 *  stays at identity rotation/position. */
+	groupTilt?: boolean;
+	/** World-space point this strip is centred on. Default the origin. */
+	center?: { x: number; y: number; z: number };
+	/** Gap at uMode=1 (front) / uMode=0 (back). Default the shared GAP_FRONT/GAP_BACK. Pass equal
+	 *  values to fix the gap regardless of uMode (a sub-page row that isn't part of the toggle). */
+	gapFront?: number;
+	gapBack?: number;
+	depthCurve?: number;
+	itemWidth?: number;
+	itemHeight?: number;
+	/** Scene to add image/video meshes into. Defaults to a new THREE.Scene owned by this instance
+	 *  (the home strip's own `imageScene`/`videoScene`, rendered by the Images/Video layers). A
+	 *  sub-page carousel instead passes the home Gallery's existing `videoScene` so its cards render
+	 *  through that same persistent layer, rather than standing up a new one. */
+	imageScene?: THREE.Scene;
+	videoScene?: THREE.Scene;
 }
 
 const TITLE_HEIGHT = 4;
@@ -29,23 +76,35 @@ function lerp(a: number, b: number, t: number): number {
 	return a + (b - a) * t;
 }
 
-export class Gallery {
-	imageScene = new THREE.Scene();
-	videoScene = new THREE.Scene();
+/**
+ * One carousel component for every scrolling strip in this port — the home page's project gallery
+ * and any sub-page media row alike — configured via `GalleryOptions` rather than duplicated as two
+ * classes. Positioning (wrap, gap-lerp, depth arc) always goes through the shared `CarouselLayout`
+ * (carousel-shared.ts); what varies between a "gallery" use and a "carousel" use is only which of
+ * titles/hover-nav/group-tilt/media-types this instance turns on.
+ */
+export class Gallery implements Scrollable {
+	imageScene: THREE.Scene;
+	videoScene: THREE.Scene;
 
 	cards: Card[] = [];
 	videoCards: VideoCard[] = [];
 	titles: Title[] = [];
-	projects: ProjectDef[];
+	projects: GalleryItem[];
 
 	private scene: Scene;
 	private group = new THREE.Group();
 	private groupPivot = new THREE.Group();
 	private videoGroup = new THREE.Group();
-	private gap = GAP_FRONT;
 	/** Written every frame by the `Scroll` layer (real Lenis-driven input, phase 4). */
 	scrollPosition = 0;
 	private previousScrollPosition = 0;
+	private layout: CarouselLayout;
+	private axis: CarouselAxis;
+	private center: { x: number; y: number; z: number };
+	private hasTitles: boolean;
+	private hoverNav: boolean;
+	private groupTilt: boolean;
 	private mouseOffset = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 	private mouseTarget = { posX: 0, posZ: 0, rotX: 0, rotY: 0 };
 
@@ -55,31 +114,68 @@ export class Gallery {
 	private _camMV = new THREE.Matrix4();
 	private entranceTimelines: gsap.core.Timeline[] = [];
 
-	constructor(scene: Scene, projects: ProjectDef[]) {
+	constructor(scene: Scene, projects: GalleryItem[], options: GalleryOptions = {}) {
 		this.scene = scene;
 		this.projects = projects;
+		this.axis = options.axis ?? 'vertical';
+		this.center = options.center ?? { x: 0, y: 0, z: 0 };
+		this.hasTitles = options.titles ?? true;
+		this.hoverNav = options.hoverNav ?? true;
+		this.groupTilt = options.groupTilt ?? true;
+
+		this.imageScene = options.imageScene ?? new THREE.Scene();
+		this.videoScene = options.videoScene ?? new THREE.Scene();
 		this.groupPivot.add(this.group);
 		this.imageScene.add(this.groupPivot);
 		this.videoScene.add(this.videoGroup);
 
+		const itemWidth = options.itemWidth ?? CARD_WIDTH;
+		const itemHeight = options.itemHeight ?? CARD_HEIGHT;
+		this.layout = new CarouselLayout({
+			axis: this.axis,
+			itemSize: this.axis === 'vertical' ? itemHeight : itemWidth,
+			itemCount: projects.length,
+			gapFront: options.gapFront ?? GAP_FRONT,
+			gapBack: options.gapBack ?? GAP_BACK,
+			depthCurve: options.depthCurve
+		});
+
+		const mediaType = options.mediaType ?? 'both';
+		const wantsImage = mediaType === 'both' || mediaType === 'image';
+		const wantsVideo = mediaType === 'both' || mediaType === 'video';
+
 		for (const project of projects) {
-			const card = new Card(scene, { textureUrl: project.textureUrl, width: CARD_WIDTH, height: CARD_HEIGHT });
-			this.group.add(card.mesh);
-			this.cards.push(card);
+			if (wantsImage && project.textureUrl) {
+				const card = new Card(scene, { textureUrl: project.textureUrl, width: itemWidth, height: itemHeight });
+				this.group.add(card.mesh);
+				this.cards.push(card);
+			}
 
-			const videoCard = new VideoCard(scene, { videoUrl: project.videoUrl, width: CARD_WIDTH, height: CARD_HEIGHT });
-			this.videoGroup.add(videoCard.mesh);
-			this.videoCards.push(videoCard);
+			if (wantsVideo && project.videoUrl) {
+				const videoCard = new VideoCard(scene, { videoUrl: project.videoUrl, width: itemWidth, height: itemHeight });
+				this.videoGroup.add(videoCard.mesh);
+				if (!this.hoverNav) {
+					// No hover to reveal it later — this row shows video immediately. setOffsetIn() also
+					// starts playback (VideoCard defaults to uOffsetY: 1, hidden by the fragment shader's
+					// alpha mask — see video-card/fragment.glsl).
+					videoCard.setOffsetIn();
+				}
+				this.videoCards.push(videoCard);
+			}
 
-			const title = new Title(project.title, TITLE_HEIGHT);
-			this.group.add(title.mesh);
-			this.titles.push(title);
+			if (this.hasTitles && project.title) {
+				const title = new Title(project.title, TITLE_HEIGHT);
+				this.group.add(title.mesh);
+				this.titles.push(title);
+			}
 		}
 
-		for (let i = 0; i < this.cards.length; i++) {
-			this.cards[i].mesh.visible = true;
-			this.cards[i].material.uniforms.uProgress.value = 1;
-			this.cards[i].material.uniforms.uWarp.value = 1;
+		if (wantsImage) {
+			for (const card of this.cards) {
+				card.mesh.visible = true;
+				card.material.uniforms.uProgress.value = 1;
+				card.material.uniforms.uWarp.value = 1;
+			}
 		}
 	}
 
@@ -87,7 +183,7 @@ export class Gallery {
 		return this._hoveredIndex;
 	}
 
-	/** Hides the home strip's cards/titles/videos — called by the route layout on any sub-route so a
+	/** Hides this strip's cards/titles/videos — called by the route layout on any sub-route so a
 	 *  project/info page's own content isn't shown stacked on top of the home gallery underneath it. */
 	setHomeVisible(visible: boolean): void {
 		this.groupPivot.visible = visible;
@@ -103,43 +199,46 @@ export class Gallery {
 
 	private updateItems(): void {
 		const uMode = this.scene.uniforms.uMode.value;
-		this.gap = lerp(GAP_BACK, GAP_FRONT, uMode);
-		// Stacked vertically (matching the source's actual scroll axis — see card/vertex.glsl's
-		// header comment), so the step is the card's HEIGHT + gap, not its width.
-		const step = CARD_HEIGHT + this.gap;
-		const totalHeight = step * this.cards.length;
-		const wrapped = ((this.scrollPosition % totalHeight) + totalHeight) % totalHeight;
-
-		// Gallery-wide scroll speed (simplified from the original's per-mesh tracked speed) drives each
-		// card's warp shader — see card/vertex.glsl's `mix(-.00015, -(uSpeed*.2), uProgress)`, which
-		// multiplies this by distanceFromCentre² (a raw world-space distance, easily in the thousands
-		// once squared) — the original always damps its own raw scroll delta by a `speedLimit` constant
-		// (`isLowDpr||isSafari ? 3e-5 : 5e-5`) before it ever reaches that shader term. Missing that
-		// damping here was the bug: an un-scaled per-frame delta blew the warp multiplier up hugely.
-		const SPEED_LIMIT = 5e-5;
-		const speed = (this.scrollPosition - this.previousScrollPosition) * SPEED_LIMIT;
+		const speed = computeScrollSpeed(this.scrollPosition, this.previousScrollPosition);
 		this.previousScrollPosition = this.scrollPosition;
+		const axis = this.layout.positionAxis;
+		const crossAxis = axis === 'x' ? 'y' : 'x';
+		const crossValue = axis === 'x' ? this.center.y : this.center.x;
+		const alongOrigin = axis === 'x' ? this.center.x : this.center.y;
 
-		for (let i = 0; i < this.cards.length; i++) {
-			let y = step * i - wrapped;
-			y = ((y + totalHeight / 2) % totalHeight + totalHeight) % totalHeight - totalHeight / 2;
-			// Same depth arc MediaCarousel uses — one shared definition (carousel-shared.ts) for the
-			// "comes from behind to the front" sweep, not two independently-tuned implementations.
-			const z = computeDepthOffset(y, step, DEPTH_CURVE);
-			this.cards[i].mesh.position.y = y;
-			this.cards[i].mesh.position.z = z;
-			this.cards[i].material.uniforms.uSpeed.value = speed;
-			this.videoCards[i].mesh.position.y = y;
-			this.videoCards[i].mesh.position.x = this.cards[i].mesh.position.x;
-			this.videoCards[i].mesh.position.z = z + 0.01;
-			this.videoCards[i].material.uniforms.uSpeed.value = speed;
-			this.titles[i].mesh.position.y = y;
-			this.titles[i].mesh.position.z = z;
-			this.titles[i].mesh.position.x = this.cards[i].mesh.position.x + CARD_WIDTH / 2 + TITLE_OFFSET_X;
+		const count = Math.max(this.cards.length, this.videoCards.length, this.titles.length);
+		for (let i = 0; i < count; i++) {
+			const { position, depth } = this.layout.computeItem(i, this.scrollPosition, uMode);
+			const along = alongOrigin + position;
+			const z = this.center.z + depth;
+
+			const card = this.cards[i];
+			if (card) {
+				card.mesh.position[axis] = along;
+				card.mesh.position[crossAxis] = crossValue;
+				card.mesh.position.z = z;
+				card.material.uniforms.uSpeed.value = speed;
+			}
+
+			const videoCard = this.videoCards[i];
+			if (videoCard) {
+				videoCard.mesh.position[axis] = along;
+				videoCard.mesh.position[crossAxis] = crossValue;
+				videoCard.mesh.position.z = z + 0.01;
+				videoCard.material.uniforms.uSpeed.value = speed;
+			}
+
+			const title = this.titles[i];
+			if (title) {
+				title.mesh.position[axis] = along;
+				title.mesh.position[crossAxis] = crossValue + TITLE_OFFSET_X;
+				title.mesh.position.z = z;
+			}
 		}
 	}
 
 	private updateGroup(): void {
+		if (!this.groupTilt) return;
 		const uMode = this.scene.uniforms.uMode.value;
 		this.group.rotation.x = lerp(BACK_STATE.rotationX, 0, uMode);
 		this.group.rotation.y = lerp(BACK_STATE.rotationY, 0, uMode);
@@ -161,10 +260,11 @@ export class Gallery {
 	}
 
 	handleHover(mouseNX: number, mouseNY: number): void {
+		if (!this.hoverNav) return;
 		if (!this.groupPivot.visible) {
 			if (this._hoveredIndex !== null) {
-				this.cards[this._hoveredIndex].setInactive();
-				this.videoCards[this._hoveredIndex].setOffsetOut();
+				this.cards[this._hoveredIndex]?.setInactive();
+				this.videoCards[this._hoveredIndex]?.setOffsetOut();
 				this._hoveredIndex = null;
 			}
 			return;
@@ -229,12 +329,12 @@ export class Gallery {
 		if (closestIndex === this._hoveredIndex) return;
 		if (this._hoveredIndex !== null) {
 			this.cards[this._hoveredIndex].setInactive();
-			this.videoCards[this._hoveredIndex].setOffsetOut();
+			this.videoCards[this._hoveredIndex]?.setOffsetOut();
 		}
 		this._hoveredIndex = closestIndex;
 		if (this._hoveredIndex !== null) {
 			this.cards[this._hoveredIndex].setActive();
-			this.videoCards[this._hoveredIndex].setOffsetIn();
+			this.videoCards[this._hoveredIndex]?.setOffsetIn();
 		}
 	}
 
@@ -255,7 +355,8 @@ export class Gallery {
 		}
 	}
 
-	/** Called once per frame by Images/Video layers before rendering. */
+	/** Called once per frame — by the Images/Video layers for the home strip, or by a sub-page's own
+	 *  rAF loop (see the Work page) for a route-scoped carousel. */
 	update(mouseNX: number, mouseNY: number): void {
 		this.updateItems();
 		this.updateGroup();
@@ -268,5 +369,10 @@ export class Gallery {
 		for (const card of this.cards) card.dispose();
 		for (const videoCard of this.videoCards) videoCard.dispose();
 		for (const title of this.titles) title.dispose();
+		// Removes this instance's whole subtree at once — matters for a sub-page carousel sharing the
+		// home Gallery's videoScene: without this, a disposed-but-still-parented group would leave
+		// stale (GPU-resource-freed) meshes behind in that persistent scene after every navigation.
+		this.imageScene.remove(this.groupPivot);
+		this.videoScene.remove(this.videoGroup);
 	}
 }

@@ -3,7 +3,7 @@
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
-	import { MediaCarousel } from '$lib/three/scenes/segerman-bg/media-carousel';
+	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
 	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
@@ -18,24 +18,33 @@
 		if (!ready || !slug || !scene || !gallery || !WORK_PROJECTS[slug]) return;
 
 		const mediaUrls = [1, 2, 3, 4, 5].map((i) => `/videos/segerman-bg/work-media/${slug}-${i}.mp4`);
-		const carousel = new MediaCarousel(scene, gallery.videoScene, {
-			axis: 'horizontal',
-			mediaType: 'video',
-			urls: mediaUrls,
-			gap: 4,
-			center: { x: 0, y: 0, z: 5 }
-			// itemWidth/itemHeight/depthCurve: left at MediaCarousel's shared defaults (carousel-shared.ts) —
-			// the same card size and depth-curve strength Gallery.updateItems() uses for the home strip.
-		});
+		const carousel = new Gallery(
+			scene,
+			mediaUrls.map((videoUrl) => ({ videoUrl })),
+			{
+				axis: 'horizontal',
+				mediaType: 'video',
+				titles: false,
+				hoverNav: false,
+				groupTilt: false,
+				gapFront: 4,
+				gapBack: 4,
+				center: { x: 0, y: 0, z: 5 },
+				// Renders through the home Gallery's own persistent video layer instead of standing up a
+				// new scene/layer for this route — dispose() removes this instance's whole subtree from it
+				// on navigation away.
+				videoScene: gallery.videoScene
+			}
+		);
 		const scroll = new Scroll(scene, carousel);
 
 		// Not registered via scene.addLayer() — Scene has no removeLayer(), and this carousel/scroll
 		// pair is scoped to this page (a fresh pair gets created on every slug change), so a manual
 		// rAF loop scoped to this effect's own lifetime avoids leaking phantom layers across
-		// navigation. Layer.loop() is public — same method Scene's own loop would call.
+		// navigation.
 		let rafId = requestAnimationFrame(function tick() {
 			scroll.loop();
-			carousel.loop();
+			carousel.update(0, 0);
 			rafId = requestAnimationFrame(tick);
 		});
 
