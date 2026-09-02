@@ -331,14 +331,16 @@ export class Gallery implements Scrollable {
 		}
 
 		if (closestIndex === this._hoveredIndex) return;
+		// Hover no longer reveals the video card over the image (setOffsetIn()/setOffsetOut()) — that
+		// was showing a video frame stacked above the project picture on hover, which is what "remove
+		// that" was asking to drop. Cards still scale/highlight on hover (setActive/setInactive); the
+		// video cards themselves stay constructed but permanently hidden (uOffsetY never tweened off 1).
 		if (this._hoveredIndex !== null) {
 			this.cards[this._hoveredIndex].setInactive();
-			this.videoCards[this._hoveredIndex]?.setOffsetOut();
 		}
 		this._hoveredIndex = closestIndex;
 		if (this._hoveredIndex !== null) {
 			this.cards[this._hoveredIndex].setActive();
-			this.videoCards[this._hoveredIndex]?.setOffsetIn();
 		}
 	}
 
