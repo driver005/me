@@ -2,19 +2,24 @@
 import Lenis from 'lenis';
 import { Layer } from './layer';
 import type { Scene } from './scene';
-import type { Gallery } from './gallery';
+
+/** Anything with a settable `scrollPosition` — `Gallery` satisfies this already; so does
+ *  `MediaCarousel`, which is why this isn't typed directly against `Gallery` any more. */
+export interface Scrollable {
+	scrollPosition: number;
+}
 
 export class Scroll extends Layer {
-	private gallery: Gallery;
+	private target: Scrollable;
 	private lenis: Lenis;
-	private target = 0;
+	private targetValue = 0;
 	private current = 0;
 	private readonly ease = 0.1;
 	private unsubscribeVirtualScroll: () => void;
 
-	constructor(scene: Scene, gallery: Gallery) {
+	constructor(scene: Scene, target: Scrollable) {
 		super(scene.isTouch);
-		this.gallery = gallery;
+		this.target = target;
 
 		this.lenis = new Lenis({
 			smoothWheel: true,
@@ -26,17 +31,17 @@ export class Scroll extends Layer {
 			autoRaf: false
 		});
 		this.unsubscribeVirtualScroll = this.lenis.on('virtual-scroll', (data) => {
-			this.target += Math.max(-100, Math.min(100, data.deltaY));
+			this.targetValue += Math.max(-100, Math.min(100, data.deltaY));
 		});
 		window.addEventListener('keydown', this.onKeyDown);
 	}
 
 	private onKeyDown = (event: KeyboardEvent): void => {
 		if (event.key === 'k') {
-			this.target -= 100;
+			this.targetValue -= 100;
 			event.preventDefault();
 		} else if (event.key === 'j') {
-			this.target += 100;
+			this.targetValue += 100;
 			event.preventDefault();
 		}
 	};
@@ -44,8 +49,8 @@ export class Scroll extends Layer {
 	render(): void {}
 
 	loop(): void {
-		this.current += (this.target - this.current) * this.ease;
-		this.gallery.scrollPosition = this.current;
+		this.current += (this.targetValue - this.current) * this.ease;
+		this.target.scrollPosition = this.current;
 	}
 
 	dispose(): void {

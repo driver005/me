@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
 	import { MediaCarousel } from '$lib/three/scenes/segerman-bg/media-carousel';
+	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	const project = $derived(WORK_PROJECTS[page.params.slug ?? '']);
@@ -25,7 +26,23 @@
 			itemHeight: 20,
 			gap: 4
 		});
-		return () => carousel.dispose();
+		const scroll = new Scroll(scene, carousel);
+
+		// Not registered via scene.addLayer() — Scene has no removeLayer(), and this carousel/scroll
+		// pair is scoped to this page (a fresh pair gets created on every slug change), so a manual
+		// rAF loop scoped to this effect's own lifetime avoids leaking phantom layers across
+		// navigation. Layer.loop() is public — same method Scene's own loop would call.
+		let rafId = requestAnimationFrame(function tick() {
+			scroll.loop();
+			carousel.loop();
+			rafId = requestAnimationFrame(tick);
+		});
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			scroll.dispose();
+			carousel.dispose();
+		};
 	});
 </script>
 
