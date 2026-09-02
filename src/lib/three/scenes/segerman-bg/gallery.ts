@@ -52,6 +52,14 @@ export interface GalleryOptions {
 	depthCurve?: number;
 	itemWidth?: number;
 	itemHeight?: number;
+	/** Splits the items into this many parallel strips side by side (spaced along the cross axis —
+	 *  next to each other for a vertical gallery, stacked for a horizontal one), each independently
+	 *  wrapping/scrolling instead of one single strip. Default 1 (today's single-strip behavior).
+	 *  Items are dealt round-robin across the rows (item 0 → row 0, item 1 → row 1, ..., item N → row
+	 *  N % rows), and each row's scroll is offset by a fixed phase of the others so they don't all show
+	 *  the same items lined up at once — the masonry-gallery look the /gallery page's items use this
+	 *  for, in place of that page's previous 2D CSS-grid implementation. */
+	rows?: number;
 	/** Scene to add image/video meshes into. Defaults to a new THREE.Scene owned by this instance
 	 *  (the home strip's own `imageScene`/`videoScene`, rendered by the Images/Video layers). A
 	 *  sub-page carousel instead passes the home Gallery's existing `videoScene` so its cards render
@@ -99,7 +107,12 @@ export class Gallery implements Scrollable {
 	/** Written every frame by the `Scroll` layer (real Lenis-driven input, phase 4). */
 	scrollPosition = 0;
 	private previousScrollPosition = 0;
-	private layout: CarouselLayout;
+	/** One CarouselLayout per row (length 1 for the default single-strip case). */
+	private layouts: CarouselLayout[];
+	/** Parallel to cards/videoCards/titles — which row (index into `layouts`) each one belongs to. */
+	private itemRow: number[] = [];
+	private rowCount: number;
+	private rowSpacing: number;
 	private axis: CarouselAxis;
 	private center: { x: number; y: number; z: number };
 	private hasTitles: boolean;
@@ -131,14 +144,23 @@ export class Gallery implements Scrollable {
 
 		const itemWidth = options.itemWidth ?? CARD_WIDTH;
 		const itemHeight = options.itemHeight ?? CARD_HEIGHT;
-		this.layout = new CarouselLayout({
-			axis: this.axis,
-			itemSize: this.axis === 'vertical' ? itemHeight : itemWidth,
-			itemCount: projects.length,
-			gapFront: options.gapFront ?? GAP_FRONT,
-			gapBack: options.gapBack ?? GAP_BACK,
-			depthCurve: options.depthCurve
-		});
+		this.rowCount = Math.max(1, Math.floor(options.rows ?? 1));
+		this.rowSpacing = (this.axis === 'vertical' ? itemWidth : itemHeight) + (options.gapFront ?? GAP_FRONT);
+
+		// Items dealt round-robin: item i belongs to row i % rowCount.
+		const rowItemCounts = new Array(this.rowCount).fill(0) as number[];
+		for (let i = 0; i < projects.length; i++) rowItemCounts[i % this.rowCount]++;
+		this.layouts = rowItemCounts.map(
+			(itemCount) =>
+				new CarouselLayout({
+					axis: this.axis,
+					itemSize: this.axis === 'vertical' ? itemHeight : itemWidth,
+					itemCount: Math.max(1, itemCount),
+					gapFront: options.gapFront ?? GAP_FRONT,
+					gapBack: options.gapBack ?? GAP_BACK,
+					depthCurve: options.depthCurve
+				})
+		);
 
 		const mediaType = options.mediaType ?? 'both';
 		const wantsImage = mediaType === 'both' || mediaType === 'image';
@@ -146,7 +168,9 @@ export class Gallery implements Scrollable {
 
 		const uAxis = this.axis === 'horizontal' ? 1 : 0;
 
-		for (const project of projects) {
+		projects.forEach((project, i) => {
+			this.itemRow.push(i % this.rowCount);
+
 			if (wantsImage && project.textureUrl) {
 				const card = new Card(scene, { textureUrl: project.textureUrl, width: itemWidth, height: itemHeight });
 				card.material.uniforms.uAxis.value = uAxis;
@@ -172,7 +196,7 @@ export class Gallery implements Scrollable {
 				this.group.add(title.mesh);
 				this.titles.push(title);
 			}
-		}
+		});
 
 		if (wantsImage) {
 			for (const card of this.cards) {
@@ -205,16 +229,25 @@ export class Gallery implements Scrollable {
 		const uMode = this.scene.uniforms.uMode.value;
 		const speed = computeScrollSpeed(this.scrollPosition, this.previousScrollPosition);
 		this.previousScrollPosition = this.scrollPosition;
-		const axis = this.layout.positionAxis;
+		const axis = this.layouts[0].positionAxis;
 		const crossAxis = axis === 'x' ? 'y' : 'x';
-		const crossValue = axis === 'x' ? this.center.y : this.center.x;
+		const baseCrossValue = axis === 'x' ? this.center.y : this.center.x;
 		const alongOrigin = axis === 'x' ? this.center.x : this.center.y;
 
 		const count = Math.max(this.cards.length, this.videoCards.length, this.titles.length);
 		for (let i = 0; i < count; i++) {
-			const { position, depth } = this.layout.computeItem(i, this.scrollPosition, uMode);
+			const row = this.itemRow[i] ?? 0;
+			const layout = this.layouts[row];
+			// Round-robin dealing (constructor) means this item's position within ITS OWN row's wrap
+			// cycle is i / rowCount, not i itself. A per-row phase offset on top keeps rows from all
+			// showing the same items lined up together — the masonry-gallery look `rows` exists for.
+			const withinRow = Math.floor(i / this.rowCount);
+			const phase = row * this.rowSpacing * 1.7;
+			const { position, depth } = layout.computeItem(withinRow, this.scrollPosition + phase, uMode);
 			const along = alongOrigin + position;
 			const z = this.center.z + depth;
+			// Rows spread evenly across the cross axis, centred on `this.center`.
+			const crossValue = baseCrossValue + (row - (this.rowCount - 1) / 2) * this.rowSpacing;
 
 			const card = this.cards[i];
 			if (card) {

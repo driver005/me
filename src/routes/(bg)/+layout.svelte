@@ -146,7 +146,11 @@
 		gallery.setHomeVisible(isHome);
 
 		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
-		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : pathname === '/about' ? 'info' : 'error';
+		// /gallery reuses the 'info' treatment (no dedicated planet look was asked for) rather than
+		// falling through to 'error', which parks the planet off-screen at z:-200 — fine for a route
+		// that's never actually shown, wrong for a real page.
+		const pageId: PlanetPageId =
+			isHome ? 'home' : workSlug ? 'work' : pathname === '/about' || pathname === '/gallery' ? 'info' : 'error';
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
 		planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
 		compositor.setPage(pageId);
