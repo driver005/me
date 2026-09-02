@@ -1,4 +1,8 @@
-// Real project copy, sourced from the site's own content.CFZxyfkA.js (fetched via Firecrawl this session).
+// Real project data, derived from $lib/data's own `works` array (the single source of truth for
+// title/client/year/category/img/href) plus the extra fields this engine's Gallery/MediaCarousel need
+// that $lib/data doesn't carry yet.
+import { works } from '$lib/data';
+
 export interface WorkProject {
 	slug: string;
 	title: string;
@@ -6,66 +10,74 @@ export interface WorkProject {
 	role: string;
 	url: string;
 	description: string;
-	/** Tints the planet's uLightColor/uDarkColor while this project's page is showing (Planet.animate()
-	 *  in planet.ts) — the source's own per-project recolor (world.js's `this.colors.work[slug]`). */
+	textureUrl: string;
+	/** TODO: no real per-project clip exists yet — points at a file that doesn't exist, so the media
+	 *  carousel's video card falls back to its placeholder texture until one is added at this path. */
+	videoUrl: string;
+	/** Tints the planet's uLightColor/uDarkColor while this project's page is showing
+	 *  (Planet.animate() in planet.ts). TODO: placeholder palette — swap for real per-project brand
+	 *  colors when you have them. */
 	lightColor: string;
 	darkColor: string;
 }
 
-export const WORK_PROJECTS: Record<string, WorkProject> = {
-	estrela: {
-		slug: 'estrela',
-		title: 'Estrela Studio',
-		year: 2025,
-		role: 'Front-end development',
-		url: 'https://estrela.studio/',
-		description:
-			'Close collaboration with Malvah Studio brought this immersive portfolio to life, winning Awwwards Site of the Day and Developer Award.',
-		lightColor: '#c093cc',
-		darkColor: '#ab70db'
+/** Fields $lib/data's `works` doesn't carry — full description text, and placeholder
+ *  video/color slots (see WorkProject's own TODOs) until real ones exist. */
+const WORK_META: Record<string, { description: string; lightColor: string; darkColor: string }> = {
+	teclab: {
+		description: 'Front-end build for SFZ Tübingen — a React web app delivered for the organization.',
+		lightColor: '#7ba7c9',
+		darkColor: '#3d6a8c'
 	},
-	yucca: {
-		slug: 'yucca',
-		title: 'Yucca Packaging',
-		year: 2025,
-		role: 'Front-end development',
-		url: 'https://yucca.co.za/',
-		description:
-			'A highly customised and integrated store experience designed by Estrela Studio, won the Awwwards Site of the Day and Developer Award.',
-		lightColor: '#489d74',
-		darkColor: '#336c50'
+	hhmodle: {
+		description: 'A Wordle-style daily puzzle game, built in Python as a personal science/data project.',
+		lightColor: '#8fbf8f',
+		darkColor: '#3f7a3f'
 	},
-	zulik: {
-		slug: 'zulik',
-		title: 'Zulik',
-		year: 2025,
-		role: 'Design, front-end development',
-		url: 'https://zulik.co/',
-		description:
-			'I designed and built the new portfolio for Zulik, the studio I co-founded with my friend Anton Van Diermen. Awarded FWA Site of the Day.',
-		lightColor: '#5d83d0',
-		darkColor: '#4772b8'
+	congelado: {
+		description: 'A systems-level personal project written in C++.',
+		lightColor: '#9c9cc9',
+		darkColor: '#54548c'
 	},
-	payjustnow: {
-		slug: 'payjustnow',
-		title: 'PayJustNow',
-		year: 2025,
-		role: 'Front-end development',
-		url: 'https://payjustnow.com/',
-		description:
-			'Motion-rich marketing site focused on smooth transitions and refined scroll interactions, designed by Estrela Studio.',
-		lightColor: '#98ac4d',
-		darkColor: '#1a7f26'
+	blog: {
+		description: 'A personal publishing platform, self-built and self-hosted in Python.',
+		lightColor: '#c9a97b',
+		darkColor: '#8c6a3d'
 	},
-	vineyard: {
-		slug: 'vineyard',
-		title: 'Vineyard Hotel',
-		year: 2025,
-		role: 'Front-end development',
-		url: 'https://www.vineyard.co.za/',
-		description:
-			'Performance-focused marketing site featuring elegant motion effects and custom third-party integrations, designed by Estrela Studio.',
-		lightColor: '#7299b1',
-		darkColor: '#306e82'
+	me: {
+		description: 'This site — a personal portfolio built in Svelte, continuously reworked.',
+		lightColor: '#c97b9c',
+		darkColor: '#8c3d5f'
+	},
+	fuzzyboard: {
+		description: 'A personal Flutter app project.',
+		lightColor: '#c9c37b',
+		darkColor: '#8c853d'
 	}
 };
+
+export const WORK_PROJECTS: Record<string, WorkProject> = Object.fromEntries(
+	works.map((project) => {
+		const slug = project.title;
+		const meta = WORK_META[slug] ?? {
+			description: `${project.category} project for ${project.client}.`,
+			lightColor: '#9ca3af',
+			darkColor: '#4b5563'
+		};
+		return [
+			slug,
+			{
+				slug,
+				title: project.title,
+				year: Number(project.year),
+				role: project.category,
+				url: project.href,
+				description: meta.description,
+				textureUrl: project.img,
+				videoUrl: `/videos/work/${slug}.mp4`,
+				lightColor: meta.lightColor,
+				darkColor: meta.darkColor
+			}
+		];
+	})
+);

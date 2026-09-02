@@ -1,174 +1,184 @@
 import * as THREE from 'three';
+import type { ThrelteContext } from '@threlte/core';
 import type { Layer } from './layer';
 import type { PointerState, SceneUniforms } from './types';
 import { createFullscreenTriangle } from './fullscreen-triangle';
 
-export class Scene {
-	canvas: HTMLCanvasElement;
+/**
+ * The engine's renderer/camera/uniform/render-target handle — every Layer class (Stars, Fog, Planet,
+ * Gallery, Compositor, ...) takes this as `scene: Scene` and is otherwise untouched by the Threlte
+ * migration below. Was a class owning its own `THREE.WebGLRenderer`; now an interface backed by
+ * `createScene()`, which builds this same shape from Threlte's own `<Canvas>` context instead —
+ * Threlte owns the renderer/canvas/camera lifecycle, this only adds the engine's own uniforms/pointer/
+ * render-target bookkeeping and per-frame layer loop on top.
+ */
+export interface Scene {
 	renderer: THREE.WebGLRenderer;
 	camera: THREE.PerspectiveCamera;
-	scene = new THREE.Scene();
-	fullScreenTriangle = createFullscreenTriangle();
+	scene: THREE.Scene;
+	fullScreenTriangle: THREE.BufferGeometry;
 
 	uniforms: SceneUniforms;
-	pointer: PointerState = { x: 0, y: 0, dx: 0, dy: 0, nx: 0, ny: 0, speed: 0, isDown: false };
+	pointer: PointerState;
 
-	get widthAtZ(): number {
-		return this._widthAtZ;
-	}
-
-	get heightAtZ(): number {
-		return this._heightAtZ;
-	}
+	readonly widthAtZ: number;
+	readonly heightAtZ: number;
 
 	isTouch: boolean;
 	isLowDpr: boolean;
 	isMobile: boolean;
 	dpr: number;
 
-	private layers: Layer[] = [];
-	private rts: { rt: THREE.WebGLRenderTarget; scaleFn: () => number }[] = [];
-	private outputFn: (() => void) | null = null;
-	private rafId = 0;
-	private width = 0;
-	private height = 0;
-	private _widthAtZ = 0;
-	private _heightAtZ = 0;
+	addLayer(layer: Layer): void;
+	createRenderTarget(scale: number, options?: THREE.RenderTargetOptions): THREE.WebGLRenderTarget;
+	/** The final draw call each frame — set once by the compositor. Before that, defaults to a black clear. */
+	setOutput(drawFn: () => void): void;
+	dispose(): void;
+}
 
-	constructor(canvas: HTMLCanvasElement) {
-		this.canvas = canvas;
-		this.isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
-		this.dpr = Math.min(window.devicePixelRatio, 2);
-		this.isLowDpr = window.devicePixelRatio <= 1.5;
-		this.isMobile = window.matchMedia('(max-width: 767px)').matches;
+/**
+ * Builds a `Scene` handle from an already-mounted Threlte `<Canvas>` context (call from inside a
+ * component that is itself a descendant of `<Canvas>`, so `useThrelte()` has something to return).
+ * The caller owns driving `resize()`/the per-frame loop via Threlte's own `size` store and `useTask` —
+ * see EngineRoot.svelte, which is the only thing that constructs this.
+ */
+export function createScene(threlte: ThrelteContext<THREE.WebGLRenderer>, canvas: HTMLCanvasElement): Scene {
+	const isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+	const isLowDpr = window.devicePixelRatio <= 1.5;
+	const isMobile = window.matchMedia('(max-width: 767px)').matches;
 
-		this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, powerPreference: 'high-performance' });
-		this.renderer.autoClear = false;
-		this.renderer.setPixelRatio(this.dpr);
-		this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+	const renderer = threlte.renderer as THREE.WebGLRenderer;
+	const camera = threlte.camera.current as THREE.PerspectiveCamera;
+	const innerScene = threlte.scene;
+	const fullScreenTriangle = createFullscreenTriangle();
 
-		this.camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-		this.camera.position.z = 100;
-
-		this.uniforms = {
-			uTime: { value: 0 },
-			uRes: { value: new THREE.Vector2() },
-			uDpr: { value: this.dpr },
-			uMode: { value: 1 },
-			uIsTouch: { value: 0 },
-			uCurveX: { value: 0.00005 },
-			uCurveZ: { value: 0.01 },
-			uToggleCoords: { value: new THREE.Vector2(0.9, 0.9) },
-			uToggleProgress: { value: 0 },
-			uDirection: { value: 0 },
-			uProgressFront: { value: 0 },
-			uProgressBack: { value: 0 },
-			uWarp: { value: 0 }
-		};
-		this.uniforms.uIsTouch.value = this.isTouch ? 1 : 0;
-
-		window.addEventListener('resize', this.handleWindowResize);
-		canvas.addEventListener('pointermove', this.onPointerMove, { passive: true });
-		canvas.addEventListener('pointerdown', this.onPointerDown, { passive: true });
-		canvas.addEventListener('pointerup', this.onPointerUp, { passive: true });
-		canvas.addEventListener('pointercancel', this.onPointerUp, { passive: true });
-
-		this.handleWindowResize();
-	}
-
-	addLayer(layer: Layer): void {
-		this.layers.push(layer);
-	}
-
-	createRenderTarget(scale: number, options: THREE.RenderTargetOptions = {}): THREE.WebGLRenderTarget {
-		const scaleFn = () => scale;
-		const rt = new THREE.WebGLRenderTarget(
-			Math.round(this.width * scale),
-			Math.round(this.height * scale),
-			{ minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false, stencilBuffer: false, ...options }
-		);
-		rt.texture.generateMipmaps = false;
-		this.rts.push({ rt, scaleFn });
-		return rt;
-	}
-
-	/** The final draw call each frame — set once by the compositor (Task 9). Before that, defaults to a black clear. */
-	setOutput(drawFn: () => void): void {
-		this.outputFn = drawFn;
-	}
-
-	private onPointerMove = (event: PointerEvent): void => {
-		const nx = (event.clientX / this.width) * 2 - 1;
-		const ny = -(event.clientY / this.height) * 2 + 1;
-		this.pointer.dx = event.clientX - this.pointer.x;
-		this.pointer.dy = event.clientY - this.pointer.y;
-		this.pointer.x = event.clientX;
-		this.pointer.y = event.clientY;
-		this.pointer.nx = nx;
-		this.pointer.ny = ny;
-		this.pointer.speed = Math.abs(this.pointer.dx) + Math.abs(this.pointer.dy);
+	const uniforms: SceneUniforms = {
+		uTime: { value: 0 },
+		uRes: { value: new THREE.Vector2() },
+		uDpr: { value: threlte.dpr.current },
+		uMode: { value: 1 },
+		uIsTouch: { value: isTouch ? 1 : 0 },
+		uCurveX: { value: 0.00005 },
+		uCurveZ: { value: 0.01 },
+		uToggleCoords: { value: new THREE.Vector2(0.9, 0.9) },
+		uToggleProgress: { value: 0 },
+		uDirection: { value: 0 },
+		uProgressFront: { value: 0 },
+		uProgressBack: { value: 0 },
+		uWarp: { value: 0 }
 	};
 
-	private onPointerDown = (event: PointerEvent): void => {
-		this.pointer.isDown = true;
-		this.pointer.x = event.clientX;
-		this.pointer.y = event.clientY;
-	};
+	const pointer: PointerState = { x: 0, y: 0, dx: 0, dy: 0, nx: 0, ny: 0, speed: 0, isDown: false };
 
-	private onPointerUp = (): void => {
-		this.pointer.isDown = false;
-	};
+	const layers: Layer[] = [];
+	const rts: { rt: THREE.WebGLRenderTarget; scaleFn: () => number }[] = [];
+	let outputFn: (() => void) | null = null;
+	let width = 0;
+	let height = 0;
+	let widthAtZ = 0;
+	let heightAtZ = 0;
 
-	private handleWindowResize = (): void => {
-		this.width = window.innerWidth;
-		this.height = window.innerHeight;
-		this.dpr = Math.min(window.devicePixelRatio, 2);
-		this.resize(this.width, this.height);
-	};
+	function onPointerMove(event: PointerEvent): void {
+		const nx = (event.clientX / width) * 2 - 1;
+		const ny = -(event.clientY / height) * 2 + 1;
+		pointer.dx = event.clientX - pointer.x;
+		pointer.dy = event.clientY - pointer.y;
+		pointer.x = event.clientX;
+		pointer.y = event.clientY;
+		pointer.nx = nx;
+		pointer.ny = ny;
+		pointer.speed = Math.abs(pointer.dx) + Math.abs(pointer.dy);
+	}
+	function onPointerDown(event: PointerEvent): void {
+		pointer.isDown = true;
+		pointer.x = event.clientX;
+		pointer.y = event.clientY;
+	}
+	function onPointerUp(): void {
+		pointer.isDown = false;
+	}
+	canvas.addEventListener('pointermove', onPointerMove, { passive: true });
+	canvas.addEventListener('pointerdown', onPointerDown, { passive: true });
+	canvas.addEventListener('pointerup', onPointerUp, { passive: true });
+	canvas.addEventListener('pointercancel', onPointerUp, { passive: true });
 
-	resize(width: number, height: number): void {
-		this.width = width;
-		this.height = height;
-		this.camera.aspect = width / height;
-		this.camera.updateProjectionMatrix();
-		const fovRad = (this.camera.fov * Math.PI) / 180;
-		this._heightAtZ = 2 * Math.tan(fovRad / 2) * this.camera.position.z;
-		this._widthAtZ = this._heightAtZ * this.camera.aspect;
-		this.uniforms.uRes.value.set(width, height);
-		this.uniforms.uDpr.value = this.dpr;
-		this.renderer.setPixelRatio(this.dpr);
-		this.renderer.setSize(width, height);
-		for (const { rt, scaleFn } of this.rts) {
-			rt.setSize(Math.round(width * scaleFn()), Math.round(height * scaleFn()));
+	function resize(w: number, h: number): void {
+		width = w;
+		height = h;
+		// Threlte's own `makeDefault` camera already gets its aspect/projection-matrix updated on
+		// resize — this only recomputes the engine's own derived widthAtZ/heightAtZ on top of that.
+		const fovRad = (camera.fov * Math.PI) / 180;
+		heightAtZ = 2 * Math.tan(fovRad / 2) * camera.position.z;
+		widthAtZ = heightAtZ * camera.aspect;
+		uniforms.uRes.value.set(w, h);
+		uniforms.uDpr.value = threlte.dpr.current;
+		for (const { rt, scaleFn } of rts) {
+			rt.setSize(Math.round(w * scaleFn()), Math.round(h * scaleFn()));
 		}
-		for (const layer of this.layers) layer.dirty();
+		for (const layer of layers) layer.dirty();
 	}
+	resize(canvas.clientWidth, canvas.clientHeight);
 
-	private loop = (t: number): void => {
-		this.uniforms.uTime.value = t / 1000;
-		for (const layer of this.layers) layer.loop();
-		this.renderer.setRenderTarget(null);
-		this.renderer.clear();
-		if (this.outputFn) {
-			this.outputFn();
+	const handle: Scene = {
+		renderer,
+		camera,
+		scene: innerScene,
+		fullScreenTriangle,
+		uniforms,
+		pointer,
+		get widthAtZ() {
+			return widthAtZ;
+		},
+		get heightAtZ() {
+			return heightAtZ;
+		},
+		isTouch,
+		isLowDpr,
+		isMobile,
+		get dpr() {
+			return threlte.dpr.current;
+		},
+		addLayer(layer: Layer): void {
+			layers.push(layer);
+		},
+		createRenderTarget(scale: number, options: THREE.RenderTargetOptions = {}): THREE.WebGLRenderTarget {
+			const scaleFn = () => scale;
+			const rt = new THREE.WebGLRenderTarget(
+				Math.round(width * scale),
+				Math.round(height * scale),
+				{ minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false, stencilBuffer: false, ...options }
+			);
+			rt.texture.generateMipmaps = false;
+			rts.push({ rt, scaleFn });
+			return rt;
+		},
+		setOutput(drawFn: () => void): void {
+			outputFn = drawFn;
+		},
+		dispose(): void {
+			canvas.removeEventListener('pointermove', onPointerMove);
+			canvas.removeEventListener('pointerdown', onPointerDown);
+			canvas.removeEventListener('pointerup', onPointerUp);
+			canvas.removeEventListener('pointercancel', onPointerUp);
+			for (const layer of layers) layer.dispose?.();
+			for (const { rt } of rts) rt.dispose();
+			fullScreenTriangle.dispose();
 		}
-		this.rafId = requestAnimationFrame(this.loop);
 	};
 
-	start(): void {
-		this.rafId = requestAnimationFrame(this.loop);
-	}
+	// Exposed for EngineRoot.svelte, which drives both from a Threlte useTask/size-watch instead of
+	// this module owning its own requestAnimationFrame/resize-listener (Threlte owns that loop now).
+	(handle as Scene & { __resize: typeof resize; __layers: Layer[]; __getOutput: () => (() => void) | null }).__resize = resize;
+	(handle as Scene & { __resize: typeof resize; __layers: Layer[]; __getOutput: () => (() => void) | null }).__layers = layers;
+	(handle as Scene & { __resize: typeof resize; __layers: Layer[]; __getOutput: () => (() => void) | null }).__getOutput = () => outputFn;
 
-	dispose(): void {
-		cancelAnimationFrame(this.rafId);
-		window.removeEventListener('resize', this.handleWindowResize);
-		this.canvas.removeEventListener('pointermove', this.onPointerMove);
-		this.canvas.removeEventListener('pointerdown', this.onPointerDown);
-		this.canvas.removeEventListener('pointerup', this.onPointerUp);
-		this.canvas.removeEventListener('pointercancel', this.onPointerUp);
-		for (const layer of this.layers) layer.dispose?.();
-		for (const { rt } of this.rts) rt.dispose();
-		this.fullScreenTriangle.dispose();
-		this.renderer.dispose();
-	}
+	return handle;
+}
+
+/** Internal handle for EngineRoot.svelte's resize-watch/useTask — not part of the public `Scene` shape
+ *  every Layer class sees. */
+export interface SceneInternal {
+	__resize: (width: number, height: number) => void;
+	__layers: Layer[];
+	__getOutput: () => (() => void) | null;
 }

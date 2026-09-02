@@ -1,4 +1,4 @@
-<!-- src/routes/test/work/[slug]/+page.svelte -->
+<!-- src/routes/(bg)/works/[slug]/+page.svelte -->
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
@@ -15,25 +15,29 @@
 		const ready = bgContext.getReady();
 		const scene = bgContext.getScene();
 		const gallery = bgContext.getGallery();
-		if (!ready || !slug || !scene || !gallery || !WORK_PROJECTS[slug]) return;
+		const currentProject = slug ? WORK_PROJECTS[slug] : undefined;
+		if (!ready || !slug || !scene || !gallery || !currentProject) return;
 
-		const mediaUrls = [1, 2, 3, 4, 5].map((i) => `/videos/segerman-bg/work-media/${slug}-${i}.mp4`);
+		// TODO: real per-project media clips don't exist yet (WorkProject.videoUrl points at a file
+		// that isn't there) — shows the project's real screenshot as a single-item image row instead of
+		// a broken video placeholder. Switch mediaType back to 'video' with a real multi-clip array once
+		// those exist (matches the source's own 5-clips-per-project carousel).
 		const carousel = new Gallery(
 			scene,
-			mediaUrls.map((videoUrl) => ({ videoUrl })),
+			[{ textureUrl: currentProject.textureUrl }],
 			{
 				axis: 'horizontal',
-				mediaType: 'video',
+				mediaType: 'image',
 				titles: false,
 				hoverNav: false,
 				groupTilt: false,
 				gapFront: 4,
 				gapBack: 4,
 				center: { x: 0, y: 0, z: 5 },
-				// Renders through the home Gallery's own persistent video layer instead of standing up a
+				// Renders through the home Gallery's own persistent image layer instead of standing up a
 				// new scene/layer for this route — dispose() removes this instance's whole subtree from it
 				// on navigation away.
-				videoScene: gallery.videoScene
+				imageScene: gallery.imageScene
 			}
 		);
 		const scroll = new Scroll(scene, carousel);
@@ -57,12 +61,12 @@
 </script>
 
 <svelte:head>
-	<title>{project ? `${project.title} — WebGL Background Test` : 'Project not found'}</title>
+	<title>{project ? `${project.title} — Adrian Fernández` : 'Project not found'}</title>
 </svelte:head>
 
 {#if project}
 	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-3 p-8 text-white sm:max-w-xl">
-		<a href="/test" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
+		<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
 		<h1 class="text-3xl font-black uppercase">{project.title}</h1>
 		<p class="text-sm text-white/70">{project.role} · {project.year}</p>
 		<p class="leading-relaxed text-white/90">{project.description}</p>
@@ -77,6 +81,6 @@
 	</div>
 {:else}
 	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 p-8 text-white">
-		<a href="/test" class="pointer-events-auto underline">← Back — project not found</a>
+		<a href="/" class="pointer-events-auto underline">← Back — project not found</a>
 	</div>
 {/if}

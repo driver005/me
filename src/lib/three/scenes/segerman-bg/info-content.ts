@@ -1,4 +1,8 @@
-// Author bio copy for the Info page.
+// Real bio copy (from paraglide messages, the same about_bio_1/about_bio_2 the /about page uses) and
+// real tool list (from $lib/data's own skills array) for the /about page's WebGL-background overlay.
+import { m } from '$lib/paraglide/messages';
+import { skills } from '$lib/data';
+
 export interface InfoContent {
 	paragraphs: string[];
 	tools: string[];
@@ -6,11 +10,8 @@ export interface InfoContent {
 }
 
 export const INFO_CONTENT: InfoContent = {
-	paragraphs: [
-		"I'm Rafi, a creative developer based in Cape Town. My focus is building websites that are super performant and layered with immersive motion and interactions.",
-		'I come from a design background which helps me work with designers to bring their ideas to life. I love the process of converting static layouts into memorable experiences.',
-		"I'm also the co-founder of Zulik, a web development studio partnering with creative teams to produce brand websites, online stores and whatever the brief needs."
-	],
-	tools: ['Astro.js', 'WordPress', 'Nuxt.js', 'GSAP', 'Three.js', 'GLSL', 'Sanity', 'Figma'],
-	awards: ['2x Awwwards SOTD', '2x Awwwards Dev', '1x FWA FOTD']
+	paragraphs: [m['about.bio_1'](), m['about.bio_2']()],
+	tools: skills.map((skill) => skill.name),
+	// No awards data yet — the {#each} in info/+page.svelte simply renders nothing for an empty list.
+	awards: []
 };

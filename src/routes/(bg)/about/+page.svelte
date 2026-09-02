@@ -1,4 +1,4 @@
-<!-- src/routes/test/info/+page.svelte -->
+<!-- src/routes/(bg)/about/+page.svelte -->
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { INFO_CONTENT } from '$lib/three/scenes/segerman-bg/info-content';
@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>Info — WebGL Background Test</title>
+	<title>About — Adrian Fernández</title>
 </svelte:head>
 
 <!-- Left half above md (768px, matching InfoPortrait's own SPLIT_BREAKPOINT_PX — the portrait moves
@@ -30,7 +30,7 @@
 	class="pointer-events-none fixed bottom-0 left-0 z-20 flex w-full flex-col gap-4 p-8 sm:max-w-xl md:w-1/2 md:max-w-none"
 >
 	<a
-		href="/test"
+		href="/"
 		class="pointer-events-auto w-fit text-sm text-black/60 underline hover:text-black md:text-white/60 md:hover:text-white"
 	>
 		← Back
