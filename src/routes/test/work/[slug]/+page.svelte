@@ -3,7 +3,7 @@
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
-	import { WorkCarousel } from '$lib/three/scenes/segerman-bg/work-carousel';
+	import { MediaCarousel } from '$lib/three/scenes/segerman-bg/media-carousel';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	const project = $derived(WORK_PROJECTS[page.params.slug ?? '']);
@@ -17,7 +17,14 @@
 		if (!ready || !slug || !scene || !gallery || !WORK_PROJECTS[slug]) return;
 
 		const mediaUrls = [1, 2, 3, 4, 5].map((i) => `/videos/segerman-bg/work-media/${slug}-${i}.mp4`);
-		const carousel = new WorkCarousel(scene, gallery, mediaUrls);
+		const carousel = new MediaCarousel(scene, gallery.videoScene, {
+			axis: 'horizontal',
+			mediaType: 'video',
+			urls: mediaUrls,
+			itemWidth: 30,
+			itemHeight: 20,
+			gap: 4
+		});
 		return () => carousel.dispose();
 	});
 </script>
