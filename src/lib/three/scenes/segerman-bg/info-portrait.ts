@@ -68,10 +68,12 @@ export class InfoPortrait {
 	 *  space background). */
 	private updateLayout(): void {
 		const isSplit = window.innerWidth >= SPLIT_BREAKPOINT_PX;
-		const width = isSplit ? this.scene.widthAtZ / 2 : this.scene.widthAtZ;
-		const height = this.scene.heightAtZ;
+		const zoneWidth = isSplit ? this.scene.widthAtZ / 2 : this.scene.widthAtZ;
+		const zoneHeight = this.scene.heightAtZ;
 
-		this.mesh.scale.set(width, height, 1);
+		// Half the zone's own size in both dimensions, still centered within that zone (right half
+		// above the split breakpoint, full width below it).
+		this.mesh.scale.set(zoneWidth * 0.5, zoneHeight * 0.5, 1);
 		this.mesh.position.x = isSplit ? this.scene.widthAtZ / 4 : 0;
 	}
 

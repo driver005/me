@@ -9,6 +9,10 @@ export interface Scrollable {
 	scrollPosition: number;
 }
 
+/** How far one scroll tick moves the carousel — the raw clamped deltaY was moving it way too far
+ *  per tick, so this scales it down. Tune this, not the clamp above, if it still needs adjusting. */
+const SCROLL_SPEED = 0.3;
+
 export class Scroll extends Layer {
 	private target: Scrollable;
 	private lenis: Lenis;
@@ -31,7 +35,7 @@ export class Scroll extends Layer {
 			autoRaf: false
 		});
 		this.unsubscribeVirtualScroll = this.lenis.on('virtual-scroll', (data) => {
-			this.targetValue += Math.max(-100, Math.min(100, data.deltaY));
+			this.targetValue += Math.max(-100, Math.min(100, data.deltaY)) * SCROLL_SPEED;
 		});
 		window.addEventListener('keydown', this.onKeyDown);
 	}

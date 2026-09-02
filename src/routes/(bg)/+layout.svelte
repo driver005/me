@@ -168,6 +168,7 @@
 		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
 		// underneath a project/about page's own content.
 		gallery.setHomeVisible(isHome);
+		nameText?.setVisible(isHome);
 
 		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
 		// Every non-home, non-work route reachable inside this (bg) group gets the 'info' treatment —
@@ -310,7 +311,7 @@
 
 		// Big see-through "ADRIAN" on the opposite (left) half, over the Earth — dropped into the same
 		// imageScene/camera/render pass the gallery cards already use, rather than a new render target.
-		nameText = new NameText(gallery.imageScene, { x: -36, y: 0, z: -15 }, 'ADRIAN', 20);
+		nameText = new NameText(scene, gallery.imageScene, { x: -42.5, y: 0, z: -30 }, ['AD', 'RI', 'AN'], 30, 85, 120);
 
 		scroll = new Scroll(scene, gallery);
 		scene.addLayer(scroll);
@@ -326,7 +327,7 @@
 		front = new Front(scene, images, video, texts);
 
 		scene.addLayer(stars);
-		scene.addLayer(fog);
+		// scene.addLayer(fog); // temporarily disabled per request — seeing how it looks without it
 		scene.addLayer(fluid);
 		// planetSwitcher, not `planet` directly — it delegates to whichever planet (mesh or raymarched)
 		// the route effect has set active, so only the currently-visible one actually renders each frame.

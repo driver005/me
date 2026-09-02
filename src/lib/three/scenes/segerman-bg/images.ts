@@ -3,6 +3,7 @@ import { Layer } from './layer';
 import type { Scene } from './scene';
 import type { Gallery } from './gallery';
 import { Blur } from './blur';
+import { NAME_TEXT_LAYER } from './name-text';
 
 export class Images extends Layer {
 	private scene: Scene;
@@ -55,10 +56,15 @@ export class Images extends Layer {
 		this.blur.apply(this.backRT.texture, this.tightBlurA, this.tightBlurB, 1);
 
 		// Front pass (uImageMode=1): grain/duotone treatment, no bloom — feeds the white front compositor.
+		// NameText lives only in the back pass — it isn't a Card, so it has no uImageMode of its own
+		// to gate itself with; excluded here via its dedicated camera layer instead, re-enabled right
+		// after so every other render this frame keeps seeing the camera's normal (all-layers) view.
 		for (const card of this.gallery.cards) card.setImageMode(1);
+		this.scene.camera.layers.disable(NAME_TEXT_LAYER);
 		renderer.setRenderTarget(this.frontRT);
 		renderer.clear();
 		renderer.render(this.gallery.imageScene, this.scene.camera);
+		this.scene.camera.layers.enable(NAME_TEXT_LAYER);
 	}
 
 	dispose(): void {

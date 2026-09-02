@@ -98,7 +98,7 @@ const TITLE_OFFSET_X = 8;
 
 const BACK_STATE = {
 	rotationX: 0,
-	rotationY: -0.49,
+	rotationY: -0.15,
 	rotationZ: 0,
 	positionX: -5.3,
 	positionY: 0,
