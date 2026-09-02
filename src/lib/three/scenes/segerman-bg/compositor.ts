@@ -34,6 +34,9 @@ export interface CompositorLayers {
 // already ported as this class's uGlowStrength default (0.9); the other pages never were.
 const GLOW_STRENGTH_BY_PAGE: Record<PlanetPageId, number> = { home: 0.9, work: 0.4, info: 0.1, error: 0 };
 
+/** Fog only shows on the home page — sub-pages (their own DOM content over the immersive view) drop it. */
+const HAS_FOG_BY_PAGE: Record<PlanetPageId, number> = { home: 1, work: 0, info: 0, error: 0 };
+
 export class Compositor {
 	private scene: Scene;
 	private backRT: THREE.WebGLRenderTarget;
@@ -136,14 +139,20 @@ export class Compositor {
 		this.outputMesh.frustumCulled = false;
 	}
 
-	/** Tweens the back layer's glow strength to the given page's value (GLOW_STRENGTH_BY_PAGE) — called
-	 *  by the route layout alongside Planet.animate(), on every navigation. */
+	/** Tweens the back layer's glow strength and fog visibility to the given page's values
+	 *  (GLOW_STRENGTH_BY_PAGE, HAS_FOG_BY_PAGE) — called by the route layout alongside
+	 *  Planet.animate(), on every navigation. */
 	setPage(pageId: PlanetPageId): void {
 		this.pageTimeline?.kill();
 		this.pageTimeline = gsap.timeline();
 		this.pageTimeline.to(
 			this.backMaterial.uniforms.uGlowStrength,
 			{ value: GLOW_STRENGTH_BY_PAGE[pageId], duration: 2.3, ease: 'power3.inOut' },
+			0
+		);
+		this.pageTimeline.to(
+			this.backMaterial.uniforms.uHasFog,
+			{ value: HAS_FOG_BY_PAGE[pageId], duration: 2.3, ease: 'power3.inOut' },
 			0
 		);
 	}

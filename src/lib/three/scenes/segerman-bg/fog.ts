@@ -15,6 +15,7 @@ export class Fog extends Layer {
 	private scene: Scene;
 	private fluidSim: FluidSim | null = null;
 	private colorTween: gsap.core.Tween | null = null;
+	private enabledTween: gsap.core.Tween | null = null;
 
 	constructor(scene: Scene, noiseTexture: THREE.Texture) {
 		super(scene.isTouch);
@@ -70,6 +71,20 @@ export class Fog extends Layer {
 	 *  visually: back-fragment.glsl blends litFog over everything at a floor of uFogFloor (0.3) even
 	 *  where the fog texture's own density is low, so a fog color that doesn't track the planet's
 	 *  current per-page/per-project tint visibly washes it out toward a fixed navy instead. */
+	/** Fades this layer's own fog density in/out (its `uHasFog`, which raises the density threshold when
+	 *  0 — see fog/fragment.glsl's `smoothstep(uDensityMin - (1.0 - uHasFog), ...)`) — the fog only
+	 *  shows on the home page; sub-pages drop it. Compositor.setPage() tweens the compositing side
+	 *  (its own uHasFog, gating whether fog blends into the final image at all) the same way — both are
+	 *  needed since either alone would leave the other's fog computation/blend still partially active. */
+	setEnabled(enabled: boolean): void {
+		this.enabledTween?.kill();
+		this.enabledTween = gsap.to(this.material.uniforms.uHasFog, {
+			value: enabled ? 1 : 0,
+			duration: 2.3,
+			ease: 'power3.inOut'
+		});
+	}
+
 	setColor(hex: string): void {
 		this.colorTween?.kill();
 		const target = new THREE.Color(hex);
@@ -96,6 +111,7 @@ export class Fog extends Layer {
 
 	dispose(): void {
 		this.colorTween?.kill();
+		this.enabledTween?.kill();
 		this.material.dispose();
 	}
 }

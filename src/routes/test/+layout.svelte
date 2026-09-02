@@ -142,6 +142,10 @@
 		// per-project tint so the planet doesn't get washed back toward a fixed navy by a fog that never
 		// changed. FOG_COLOR_DEFAULT matches Fog's own built-in default, for home/info/error.
 		fog.setColor(project ? project.darkColor : FOG_COLOR_DEFAULT);
+		// Fog only shows on the home page — sub-pages drop it (their own DOM content sits over the
+		// immersive view instead). Both sides: Fog's own density (its own uHasFog) and the compositor's
+		// blend of it into the final image (compositor.setPage()'s own uHasFog tween).
+		fog.setEnabled(isHome);
 	});
 
 	function handleCanvasClick(): void {
