@@ -100,9 +100,13 @@
 	let routeModeTimeline: gsap.core.Tween | null = null;
 	$effect(() => {
 		const isHome = page.url.pathname === '/test';
-		if (!scene) return;
+		if (!scene || !gallery) return;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' });
+		// Sub-routes add their own 3D content (Work's media carousel, Info's portrait) into the same
+		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
+		// underneath a project/info page's own content.
+		gallery.setHomeVisible(isHome);
 	});
 
 	function handleCanvasClick(): void {

@@ -49,6 +49,7 @@ export class Gallery {
 	private scene: Scene;
 	private group = new THREE.Group();
 	private groupPivot = new THREE.Group();
+	private videoGroup = new THREE.Group();
 	private gap = GAP_FRONT;
 	/** Written every frame by the `Scroll` layer (real Lenis-driven input, phase 4). */
 	scrollPosition = 0;
@@ -67,6 +68,7 @@ export class Gallery {
 		this.projects = projects;
 		this.groupPivot.add(this.group);
 		this.imageScene.add(this.groupPivot);
+		this.videoScene.add(this.videoGroup);
 
 		for (const project of projects) {
 			const card = new Card(scene, { textureUrl: project.textureUrl, width: CARD_WIDTH, height: CARD_HEIGHT });
@@ -74,7 +76,7 @@ export class Gallery {
 			this.cards.push(card);
 
 			const videoCard = new VideoCard(scene, { videoUrl: project.videoUrl, width: CARD_WIDTH, height: CARD_HEIGHT });
-			this.videoScene.add(videoCard.mesh);
+			this.videoGroup.add(videoCard.mesh);
 			this.videoCards.push(videoCard);
 
 			const title = new Title(project.title, TITLE_HEIGHT);
@@ -91,6 +93,13 @@ export class Gallery {
 
 	get hoveredIndex(): number | null {
 		return this._hoveredIndex;
+	}
+
+	/** Hides the home strip's cards/titles/videos — called by the route layout on any sub-route so a
+	 *  project/info page's own content isn't shown stacked on top of the home gallery underneath it. */
+	setHomeVisible(visible: boolean): void {
+		this.groupPivot.visible = visible;
+		this.videoGroup.visible = visible;
 	}
 
 	setMouseTarget(nx: number, ny: number): void {
@@ -155,6 +164,14 @@ export class Gallery {
 	}
 
 	handleHover(mouseNX: number, mouseNY: number): void {
+		if (!this.groupPivot.visible) {
+			if (this._hoveredIndex !== null) {
+				this.cards[this._hoveredIndex].setInactive();
+				this.videoCards[this._hoveredIndex].setOffsetOut();
+				this._hoveredIndex = null;
+			}
+			return;
+		}
 		this.groupPivot.updateMatrixWorld(true);
 		const camera = this.scene.camera;
 		const uMode = this.scene.uniforms.uMode.value;
