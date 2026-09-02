@@ -41,8 +41,11 @@ export class InfoPortrait {
 		const geometry = new THREE.PlaneGeometry(1, 1, 30, 30);
 		this.mesh = new THREE.Mesh(geometry, this.material);
 		this.mesh.scale.set(20, 26, 1);
-		this.mesh.position.set(-18, 3, 0);
-		this.mesh.rotation.y = -0.42;
+		// Centered, facing the camera head-on — the previous {x:-18, rotation.y:-0.42} (an approximated
+		// backState offset, per this class's own comment) shifted the portrait off to the side and
+		// turned it away from the camera instead.
+		this.mesh.position.set(0, 3, 0);
+		this.mesh.rotation.y = 0;
 		this.mesh.frustumCulled = false;
 
 		this.gallery.imageScene.add(this.mesh);
