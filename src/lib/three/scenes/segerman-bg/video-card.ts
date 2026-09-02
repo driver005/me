@@ -11,6 +11,9 @@ export interface VideoCardOptions {
 	videoUrl: string;
 	width: number;
 	height: number;
+	/** Per-card dome curve strength — see card/vertex.glsl's own comment. Default -1.85 (the source's
+	 *  own value); pass 0 for a flat card. */
+	crtStrength?: number;
 }
 
 export class VideoCard {
@@ -54,7 +57,8 @@ export class VideoCard {
 				uHover: { value: 0 },
 				uProgress: { value: 1 },
 				uWarp: { value: 1 },
-				uAxis: { value: 0 }
+				uAxis: { value: 0 },
+				uCrtStrength: { value: options.crtStrength ?? -1.85 }
 			},
 			vertexShader: cardVertex,
 			fragmentShader: videoFragment,

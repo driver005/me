@@ -22,6 +22,15 @@ export interface GalleryItem {
 	title?: string;
 	textureUrl?: string;
 	videoUrl?: string;
+	/** Explicit row assignment for a multi-row layout (GalleryOptions.rows) — which parallel strip this
+	 *  item belongs to. Omit to auto-deal round-robin (item i -> row i % rows, densely packed, no
+	 *  gaps) — the default, and what single-row use implicitly does too (everything in row 0). */
+	row?: number;
+	/** Explicit within-row wrap-cycle slot, out of that row's own `rowSlotCount` possible slots — its
+	 *  fixed position along that row's infinite scroll. Only meaningful alongside `row`; a row's slots
+	 *  with no item assigned to them stay empty (no card there) rather than every position being
+	 *  filled, matching a sparse source layout instead of a densely-packed one. */
+	slot?: number;
 }
 
 export interface GalleryOptions {
@@ -50,6 +59,10 @@ export interface GalleryOptions {
 	gapFront?: number;
 	gapBack?: number;
 	depthCurve?: number;
+	/** Per-card dome curve strength, passed straight through to each Card/VideoCard (see their own
+	 *  crtStrength option / card/vertex.glsl's comment). Default -1.85 (the source's own value, and
+	 *  every existing strip's implicit behavior); pass 0 for flat, un-rounded cards. */
+	cardCurve?: number;
 	itemWidth?: number;
 	itemHeight?: number;
 	/** Splits the items into this many parallel strips side by side (spaced along the cross axis —
@@ -60,6 +73,12 @@ export interface GalleryOptions {
 	 *  the same items lined up at once — the masonry-gallery look the /gallery page's items use this
 	 *  for, in place of that page's previous 2D CSS-grid implementation. */
 	rows?: number;
+	/** Floor on every row's wrap-cycle slot count, when items carry explicit `row`/`slot` (GalleryItem)
+	 *  — a row's own count is otherwise just `max(slot) + 1` across its items. Raising this beyond that
+	 *  stretches the row's wrap cycle across more empty slots than it has real items for, spacing them
+	 *  further apart with more empty gaps between — the sparse look a source dataset with genuinely
+	 *  unfilled cells (not every grid position holding an image) needs. */
+	rowSlotCount?: number;
 	/** Scene to add image/video meshes into. Defaults to a new THREE.Scene owned by this instance
 	 *  (the home strip's own `imageScene`/`videoScene`, rendered by the Images/Video layers). A
 	 *  sub-page carousel instead passes the home Gallery's existing `videoScene` so its cards render
@@ -111,6 +130,8 @@ export class Gallery implements Scrollable {
 	private layouts: CarouselLayout[];
 	/** Parallel to cards/videoCards/titles — which row (index into `layouts`) each one belongs to. */
 	private itemRow: number[] = [];
+	/** Parallel to itemRow — each item's fixed slot within its own row's wrap cycle. */
+	private itemSlotIndex: number[] = [];
 	private rowCount: number;
 	private rowSpacing: number;
 	private axis: CarouselAxis;
@@ -147,10 +168,36 @@ export class Gallery implements Scrollable {
 		this.rowCount = Math.max(1, Math.floor(options.rows ?? 1));
 		this.rowSpacing = (this.axis === 'vertical' ? itemWidth : itemHeight) + (options.gapFront ?? GAP_FRONT);
 
-		// Items dealt round-robin: item i belongs to row i % rowCount.
-		const rowItemCounts = new Array(this.rowCount).fill(0) as number[];
-		for (let i = 0; i < projects.length; i++) rowItemCounts[i % this.rowCount]++;
-		this.layouts = rowItemCounts.map(
+		// Two ways to place items across rows: explicit (an item's own `row`/`slot`, GalleryItem) when
+		// any item carries them, else auto-deal round-robin (item i -> row i % rowCount, densely packed
+		// into consecutive slots — today's default, unchanged). Explicit placement is what lets a row
+		// have empty slots: its wrap-cycle length (rowSlotCounts) comes from the highest slot index
+		// (or rowSlotCount, if that asks for more), not from how many items actually landed in it.
+		const hasExplicitSlots = projects.some((p) => p.row != null || p.slot != null);
+		const rowSlotCounts = new Array(this.rowCount).fill(0) as number[];
+		const itemSlots: { row: number; slot: number }[] = [];
+
+		if (hasExplicitSlots) {
+			for (const project of projects) {
+				const row = Math.max(0, Math.min(this.rowCount - 1, Math.floor(project.row ?? 0)));
+				const slot = Math.max(0, Math.floor(project.slot ?? 0));
+				itemSlots.push({ row, slot });
+				rowSlotCounts[row] = Math.max(rowSlotCounts[row], slot + 1);
+			}
+			if (options.rowSlotCount != null) {
+				for (let r = 0; r < this.rowCount; r++) rowSlotCounts[r] = Math.max(rowSlotCounts[r], options.rowSlotCount);
+			}
+		} else {
+			const nextSlot = new Array(this.rowCount).fill(0) as number[];
+			projects.forEach((_, i) => {
+				const row = i % this.rowCount;
+				itemSlots.push({ row, slot: nextSlot[row] });
+				nextSlot[row]++;
+			});
+			for (let r = 0; r < this.rowCount; r++) rowSlotCounts[r] = nextSlot[r];
+		}
+
+		this.layouts = rowSlotCounts.map(
 			(itemCount) =>
 				new CarouselLayout({
 					axis: this.axis,
@@ -169,17 +216,28 @@ export class Gallery implements Scrollable {
 		const uAxis = this.axis === 'horizontal' ? 1 : 0;
 
 		projects.forEach((project, i) => {
-			this.itemRow.push(i % this.rowCount);
+			this.itemRow.push(itemSlots[i].row);
+			this.itemSlotIndex.push(itemSlots[i].slot);
 
 			if (wantsImage && project.textureUrl) {
-				const card = new Card(scene, { textureUrl: project.textureUrl, width: itemWidth, height: itemHeight });
+				const card = new Card(scene, {
+					textureUrl: project.textureUrl,
+					width: itemWidth,
+					height: itemHeight,
+					crtStrength: options.cardCurve
+				});
 				card.material.uniforms.uAxis.value = uAxis;
 				this.group.add(card.mesh);
 				this.cards.push(card);
 			}
 
 			if (wantsVideo && project.videoUrl) {
-				const videoCard = new VideoCard(scene, { videoUrl: project.videoUrl, width: itemWidth, height: itemHeight });
+				const videoCard = new VideoCard(scene, {
+					videoUrl: project.videoUrl,
+					width: itemWidth,
+					height: itemHeight,
+					crtStrength: options.cardCurve
+				});
 				videoCard.material.uniforms.uAxis.value = uAxis;
 				this.videoGroup.add(videoCard.mesh);
 				if (!this.hoverNav) {
@@ -238,10 +296,10 @@ export class Gallery implements Scrollable {
 		for (let i = 0; i < count; i++) {
 			const row = this.itemRow[i] ?? 0;
 			const layout = this.layouts[row];
-			// Round-robin dealing (constructor) means this item's position within ITS OWN row's wrap
-			// cycle is i / rowCount, not i itself. A per-row phase offset on top keeps rows from all
-			// showing the same items lined up together — the masonry-gallery look `rows` exists for.
-			const withinRow = Math.floor(i / this.rowCount);
+			// This item's fixed position within ITS OWN row's wrap cycle (constructor) — not i itself.
+			// A per-row phase offset on top keeps rows from all showing the same items lined up
+			// together — the masonry-gallery look `rows` exists for.
+			const withinRow = this.itemSlotIndex[i] ?? 0;
 			const phase = row * this.rowSpacing * 1.7;
 			const { position, depth } = layout.computeItem(withinRow, this.scrollPosition + phase, uMode);
 			const along = alongOrigin + position;

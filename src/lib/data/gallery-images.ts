@@ -8,8 +8,8 @@ function mulberry32(seed: number) {
 	};
 }
 
-const COLS = 8;
-const GALLERY_ROWS = 25;
+export const COLS = 8;
+export const GALLERY_ROWS = 25;
 
 export interface GalleryImage {
 	src: string;

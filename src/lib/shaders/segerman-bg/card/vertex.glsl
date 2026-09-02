@@ -19,6 +19,11 @@ uniform float uCurveX;
  *  below so both carousels get it, instead of it being silently Y-only. */
 uniform float uAxis;
 
+/** Per-card dome curve strength (was a hardcoded -1.85 local). Default -1.85 everywhere except where
+ *  a Card/VideoCard is explicitly given a different value (Gallery's own `cardCurve` option) — 0
+ *  flattens the card instead of it bulging/rounding at the edges in back mode. */
+uniform float uCrtStrength;
+
 
 void main() {
     vUv = uv;
@@ -71,9 +76,7 @@ void main() {
 
     float r2 = dot(ndc, ndc);
 
-    float crtStrength = -1.85;
-
-    pos.z += crtStrength * r2 * abs(1.0 - uMode);
+    pos.z += uCrtStrength * r2 * abs(1.0 - uMode);
 
 
     float planeDist = abs((modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).y);

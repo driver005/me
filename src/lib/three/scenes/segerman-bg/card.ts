@@ -10,6 +10,9 @@ export interface CardOptions {
 	textureUrl: string;
 	width: number;
 	height: number;
+	/** Per-card dome curve strength — see card/vertex.glsl's own comment. Default -1.85 (the source's
+	 *  own value); pass 0 for a flat card. */
+	crtStrength?: number;
 }
 
 export class Card {
@@ -34,6 +37,7 @@ export class Card {
 				uProgress: { value: 0 },
 				uWarp: { value: 0 },
 				uAxis: { value: 0 },
+				uCrtStrength: { value: options.crtStrength ?? -1.85 },
 				uCurveZ: scene.uniforms.uCurveZ,
 				uCurveX: scene.uniforms.uCurveX,
 				uMode: scene.uniforms.uMode,
