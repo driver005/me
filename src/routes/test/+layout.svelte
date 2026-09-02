@@ -126,7 +126,14 @@
 	$effect(() => {
 		const pathname = page.url.pathname;
 		const isHome = isHomeRoute;
-		if (!scene || !gallery || !planet || !compositor || !fog) return;
+		// webglReady is a real $state — reading it here (unlike the plain scene/gallery/planet/compositor/
+		// fog vars below, which create no reactive dependency) makes this effect re-run once onMount
+		// finishes populating them. Without it: on a hard reload directly to a sub-route, if this effect's
+		// first run happened to race ahead of onMount, the guard below would fail and — since pathname
+		// never changes again on a reload — never retry, leaving gallery.setHomeVisible(false) uncalled
+		// and the home gallery visible on top of the sub-page. Client-side navigation TO a sub-page always
+		// worked regardless, since pathname actually changing there forces a guaranteed re-run.
+		if (!webglReady || !scene || !gallery || !planet || !compositor || !fog) return;
 		isBackMode = !isHome;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
