@@ -13,6 +13,14 @@ export class Scene {
 	uniforms: SceneUniforms;
 	pointer: PointerState = { x: 0, y: 0, dx: 0, dy: 0, nx: 0, ny: 0, speed: 0, isDown: false };
 
+	get widthAtZ(): number {
+		return this._widthAtZ;
+	}
+
+	get heightAtZ(): number {
+		return this._heightAtZ;
+	}
+
 	isTouch: boolean;
 	isLowDpr: boolean;
 	isMobile: boolean;
@@ -24,6 +32,8 @@ export class Scene {
 	private rafId = 0;
 	private width = 0;
 	private height = 0;
+	private _widthAtZ = 0;
+	private _heightAtZ = 0;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
@@ -121,6 +131,9 @@ export class Scene {
 		this.height = height;
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
+		const fovRad = (this.camera.fov * Math.PI) / 180;
+		this._heightAtZ = 2 * Math.tan(fovRad / 2) * this.camera.position.z;
+		this._widthAtZ = this._heightAtZ * this.camera.aspect;
 		this.uniforms.uRes.value.set(width, height);
 		this.uniforms.uDpr.value = this.dpr;
 		this.renderer.setPixelRatio(this.dpr);
