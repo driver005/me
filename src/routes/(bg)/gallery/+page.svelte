@@ -36,6 +36,9 @@
 				// far too dense/overlapping side by side.
 				itemWidth: 18,
 				itemHeight: 18,
+				// Flat instead of the parabolic depth arc other strips use — items stay in a flat plane as
+				// they scroll down from the top instead of bulging toward/away from the camera.
+				depthCurve: 0,
 				gapFront: 4,
 				gapBack: 4,
 				center: { x: 0, y: 0, z: 5 },
