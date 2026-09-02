@@ -82,6 +82,11 @@ export class Compositor {
 				uTextColor: { value: new THREE.Color('#ffffff').convertLinearToSRGB() },
 				uLabelColor: { value: new THREE.Color('#93949f').convertLinearToSRGB() },
 				uGrainAmount: { value: 0.025 },
+				// Tints the film grain to the planet's own light color instead of neutral white/grey, so
+				// the noise reads as belonging to whichever planet is currently showing (see Planet's
+				// per-page recolor) rather than a flat overlay. Synced from the planet's own uLightColor
+				// uniform every frame in render(), below.
+				uNoiseColor: { value: new THREE.Color() },
 				uFogFloor: { value: 0.3 },
 				uFogColorStr: { value: 1.9 },
 				uBloomTint: { value: 0.01 },
@@ -156,6 +161,7 @@ export class Compositor {
 		this.backMaterial.uniforms.tImagesBackBloom.value = this.imagesLayer.backBloomTexture;
 		this.backMaterial.uniforms.tVideo.value = this.videoLayer.texture;
 		this.backMaterial.uniforms.tTexts.value = this.textsLayer.texture;
+		(this.backMaterial.uniforms.uNoiseColor.value as THREE.Color).copy(this.planetLayer.uniforms.uLightColor.value);
 		this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		// tFront's texture identity is actually stable frame-to-frame (unlike tFluid's ping-pong swap) — this
 		// live-read isn't strictly required today, but it mirrors the original site's own per-frame assignment
