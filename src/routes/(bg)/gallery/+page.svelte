@@ -32,6 +32,10 @@
 				hoverNav: false,
 				groupTilt: false,
 				rows: ROWS,
+				// Smaller than the default project-card size (52x32) — 8 rows of full-size cards would be
+				// far too dense/overlapping side by side.
+				itemWidth: 18,
+				itemHeight: 18,
 				gapFront: 4,
 				gapBack: 4,
 				center: { x: 0, y: 0, z: 5 },
