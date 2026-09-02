@@ -65,7 +65,7 @@ export const PLANET_LOOKS: Record<string, RaymarchPlanetLook> = {
 export class RaymarchPlanet {
 	renderTarget: THREE.WebGLRenderTarget;
 	private scene: Scene;
-	private material: THREE.ShaderMaterial;
+	private material: THREE.RawShaderMaterial;
 	private geometry: THREE.BufferGeometry;
 	private mesh: THREE.Mesh;
 	private blur: Blur;
@@ -108,7 +108,15 @@ export class RaymarchPlanet {
 		};
 
 		if (variant.type === 'earth') {
-			this.material = new THREE.ShaderMaterial({
+			// RawShaderMaterial, not ShaderMaterial: ShaderMaterial auto-prepends THREE's own vertex/
+			// fragment boilerplate (its own `in vec3 position;` attribute declaration, a built-in `uv`
+			// varying, etc.) ahead of the supplied source — jsulpis's shader declares those same names
+			// itself for its own unrelated purposes (a raw fullscreen-quad position, a custom UV-like
+			// varying used by its fake camera math), so under ShaderMaterial the two collided and the
+			// vertex shader failed to compile every single frame (redefinition errors), meaning this
+			// planet has never actually rendered anything since it was first added. RawShaderMaterial
+			// skips all of that injected boilerplate, so our shader's own declarations stand alone.
+			this.material = new THREE.RawShaderMaterial({
 				glslVersion: THREE.GLSL3,
 				uniforms: {
 					...commonUniforms,
@@ -128,7 +136,7 @@ export class RaymarchPlanet {
 			});
 		} else {
 			const look = variant.look;
-			this.material = new THREE.ShaderMaterial({
+			this.material = new THREE.RawShaderMaterial({
 				glslVersion: THREE.GLSL3,
 				uniforms: {
 					...commonUniforms,

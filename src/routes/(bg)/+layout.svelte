@@ -232,17 +232,12 @@
 		// jsulpis/realtime-planet-shader planets (GPL-3.0) — one shared stars texture, one set of real
 		// NASA/USGS textures per planet. Home's Earth needs 5; the others just need their own color map.
 		const starsTexture = textureLoader.load('/textures/planets/4k_stars.jpg');
-		// Screen-space offsets translated from the mesh Planet's own per-page world positions
-		// (planet.ts's PLANET_PAGES: home {x:62,y:-26} out of a ~82x51 half-frame at that camera's
-		// depth; info {x:-38,y:-40} out of the same half-frame) into this shader's own much smaller
-		// fake-camera space, where world_x = 6 * uv.x regardless of depth (FOCAL_LENGTH cancels the
-		// depth term) — same direction and roughly the same fraction of the frame, not an exact optical
-		// match between two unrelated camera setups. Home's mesh planet sits toward the bottom-right,
-		// away from the gallery strip's own screen position; info's sits bottom-left. Without this, the
-		// raymarched planet renders dead-center by default and gets hidden behind whatever else draws
-		// there on top of the back layer.
-		const EARTH_SCREEN_POSITION = { x: 4, y: -1.5 };
-		const INFO_SCREEN_POSITION = { x: -2.5, y: -2.3 };
+		// Dead center (the default): the actual bug that made the raymarched planet invisible was the
+		// vertex shader failing to compile (see raymarch-planet.ts's RawShaderMaterial comment), not
+		// its position — verified centered against a real render once that was fixed, and it composites
+		// well there alongside the gallery cards. No off-center offset needed after all.
+		const EARTH_SCREEN_POSITION = { x: 0, y: 0 };
+		const INFO_SCREEN_POSITION = { x: 0, y: 0 };
 		earthPlanet = new RaymarchPlanet(
 			scene,
 			{
