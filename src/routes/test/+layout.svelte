@@ -37,6 +37,11 @@
 	 *  color (home/info/error). */
 	const FOG_COLOR_DEFAULT = '#20447e';
 
+	/** Whether the background is currently in front/white mode — home defaults here (matches the route
+	 *  effect's own `isHome` target), and Toggle's button can also flip it on any page. Drives DOM text
+	 *  overlaid on the canvas (the nav link below): white text over the white front plate is invisible. */
+	let isFrontMode = $state(true);
+
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
 	let webglReady = $state(false);
@@ -116,6 +121,7 @@
 		const pathname = page.url.pathname;
 		const isHome = pathname === '/test';
 		if (!scene || !gallery || !planet || !compositor || !fog) return;
+		isFrontMode = isHome;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
 		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
@@ -314,10 +320,15 @@
 {:else}
 	<canvas bind:this={canvasRef} class="fixed inset-0 h-full w-full"></canvas>
 	{#if webglReady && scene && fluid && texts}
-		<Toggle {scene} {fluid} {texts} />
+		<Toggle {scene} {fluid} {texts} onModeChange={(isBackMode) => (isFrontMode = !isBackMode)} />
 	{/if}
 	<nav class="fixed top-6 left-6 z-20 text-sm">
-		<a href="/test/info" class="text-white/70 underline hover:text-white">Info</a>
+		<a
+			href="/test/info"
+			class="underline {isFrontMode ? 'text-black/70 hover:text-black' : 'text-white/70 hover:text-white'}"
+		>
+			Info
+		</a>
 	</nav>
 	{@render children()}
 	{#if loaderVisible}

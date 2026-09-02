@@ -6,7 +6,12 @@
 	import type { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
 	import type { Texts } from '$lib/three/scenes/segerman-bg/texts';
 
-	let { scene, fluid, texts }: { scene: Scene; fluid: FluidSim; texts: Texts } = $props();
+	let {
+		scene,
+		fluid,
+		texts,
+		onModeChange
+	}: { scene: Scene; fluid: FluidSim; texts: Texts; onModeChange?: (isBackMode: boolean) => void } = $props();
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
 	let isBackMode = $state(false);
@@ -26,6 +31,7 @@
 		if (isToggleTransitioning) return;
 		isToggleTransitioning = true;
 		isBackMode = !isBackMode;
+		onModeChange?.(isBackMode);
 		fluid.setMode(isBackMode);
 		syncRect();
 
