@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { Layer } from './layer';
 import type { Scene } from './scene';
+import type { Scrollable } from './scroll';
 import { Blur } from './blur';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import planetVertex from '$lib/shaders/segerman-bg/planet/vertex.glsl';
@@ -80,6 +81,14 @@ const PLANET_COLOR_WORK = new THREE.Color('#0b0d0f').convertLinearToSRGB();
 const PLANET_LIGHT_DEFAULT = new THREE.Color('#81aeca');
 const PLANET_DARK_DEFAULT = new THREE.Color('#436eb1');
 
+/** Baseline auto-rotation, always applied on top of any scroll-driven spin below. */
+const IDLE_SPIN = 0.0008;
+/** Scroll-position-delta -> extra rotation. Gallery/carousel scroll deltas run roughly single- to
+ *  low-double-digits per frame during an active scroll gesture (Scroll's own 0.1 lerp ease against a
+ *  clamped ±100 wheel target) — this keeps a brisk scroll a few times faster than the idle spin
+ *  without spinning the planet like a coin. */
+const SCROLL_SPIN_FACTOR = 0.001;
+
 export interface PlanetTextures {
 	map: THREE.Texture;
 	cracked: THREE.Texture;
@@ -110,6 +119,8 @@ export class Planet extends Layer {
 	private trailScene = new THREE.Scene();
 	private trailCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 	private pageTimeline: gsap.core.Timeline | null = null;
+	private scrollSource: Scrollable | null = null;
+	private previousScrollPosition = 0;
 
 	constructor(scene: Scene, textures: PlanetTextures) {
 		super(scene.isTouch);
@@ -199,6 +210,15 @@ export class Planet extends Layer {
 		return this.material.uniforms;
 	}
 
+	/** Drives extra rotation from cursor-scroll input — pass the home Gallery's own persistent Scroll
+	 *  target (its Lenis instance keeps capturing wheel/touch input on every route, home included or
+	 *  not, since it's never torn down between navigations) so the planet keeps spinning with whatever
+	 *  scroll gesture is happening, not just its own idle rotation. */
+	setScrollSource(target: Scrollable): void {
+		this.scrollSource = target;
+		this.previousScrollPosition = target.scrollPosition;
+	}
+
 	setPointerNDC(nx: number, ny: number): void {
 		this.pointerNDC.set(nx, ny);
 		this.raycaster.setFromCamera(this.pointerNDC, this.scene.camera);
@@ -239,7 +259,14 @@ export class Planet extends Layer {
 
 	render(): void {
 		this.material.uniforms.uTerrainTime.value += (1 / 60) * 0.1;
-		this.mesh.rotation.y += 0.0008;
+
+		let spin = IDLE_SPIN;
+		if (this.scrollSource) {
+			const scrollDelta = this.scrollSource.scrollPosition - this.previousScrollPosition;
+			this.previousScrollPosition = this.scrollSource.scrollPosition;
+			spin += scrollDelta * SCROLL_SPIN_FACTOR;
+		}
+		this.mesh.rotation.y += spin;
 
 		this.crackMode += (1 - this.crackMode) * 0.03;
 		this.mouseHover += (this.mouseHoverTarget - this.mouseHover) * 0.04;

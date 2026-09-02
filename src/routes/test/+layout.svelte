@@ -205,6 +205,11 @@
 
 			scroll = new Scroll(scene, gallery);
 			scene.addLayer(scroll);
+			// This Scroll/Gallery pair is persistent (never torn down between route navigations, unlike a
+			// sub-page's own carousel scroll) and its Lenis instance keeps capturing wheel/touch input
+			// globally — the one scroll signal available on every route, so it's what drives the planet's
+			// cursor-scroll spin regardless of which page is showing.
+			planet?.setScrollSource(gallery);
 
 			images = new Images(scene, gallery);
 			scene.addLayer(images);
