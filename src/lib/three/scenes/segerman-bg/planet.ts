@@ -48,8 +48,12 @@ const PLANET_PAGES: Record<PlanetPageId, PlanetPageConfig> = {
 		uniforms: { uGlowBiasX: -0.6, uRimPow: 4.5, uGlowPow: 3.2, uGlowStr: 1, uRimStr: 0, uTerrainScale: 3.9 }
 	},
 	work: {
-		position: { x: 0, y: -32, z: -60 },
-		scale: 50,
+		// Deliberately bigger/closer than the source's own {scale: 50, z: -60} — verified accurate to
+		// world.js and to a matching camera setup (fov 50, position.z 100, same as here), but the user
+		// found the source's own version too small/far away on this page and asked for it more
+		// prominent, a conscious deviation rather than a bug fix.
+		position: { x: 0, y: -32, z: -25 },
+		scale: 80,
 		uniforms: { uGlowBiasX: 0.6, uRimPow: 4.2, uGlowPow: 3.2, uGlowStr: 0.4, uRimStr: 1, uTerrainScale: 3.5 }
 	},
 	info: {
