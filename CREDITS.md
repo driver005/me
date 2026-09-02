@@ -3,6 +3,36 @@
 Third-party code and techniques used in this project, beyond what's already declared in
 `package.json`.
 
+## Raymarched planets (Home/About/Gallery backgrounds)
+
+**Source:** [jsulpis/realtime-planet-shader](https://github.com/jsulpis/realtime-planet-shader) by
+Julien Sulpis, **GPL-3.0 License**.
+
+**License note:** GPL-3.0 is copyleft. Including this code means the combined work — this
+repository, once these files are part of it — needs to be GPL-3.0-compatible, and the full
+corresponding source needs to be available to anyone who receives the built site (the same
+obligation as if the whole repo were GPL). This is a deliberate, informed choice made in
+conversation with the project owner, not an incidental inclusion — see the shader files' own
+header comments for the same note inline.
+
+Ported verbatim except for one change: the fragment shaders' `main()` originally always wrote
+`alpha = 1.0` (correct for a shader that's a whole page's own background on its own site, wrong
+once composited into another scene — it was overwriting this project's own stars/fog/gallery
+layers everywhere, not just where the planet itself is drawn). Changed `radiance()` to also return
+whether a given pixel is empty space or the planet/atmosphere, and `main()` to write that as the
+alpha channel instead of a hardcoded 1.0, so only the planet itself actually replaces what's
+behind it.
+
+Files:
+- `src/lib/shaders/jsulpis-planet/vertex.glsl`, `earth.fragment.glsl`, `planet.fragment.glsl`
+- `src/lib/three/scenes/segerman-bg/raymarch-planet.ts` (the Three.js-side wrapper — original code,
+  not from the source repo, just wires their shaders into a `THREE.ShaderMaterial`)
+
+Real planet/stars textures also come from that repo's own `public/` assets, itself sourced from
+public-domain imagery: Earth from NASA's [Visible Earth / Blue
+Marble](https://visibleearth.nasa.gov/collection/1484/blue-marble); Moon/Mars/Mercury/Venus/Jupiter
+from USGS Astrogeology.
+
 ## Simplex noise (`snoise`/`permute`/`taylorInvSqrt`)
 
 **Source:** [Ian McEwan, Ashima Arts — `webgl-noise`](https://github.com/ashima/webgl-noise)
