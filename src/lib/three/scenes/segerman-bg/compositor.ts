@@ -5,7 +5,7 @@ import type { PlanetPageId } from './planet';
 import type { Stars } from './stars';
 import type { Fog } from './fog';
 import type { FluidSim } from './fluid';
-import type { PlanetSource } from './planet-switcher';
+import type { Planet } from './planet';
 import type { Front } from './front';
 import type { Images } from './images';
 import type { Video } from './video';
@@ -22,7 +22,7 @@ export interface CompositorLayers {
 	stars: Stars;
 	fog: Fog;
 	fluid: FluidSim;
-	planet: PlanetSource;
+	planet: Planet;
 	front: Front;
 	images: Images;
 	video: Video;
@@ -47,7 +47,7 @@ export class Compositor {
 	private placeholder = createPlaceholderTexture();
 	private fluidSim: FluidSim;
 	private frontLayer: Front;
-	private planetLayer: PlanetSource;
+	private planetLayer: Planet;
 	private imagesLayer: Images;
 	private videoLayer: Video;
 	private textsLayer: Texts;
