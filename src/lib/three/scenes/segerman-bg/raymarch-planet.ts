@@ -79,7 +79,14 @@ export class RaymarchPlanet {
 	 *  pages set). */
 	constructor(
 		scene: Scene,
-		variant: { type: 'earth'; textures: EarthTextures } | { type: 'planet'; textures: PlanetTextureVariant; look: RaymarchPlanetLook }
+		variant: { type: 'earth'; textures: EarthTextures } | { type: 'planet'; textures: PlanetTextureVariant; look: RaymarchPlanetLook },
+		// Screen-space offset within this shader's own fake camera (world_x = 6 * uv.x at the planet's
+		// depth — see the constant derivation in the layout that calls this), defaulting to dead center.
+		// The mesh-based Planet class positions itself off-center per page (see planet.ts's
+		// PLANET_PAGES) specifically so it doesn't sit under the gallery/hero content; without an
+		// equivalent offset here, this planet renders centered and gets hidden behind whatever else is
+		// drawn on top of the back layer at screen-center.
+		screenPosition: { x: number; y: number } = { x: 0, y: 0 }
 	) {
 		this.scene = scene;
 		this.renderTarget = scene.createRenderTarget(scene.isMobile ? 1 : 0.75);
@@ -93,7 +100,7 @@ export class RaymarchPlanet {
 			uQuality: { value: scene.dpr },
 			uResolution: { value: new THREE.Vector2() },
 			sunDirectionXY: { value: new THREE.Vector2(1, 1) },
-			uPlanetPosition: { value: new THREE.Vector3(0, 0, -10) },
+			uPlanetPosition: { value: new THREE.Vector3(screenPosition.x, screenPosition.y, -10) },
 			uRotationOffset: { value: 0.6 },
 			uPlanetRadius: { value: 2 },
 			uSunIntensity: { value: 3 },
