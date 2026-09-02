@@ -13,7 +13,7 @@ export interface ProjectDef {
 }
 
 const TITLE_HEIGHT = 4;
-const TITLE_OFFSET_Y = -20;
+const TITLE_OFFSET_X = 8;
 
 const CARD_WIDTH = 52;
 const CARD_HEIGHT = 32;
@@ -103,9 +103,11 @@ export class Gallery {
 	private updateItems(): void {
 		const uMode = this.scene.uniforms.uMode.value;
 		this.gap = lerp(GAP_BACK, GAP_FRONT, uMode);
-		const step = CARD_WIDTH + this.gap;
-		const totalWidth = step * this.cards.length;
-		const wrapped = ((this.scrollPosition % totalWidth) + totalWidth) % totalWidth;
+		// Stacked vertically (matching the source's actual scroll axis — see card/vertex.glsl's
+		// header comment), so the step is the card's HEIGHT + gap, not its width.
+		const step = CARD_HEIGHT + this.gap;
+		const totalHeight = step * this.cards.length;
+		const wrapped = ((this.scrollPosition % totalHeight) + totalHeight) % totalHeight;
 
 		// Gallery-wide scroll speed (simplified from the original's per-mesh tracked speed) drives each
 		// card's warp shader — see card/vertex.glsl's `mix(-.00015, -(uSpeed*.2), uProgress)`.
@@ -113,16 +115,16 @@ export class Gallery {
 		this.previousScrollPosition = this.scrollPosition;
 
 		for (let i = 0; i < this.cards.length; i++) {
-			let x = step * i - wrapped;
-			x = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
-			this.cards[i].mesh.position.x = x;
+			let y = step * i - wrapped;
+			y = ((y + totalHeight / 2) % totalHeight + totalHeight) % totalHeight - totalHeight / 2;
+			this.cards[i].mesh.position.y = y;
 			this.cards[i].material.uniforms.uSpeed.value = speed;
-			this.videoCards[i].mesh.position.x = x;
-			this.videoCards[i].mesh.position.y = this.cards[i].mesh.position.y;
+			this.videoCards[i].mesh.position.y = y;
+			this.videoCards[i].mesh.position.x = this.cards[i].mesh.position.x;
 			this.videoCards[i].mesh.position.z = this.cards[i].mesh.position.z + 0.01;
 			this.videoCards[i].material.uniforms.uSpeed.value = speed;
-			this.titles[i].mesh.position.x = x;
-			this.titles[i].mesh.position.y = this.cards[i].mesh.position.y + TITLE_OFFSET_Y;
+			this.titles[i].mesh.position.y = y;
+			this.titles[i].mesh.position.x = this.cards[i].mesh.position.x + CARD_WIDTH / 2 + TITLE_OFFSET_X;
 		}
 	}
 
