@@ -4,6 +4,7 @@ import type { Scene } from './scene';
 import { Card } from './card';
 import { VideoCard } from './video-card';
 import type { Scrollable } from './scroll';
+import { CARD_WIDTH, CARD_HEIGHT, DEPTH_CURVE, computeDepthOffset } from './carousel-shared';
 
 export type CarouselAxis = 'horizontal' | 'vertical';
 export type CarouselMediaType = 'image' | 'video';
@@ -15,17 +16,17 @@ export interface MediaCarouselOptions {
 	mediaType: CarouselMediaType;
 	/** Image URLs (mediaType: 'image') or video URLs (mediaType: 'video'). */
 	urls: string[];
-	itemWidth: number;
-	itemHeight: number;
+	/** Defaults to the shared CARD_WIDTH/CARD_HEIGHT (carousel-shared.ts) — the same size the home
+	 *  gallery's own cards use. Override only for a deliberately different-sized row. */
+	itemWidth?: number;
+	itemHeight?: number;
 	gap: number;
 	/** World-space point the strip is centred on and curves toward — where "the camera lives"
 	 *  relative to the row. Defaults to the origin. */
 	center?: { x: number; y: number; z: number };
-	/** How far an item at the strip's outer edge sinks in Z relative to `center.z`, as a parabola
-	 *  of its distance from centre — 0 disables the arc (a flat row). An item scrolling toward
-	 *  centre rises out of that recess toward the camera; one scrolling away sinks back into it —
-	 *  the "comes from behind to the front" sweep, driven purely by this carousel's own per-item
-	 *  positioning rather than any of Card/VideoCard's own (Y-axis-locked) shader curve. */
+	/** How far an item sinks in Z as it scrolls away from centre — see carousel-shared.ts's
+	 *  computeDepthOffset(), the same formula Gallery.updateItems() uses for its own cards. Defaults
+	 *  to the shared DEPTH_CURVE; pass 0 to disable the arc (a flat row). */
 	depthCurve?: number;
 }
 
@@ -53,15 +54,17 @@ export class MediaCarousel extends Layer implements Scrollable {
 		this.targetScene = targetScene;
 		this.axis = options.axis;
 		this.center = options.center ?? { x: 0, y: 0, z: 0 };
-		this.depthCurve = options.depthCurve ?? 0;
-		this.step = (options.axis === 'horizontal' ? options.itemWidth : options.itemHeight) + options.gap;
+		this.depthCurve = options.depthCurve ?? DEPTH_CURVE;
+		const itemWidth = options.itemWidth ?? CARD_WIDTH;
+		const itemHeight = options.itemHeight ?? CARD_HEIGHT;
+		this.step = (options.axis === 'horizontal' ? itemWidth : itemHeight) + options.gap;
 		this.totalSpan = this.step * options.urls.length;
 
 		options.urls.forEach((url) => {
 			const item =
 				options.mediaType === 'video'
-					? new VideoCard(scene, { videoUrl: url, width: options.itemWidth, height: options.itemHeight })
-					: new Card(scene, { textureUrl: url, width: options.itemWidth, height: options.itemHeight });
+					? new VideoCard(scene, { videoUrl: url, width: itemWidth, height: itemHeight })
+					: new Card(scene, { textureUrl: url, width: itemWidth, height: itemHeight });
 
 			if (item instanceof VideoCard) {
 				// VideoCard defaults to uOffsetY: 1 (hidden — video-card/fragment.glsl forces alpha to
@@ -94,14 +97,9 @@ export class MediaCarousel extends Layer implements Scrollable {
 			let position = this.step * i - wrapped;
 			position = ((position + halfSpan) % this.totalSpan + this.totalSpan) % this.totalSpan - halfSpan;
 
-			// Parabolic depth arc around `center`, saturating at -depthCurve within ~2 item-widths of
-			// centre (not the full wrap-cycle halfSpan — only 1-2 items are ever visible on screen near
-			// centre at once, so normalizing against the whole strip's span left the visible portion of
-			// the curve nearly flat; the vertical gallery's own shader-driven curve concentrates its full
-			// effect at this same local, per-item scale, which is what this now matches).
-			const depthRange = this.step * 2;
-			const normalized = depthRange > 0 ? Math.max(-1, Math.min(1, position / depthRange)) : 0;
-			const depthOffset = -this.depthCurve * normalized * normalized;
+			// Same depth arc Gallery.updateItems() uses — one shared definition (carousel-shared.ts),
+			// not two independently-tuned implementations.
+			const depthOffset = computeDepthOffset(position, this.step, this.depthCurve);
 
 			const mesh = this.items[i].mesh;
 			if (this.axis === 'horizontal') {

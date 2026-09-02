@@ -5,7 +5,6 @@
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
 	import { MediaCarousel } from '$lib/three/scenes/segerman-bg/media-carousel';
 	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
-	import { CARD_WIDTH, CARD_HEIGHT } from '$lib/three/scenes/segerman-bg/gallery';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	const project = $derived(WORK_PROJECTS[page.params.slug ?? '']);
@@ -23,11 +22,10 @@
 			axis: 'horizontal',
 			mediaType: 'video',
 			urls: mediaUrls,
-			itemWidth: CARD_WIDTH,
-			itemHeight: CARD_HEIGHT,
 			gap: 4,
-			center: { x: 0, y: 0, z: 5 },
-			depthCurve: 40
+			center: { x: 0, y: 0, z: 5 }
+			// itemWidth/itemHeight/depthCurve: left at MediaCarousel's shared defaults (carousel-shared.ts) —
+			// the same card size and depth-curve strength Gallery.updateItems() uses for the home strip.
 		});
 		const scroll = new Scroll(scene, carousel);
 

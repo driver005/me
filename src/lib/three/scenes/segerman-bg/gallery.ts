@@ -4,6 +4,7 @@ import type { Scene } from './scene';
 import { Card } from './card';
 import { VideoCard } from './video-card';
 import { Title } from './title';
+import { CARD_WIDTH, CARD_HEIGHT, GAP_FRONT, GAP_BACK, DEPTH_CURVE, computeDepthOffset } from './carousel-shared';
 
 export interface ProjectDef {
 	slug: string;
@@ -14,17 +15,6 @@ export interface ProjectDef {
 
 const TITLE_HEIGHT = 4;
 const TITLE_OFFSET_X = 8;
-
-// Exported so other carousels (e.g. MediaCarousel) can match the home gallery's card size instead of
-// picking their own arbitrary dimensions.
-export const CARD_WIDTH = 52;
-export const CARD_HEIGHT = 32;
-// Derived at the same ~0.95 units/rem ratio CARD_WIDTH itself uses (52 units for the original's 54.8rem
-// card element) — the original gaps are 2.4rem/8rem. Phase 2b's final review flagged the previous values
-// (26.7/89) as using an ~11.1 units/rem ratio instead, an ~11.7x mismatch that spread the strip out far
-// more than the source (only ~2 cards visible on screen at 16:9 instead of several).
-const GAP_FRONT = 2.28;
-const GAP_BACK = 7.59;
 
 const BACK_STATE = {
 	rotationX: 0,
@@ -133,13 +123,18 @@ export class Gallery {
 		for (let i = 0; i < this.cards.length; i++) {
 			let y = step * i - wrapped;
 			y = ((y + totalHeight / 2) % totalHeight + totalHeight) % totalHeight - totalHeight / 2;
+			// Same depth arc MediaCarousel uses — one shared definition (carousel-shared.ts) for the
+			// "comes from behind to the front" sweep, not two independently-tuned implementations.
+			const z = computeDepthOffset(y, step, DEPTH_CURVE);
 			this.cards[i].mesh.position.y = y;
+			this.cards[i].mesh.position.z = z;
 			this.cards[i].material.uniforms.uSpeed.value = speed;
 			this.videoCards[i].mesh.position.y = y;
 			this.videoCards[i].mesh.position.x = this.cards[i].mesh.position.x;
-			this.videoCards[i].mesh.position.z = this.cards[i].mesh.position.z + 0.01;
+			this.videoCards[i].mesh.position.z = z + 0.01;
 			this.videoCards[i].material.uniforms.uSpeed.value = speed;
 			this.titles[i].mesh.position.y = y;
+			this.titles[i].mesh.position.z = z;
 			this.titles[i].mesh.position.x = this.cards[i].mesh.position.x + CARD_WIDTH / 2 + TITLE_OFFSET_X;
 		}
 	}
