@@ -43,7 +43,13 @@ export class MediaCarousel {
 				item.mesh.position.z = 5;
 				this.targetScene.add(item.mesh);
 				this.items.push(item);
-				item.playVideo();
+				// VideoCard defaults to uOffsetY: 1 (hidden — video-card/fragment.glsl forces alpha to
+				// zero everywhere once `uv.y += uOffsetY` pushes the sample outside [0,1]), normally
+				// revealed by Gallery's hover-triggered setOffsetIn(). This carousel isn't hover-driven,
+				// so reveal immediately — setOffsetIn() also starts playback, so playVideo() alone (which
+				// only starts playback, never touches uOffsetY) was the actual bug: the video was playing
+				// the whole time, just fully transparent.
+				item.setOffsetIn();
 			} else {
 				const item = new Card(scene, { textureUrl: url, width: options.itemWidth, height: options.itemHeight });
 				// Card defaults to uProgress/uWarp = 0 (hidden — normally revealed by Gallery's own
