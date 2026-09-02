@@ -31,21 +31,19 @@ export class MediaCarousel extends Layer implements Scrollable {
 	scrollPosition = 0;
 
 	private items: (Card | VideoCard)[] = [];
-	private baseOffsets: number[] = [];
 	private targetScene: THREE.Scene;
 	private axis: CarouselAxis;
-	private maxScroll: number;
+	private step: number;
+	private totalSpan: number;
 
 	constructor(scene: Scene, targetScene: THREE.Scene, options: MediaCarouselOptions) {
 		super(scene.isTouch);
 		this.targetScene = targetScene;
 		this.axis = options.axis;
-		const step = (options.axis === 'horizontal' ? options.itemWidth : options.itemHeight) + options.gap;
+		this.step = (options.axis === 'horizontal' ? options.itemWidth : options.itemHeight) + options.gap;
+		this.totalSpan = this.step * options.urls.length;
 
-		options.urls.forEach((url, i) => {
-			const offset = (i - (options.urls.length - 1) / 2) * step;
-			this.baseOffsets.push(offset);
-
+		options.urls.forEach((url) => {
 			const item =
 				options.mediaType === 'video'
 					? new VideoCard(scene, { videoUrl: url, width: options.itemWidth, height: options.itemHeight })
@@ -69,19 +67,17 @@ export class MediaCarousel extends Layer implements Scrollable {
 			this.targetScene.add(item.mesh);
 			this.items.push(item);
 		});
-
-		// No infinite wrap (unlike Gallery's home strip) — a short, finite in-page row just clamps at
-		// its ends. Half the total span either side of centre is enough room to bring the last item to
-		// where the first one started.
-		this.maxScroll = this.baseOffsets.length > 0 ? Math.max(...this.baseOffsets.map(Math.abs)) : 0;
 	}
 
 	render(): void {}
 
 	loop(): void {
-		const clamped = Math.max(-this.maxScroll, Math.min(this.maxScroll, this.scrollPosition));
+		// Infinite wrap, matching Gallery.updateItems()'s own modulo-wrap positioning — scrolling past
+		// the last item brings the first one back around, rather than stopping at the ends.
+		const wrapped = ((this.scrollPosition % this.totalSpan) + this.totalSpan) % this.totalSpan;
 		for (let i = 0; i < this.items.length; i++) {
-			const position = this.baseOffsets[i] - clamped;
+			let position = this.step * i - wrapped;
+			position = ((position + this.totalSpan / 2) % this.totalSpan + this.totalSpan) % this.totalSpan - this.totalSpan / 2;
 			if (this.axis === 'horizontal') this.items[i].mesh.position.x = position;
 			else this.items[i].mesh.position.y = position;
 		}
