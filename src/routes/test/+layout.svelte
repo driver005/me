@@ -26,7 +26,8 @@
 
 	setContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT, {
 		getScene: () => scene,
-		getGallery: () => gallery
+		getGallery: () => gallery,
+		getReady: () => webglReady
 	});
 
 	const MIN_LOADER_DURATION = 1200;

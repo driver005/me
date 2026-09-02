@@ -8,9 +8,10 @@
 	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
 
 	$effect(() => {
+		const ready = bgContext.getReady();
 		const scene = bgContext.getScene();
 		const gallery = bgContext.getGallery();
-		if (!scene || !gallery) return;
+		if (!ready || !scene || !gallery) return;
 
 		const portrait = new InfoPortrait(scene, gallery);
 		return () => portrait.dispose();

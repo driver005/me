@@ -11,9 +11,10 @@
 
 	$effect(() => {
 		const slug = page.params.slug;
+		const ready = bgContext.getReady();
 		const scene = bgContext.getScene();
 		const gallery = bgContext.getGallery();
-		if (!slug || !scene || !gallery || !WORK_PROJECTS[slug]) return;
+		if (!ready || !slug || !scene || !gallery || !WORK_PROJECTS[slug]) return;
 
 		const mediaUrls = [1, 2, 3, 4, 5].map((i) => `/videos/segerman-bg/work-media/${slug}-${i}.mp4`);
 		const carousel = new WorkCarousel(scene, gallery, mediaUrls);
