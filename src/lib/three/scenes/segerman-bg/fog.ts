@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 import { Layer } from './layer';
 import type { Scene } from './scene';
 import type { FluidSim } from './fluid';
@@ -13,6 +14,7 @@ export class Fog extends Layer {
 	private material: THREE.ShaderMaterial;
 	private scene: Scene;
 	private fluidSim: FluidSim | null = null;
+	private colorTween: gsap.core.Tween | null = null;
 
 	constructor(scene: Scene, noiseTexture: THREE.Texture) {
 		super(scene.isTouch);
@@ -63,6 +65,23 @@ export class Fog extends Layer {
 		return this.renderTarget.texture;
 	}
 
+	/** Tweens the fog's own tint (default '#20447e') to `hex` — called by the route layout alongside
+	 *  Planet.animate(), on every navigation. The fog's color is what actually reaches the planet
+	 *  visually: back-fragment.glsl blends litFog over everything at a floor of uFogFloor (0.3) even
+	 *  where the fog texture's own density is low, so a fog color that doesn't track the planet's
+	 *  current per-page/per-project tint visibly washes it out toward a fixed navy instead. */
+	setColor(hex: string): void {
+		this.colorTween?.kill();
+		const target = new THREE.Color(hex);
+		this.colorTween = gsap.to(this.material.uniforms.uColor.value, {
+			r: target.r,
+			g: target.g,
+			b: target.b,
+			duration: 2.3,
+			ease: 'power3.inOut'
+		});
+	}
+
 	render(): void {
 		if (this.fluidSim) {
 			this.material.uniforms.tFluid.value = this.fluidSim.texture;
@@ -76,6 +95,7 @@ export class Fog extends Layer {
 	}
 
 	dispose(): void {
+		this.colorTween?.kill();
 		this.material.dispose();
 	}
 }

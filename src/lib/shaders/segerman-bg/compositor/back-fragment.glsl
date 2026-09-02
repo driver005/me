@@ -69,7 +69,6 @@ uniform float uIsBackMode;
 uniform float uGrainAmount;
 uniform float uHasFog;
 uniform float uPlanetBlurAmt;
-uniform vec3 uNoiseColor;
 
 uniform vec4 uInfoGlow;
 uniform vec2 uInfoGlowOffset;
@@ -256,7 +255,7 @@ void main() {
     
 
     
-    col += uNoiseColor * grainy;
+    col += grainy;
 
     gl_FragColor = vec4(col, 1.);
 }

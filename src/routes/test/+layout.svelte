@@ -33,6 +33,9 @@
 	});
 
 	const MIN_LOADER_DURATION = 1200;
+	/** Fog's own built-in default tint (fog.ts) — tweened back to this on any route without a project
+	 *  color (home/info/error). */
+	const FOG_COLOR_DEFAULT = '#20447e';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
@@ -112,7 +115,7 @@
 	$effect(() => {
 		const pathname = page.url.pathname;
 		const isHome = pathname === '/test';
-		if (!scene || !gallery || !planet || !compositor) return;
+		if (!scene || !gallery || !planet || !compositor || !fog) return;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
 		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
@@ -134,6 +137,11 @@
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
 		planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
 		compositor.setPage(pageId);
+		// Fog's own color is what actually reaches the planet visually (it blends over everything,
+		// planet included, at a floor of 0.3 — see Fog.setColor()'s own comment) — track it to the same
+		// per-project tint so the planet doesn't get washed back toward a fixed navy by a fog that never
+		// changed. FOG_COLOR_DEFAULT matches Fog's own built-in default, for home/info/error.
+		fog.setColor(project ? project.darkColor : FOG_COLOR_DEFAULT);
 	});
 
 	function handleCanvasClick(): void {
