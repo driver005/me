@@ -24,28 +24,22 @@ void main() {
     vec3 posA = position;
 
 
-    // Ported from a vertically-scrolling gallery (the original scrolls up/down, so this shader's
-    // warp/mask/curve math keys off each card's vertical screen position — its "distance from centre"
-    // as it scrolls through view). This port's gallery scrolls horizontally instead (phase 2b's own
-    // design choice), so every card sat at nearly identical Y regardless of scroll position, making
-    // this math near-inert and producing warp/entrance motion that read as vertical on a horizontal
-    // layout. Swapped to key off X, matching this port's actual scroll axis.
-    posA.x -= mix(1.5, 0.0, uProgress);
+    posA.y -= mix(1.5, 0.0, uProgress);
 
 
     vec4 clipA = projectionMatrix * modelViewMatrix * vec4(posA, 1.0);
 
-    float ndcX = clipA.x / clipA.w;
+    float ndcY = clipA.y / clipA.w;
 
-    float screenX = ndcX * 0.5 + 0.5;
+    float screenY = ndcY * 0.5 + 0.5;
 
 
-    float distanceFromCentre = abs((modelViewMatrix * vec4(posA, 1.0)).x);
+    float distanceFromCentre = abs((modelViewMatrix * vec4(posA, 1.0)).y);
 
     float warp = 1.0 - pow(distanceFromCentre, 2.) * mix(-.00015, -(uSpeed*.2), uProgress);
 
 
-    float mask = 1.0 - smoothstep(.5, .6, screenX) * (1.0 - uWarp);
+    float mask = 1.0 - smoothstep(.5, .6, screenY) * (1.0 - uWarp);
 
     pos.x *= mix(1.0, warp, mask * uMode);
 
@@ -59,7 +53,7 @@ void main() {
     pos.z += crtStrength * r2 * abs(1.0 - uMode);
 
 
-    float planeDist = abs((modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).x);
+    float planeDist = abs((modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).y);
 
     float curved = planeDist * planeDist;
 
