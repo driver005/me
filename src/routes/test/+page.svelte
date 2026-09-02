@@ -13,9 +13,11 @@
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
 	import { Video } from '$lib/three/scenes/segerman-bg/video';
+	import Toggle from '$lib/components/sites/segerman/Toggle.svelte';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
 	let webglFailed = $state(false);
+	let webglReady = $state(false);
 	let scene: Scene | null = null;
 	let stars: Stars | null = null;
 	let fog: Fog | null = null;
@@ -108,6 +110,7 @@
 			scene.setOutput(() => compositor?.render());
 
 			scene.start();
+			webglReady = true;
 		}
 	});
 
@@ -123,6 +126,7 @@
 		planetMapTexture?.dispose();
 		crackedTexture?.dispose();
 		crackedNormalTexture?.dispose();
+		webglReady = false;
 		scene = null;
 		stars = null;
 		fog = null;
@@ -154,4 +158,7 @@
 	</div>
 {:else}
 	<canvas bind:this={canvasRef} class="fixed inset-0 h-full w-full"></canvas>
+	{#if webglReady && scene && fluid}
+		<Toggle {scene} {fluid} />
+	{/if}
 {/if}
