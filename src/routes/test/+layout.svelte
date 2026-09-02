@@ -94,16 +94,30 @@
 	});
 
 	// Route-driven mode transition — separate from Toggle's own click-driven state (see Toggle.svelte),
-	// but both ultimately drive the same shared scene.uniforms.uMode. Home shows the front/white view;
-	// any sub-route (a project detail page, the info page) shows the immersive back view with its DOM
+	// but both ultimately drive the same shared uniforms. Home shows the front/white view; any
+	// sub-route (a project detail page, the info page) shows the immersive back view with its DOM
 	// overlay content on top, matching the original's behavior of the background going immersive on
 	// project/info pages.
-	let routeModeTimeline: gsap.core.Tween | null = null;
+	//
+	// Tweening uMode alone is NOT enough to actually show the back view — this is the same lesson
+	// phase 3.5's final review already learned the hard way for the toggle button: the output
+	// compositor's front/back crossfade is driven by uProgressFront (see output-fragment.glsl's
+	// edgeFront), not uMode directly. uMode only affects each layer's own internal treatment (fog/
+	// stars/planet grading, this layout's own gallery visibility). Leaving uProgressFront frozen at
+	// its default means the output shader keeps showing tFront (the white plate) forever, regardless
+	// of uMode — exactly why Work/Info page content added into the shared scene never became visible.
+	let routeModeTimeline: gsap.core.Timeline | null = null;
 	$effect(() => {
 		const isHome = page.url.pathname === '/test';
 		if (!scene || !gallery) return;
 		routeModeTimeline?.kill();
-		routeModeTimeline = gsap.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' });
+		routeModeTimeline = gsap.timeline();
+		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
+		// .to(), not .fromTo() — unlike Toggle's click handler (which is guarded against overlapping
+		// clicks, so its hardcoded "from" value is always safe), route navigation has no such guard;
+		// tweening relative to whatever the current value actually is avoids a visible snap if a second
+		// navigation interrupts the first transition before it settles.
+		routeModeTimeline.to(scene.uniforms.uProgressFront, { value: isHome ? 0 : 1, duration: 1, ease: 'power2.inOut' }, 0);
 		// Sub-routes add their own 3D content (Work's media carousel, Info's portrait) into the same
 		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
 		// underneath a project/info page's own content.
