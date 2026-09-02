@@ -3,12 +3,17 @@ import gsap from 'gsap';
 import type { Scene } from './scene';
 import { Card } from './card';
 import { VideoCard } from './video-card';
+import { Title } from './title';
 
 export interface ProjectDef {
 	slug: string;
+	title: string;
 	textureUrl: string;
 	videoUrl: string;
 }
+
+const TITLE_HEIGHT = 4;
+const TITLE_OFFSET_Y = -20;
 
 const CARD_WIDTH = 52;
 const CARD_HEIGHT = 32;
@@ -38,6 +43,7 @@ export class Gallery {
 
 	cards: Card[] = [];
 	videoCards: VideoCard[] = [];
+	titles: Title[] = [];
 
 	private scene: Scene;
 	private group = new THREE.Group();
@@ -68,6 +74,10 @@ export class Gallery {
 			const videoCard = new VideoCard(scene, { videoUrl: project.videoUrl, width: CARD_WIDTH, height: CARD_HEIGHT });
 			this.videoScene.add(videoCard.mesh);
 			this.videoCards.push(videoCard);
+
+			const title = new Title(project.title, TITLE_HEIGHT);
+			this.group.add(title.mesh);
+			this.titles.push(title);
 		}
 
 		for (let i = 0; i < this.cards.length; i++) {
@@ -105,6 +115,8 @@ export class Gallery {
 			this.videoCards[i].mesh.position.y = this.cards[i].mesh.position.y;
 			this.videoCards[i].mesh.position.z = this.cards[i].mesh.position.z + 0.01;
 			this.videoCards[i].material.uniforms.uSpeed.value = speed;
+			this.titles[i].mesh.position.x = x;
+			this.titles[i].mesh.position.y = this.cards[i].mesh.position.y + TITLE_OFFSET_Y;
 		}
 	}
 
@@ -228,5 +240,6 @@ export class Gallery {
 		this.entranceTimelines = [];
 		for (const card of this.cards) card.dispose();
 		for (const videoCard of this.videoCards) videoCard.dispose();
+		for (const title of this.titles) title.dispose();
 	}
 }

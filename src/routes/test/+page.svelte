@@ -63,8 +63,15 @@
 				crackedNormal: crackedNormalTexture
 			});
 
-			const projects = ['estrela', 'payjustnow', 'vineyard', 'yucca', 'zulik'].map((slug) => ({
+			const projects = [
+				{ slug: 'estrela', title: 'Estrela Studio' },
+				{ slug: 'payjustnow', title: 'PayJustNow' },
+				{ slug: 'vineyard', title: 'Vineyard Hotel' },
+				{ slug: 'yucca', title: 'Yucca Packaging' },
+				{ slug: 'zulik', title: 'Zulik' }
+			].map(({ slug, title }) => ({
 				slug,
+				title,
 				textureUrl: `/textures/segerman-bg/work/${slug}.webp`,
 				videoUrl: `/videos/segerman-bg/work/${slug}.mp4`
 			}));
