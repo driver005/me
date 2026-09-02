@@ -7,6 +7,7 @@ import type { Planet } from './planet';
 import type { Front } from './front';
 import type { Images } from './images';
 import type { Video } from './video';
+import type { Texts } from './texts';
 import { createPlaceholderTexture } from './placeholder-textures';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import backFragment from '$lib/shaders/segerman-bg/compositor/back-fragment.glsl';
@@ -23,6 +24,7 @@ export interface CompositorLayers {
 	front: Front;
 	images: Images;
 	video: Video;
+	texts: Texts;
 }
 
 export class Compositor {
@@ -38,6 +40,7 @@ export class Compositor {
 	private planetLayer: Planet;
 	private imagesLayer: Images;
 	private videoLayer: Video;
+	private textsLayer: Texts;
 
 	constructor(scene: Scene, layers: CompositorLayers) {
 		this.scene = scene;
@@ -46,6 +49,7 @@ export class Compositor {
 		this.planetLayer = layers.planet;
 		this.imagesLayer = layers.images;
 		this.videoLayer = layers.video;
+		this.textsLayer = layers.texts;
 		this.backRT = scene.createRenderTarget(scene.isMobile ? scene.dpr : Math.min(scene.dpr, 1.5));
 
 		this.backMaterial = new THREE.ShaderMaterial({
@@ -56,7 +60,7 @@ export class Compositor {
 				tPlanet: { value: layers.planet.texture },
 				tPlanetBlur: { value: layers.planet.blurTexture },
 				tFog: { value: layers.fog.texture },
-				tTexts: { value: this.placeholder },
+				tTexts: { value: layers.texts.texture },
 				tTitlesSoft: { value: this.placeholder },
 				tTitlesBlur: { value: this.placeholder },
 				tImagesBack: { value: layers.images.backTexture },
@@ -131,6 +135,7 @@ export class Compositor {
 		this.backMaterial.uniforms.tImagesBack.value = this.imagesLayer.backTexture;
 		this.backMaterial.uniforms.tImagesBackBloom.value = this.imagesLayer.backBloomTexture;
 		this.backMaterial.uniforms.tVideo.value = this.videoLayer.texture;
+		this.backMaterial.uniforms.tTexts.value = this.textsLayer.texture;
 		this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
 		// tFront's texture identity is actually stable frame-to-frame (unlike tFluid's ping-pong swap) — this
 		// live-read isn't strictly required today, but it mirrors the original site's own per-frame assignment

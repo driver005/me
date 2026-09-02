@@ -3,6 +3,7 @@ import { Layer } from './layer';
 import type { Scene } from './scene';
 import type { Images } from './images';
 import type { Video } from './video';
+import type { Texts } from './texts';
 import { createPlaceholderTexture } from './placeholder-textures';
 // @ts-ignore - vite-plugin-glsl provides the module at build time; no ambient type is registered for it (see src/lib/three/extra/caffee.svelte for the same pattern)
 import frontFragment from '$lib/shaders/segerman-bg/front/fragment.glsl';
@@ -17,20 +18,21 @@ export class Front extends Layer {
 	private placeholder = createPlaceholderTexture();
 	private imagesLayer: Images;
 	private videoLayer: Video;
+	private textsLayer: Texts;
 
-	constructor(scene: Scene, images: Images, video: Video) {
+	constructor(scene: Scene, images: Images, video: Video, texts: Texts) {
 		super(scene.isTouch);
 		this.scene = scene;
 		this.imagesLayer = images;
 		this.videoLayer = video;
+		this.textsLayer = texts;
 		this.renderTarget = scene.createRenderTarget(scene.dpr);
 
 		this.material = new THREE.ShaderMaterial({
 			uniforms: {
-				// tTitles/tTexts are deliberate placeholders — real content lands in a future
-				// gallery-content phase, not this one.
+				// tTitles is a deliberate placeholder — real content (project titles) lands in a future phase.
 				tTitles: { value: this.placeholder },
-				tTexts: { value: this.placeholder },
+				tTexts: { value: texts.texture },
 				tImagesFront: { value: images.frontTexture },
 				tVideo: { value: video.texture },
 				uTime: scene.uniforms.uTime,
@@ -59,6 +61,7 @@ export class Front extends Layer {
 	render(): void {
 		this.material.uniforms.tImagesFront.value = this.imagesLayer.frontTexture;
 		this.material.uniforms.tVideo.value = this.videoLayer.texture;
+		this.material.uniforms.tTexts.value = this.textsLayer.texture;
 		this.scene.renderer.setRenderTarget(this.renderTarget);
 		this.scene.renderer.render(this.mesh, this.scene.camera);
 	}

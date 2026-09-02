@@ -13,6 +13,7 @@
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
 	import { Video } from '$lib/three/scenes/segerman-bg/video';
+	import { Texts } from '$lib/three/scenes/segerman-bg/texts';
 	import Toggle from '$lib/components/sites/segerman/Toggle.svelte';
 
 	let canvasRef: HTMLCanvasElement | null = $state(null);
@@ -28,6 +29,7 @@
 	let gallery: Gallery | null = null;
 	let images: Images | null = null;
 	let video: Video | null = null;
+	let texts: Texts | null = null;
 	let noiseTexture: THREE.Texture | null = null;
 	let planetMapTexture: THREE.Texture | null = null;
 	let crackedTexture: THREE.Texture | null = null;
@@ -72,8 +74,10 @@
 			scene.addLayer(images);
 			video = new Video(scene, gallery);
 			scene.addLayer(video);
+			texts = new Texts(scene, false);
+			scene.addLayer(texts);
 
-			front = new Front(scene, images, video);
+			front = new Front(scene, images, video, texts);
 
 			scene.addLayer(stars);
 			scene.addLayer(fog);
@@ -106,7 +110,7 @@
 				gallery?.setMouseTarget(nx, ny);
 			});
 
-			compositor = new Compositor(scene, { stars, fog, fluid, planet, front, images, video });
+			compositor = new Compositor(scene, { stars, fog, fluid, planet, front, images, video, texts });
 			scene.setOutput(() => compositor?.render());
 
 			scene.start();
@@ -137,6 +141,7 @@
 		gallery = null;
 		images = null;
 		video = null;
+		texts = null;
 		noiseTexture = null;
 		planetMapTexture = null;
 		crackedTexture = null;
