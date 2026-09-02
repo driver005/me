@@ -110,8 +110,13 @@ export class Gallery {
 		const wrapped = ((this.scrollPosition % totalHeight) + totalHeight) % totalHeight;
 
 		// Gallery-wide scroll speed (simplified from the original's per-mesh tracked speed) drives each
-		// card's warp shader — see card/vertex.glsl's `mix(-.00015, -(uSpeed*.2), uProgress)`.
-		const speed = this.scrollPosition - this.previousScrollPosition;
+		// card's warp shader — see card/vertex.glsl's `mix(-.00015, -(uSpeed*.2), uProgress)`, which
+		// multiplies this by distanceFromCentre² (a raw world-space distance, easily in the thousands
+		// once squared) — the original always damps its own raw scroll delta by a `speedLimit` constant
+		// (`isLowDpr||isSafari ? 3e-5 : 5e-5`) before it ever reaches that shader term. Missing that
+		// damping here was the bug: an un-scaled per-frame delta blew the warp multiplier up hugely.
+		const SPEED_LIMIT = 5e-5;
+		const speed = (this.scrollPosition - this.previousScrollPosition) * SPEED_LIMIT;
 		this.previousScrollPosition = this.scrollPosition;
 
 		for (let i = 0; i < this.cards.length; i++) {
