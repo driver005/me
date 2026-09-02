@@ -33,10 +33,10 @@ const SIM_RES = 128;
 const DYE_RES = 512;
 const ITERATIONS = 1;
 const CURL_STRENGTH = 0;
-const DENSITY_DISSIPATION = 0.83;
-const VELOCITY_DISSIPATION = 0.9;
-const PRESSURE_DISSIPATION = 0.97;
-const MAX_RADIUS = 16;
+const DISSIPATION = {
+	front: { density: 0.73, velocity: 0.98, pressure: 0.7, maxRadius: 6 },
+	back: { density: 0.83, velocity: 0.9, pressure: 0.97, maxRadius: 16 }
+};
 
 export class FluidSim extends Layer {
 	private scene: Scene;
@@ -47,6 +47,10 @@ export class FluidSim extends Layer {
 	private curlRT: THREE.WebGLRenderTarget;
 	private splats: Splat[] = [];
 	private radius = 0;
+	private densityDissipation = DISSIPATION.front.density;
+	private velocityDissipation = DISSIPATION.front.velocity;
+	private pressureDissipation = DISSIPATION.front.pressure;
+	private maxRadius = DISSIPATION.front.maxRadius;
 	private mesh: THREE.Mesh;
 
 	private clearMaterial: THREE.RawShaderMaterial;
@@ -90,7 +94,7 @@ export class FluidSim extends Layer {
 
 		const common = { glslVersion: THREE.GLSL3, vertexShader: fluidVertex, blending: THREE.NoBlending, depthTest: false, depthWrite: false };
 
-		this.clearMaterial = new THREE.RawShaderMaterial({ ...common, uniforms: { texelSize, uTexture: { value: null }, value: { value: PRESSURE_DISSIPATION } }, fragmentShader: clearFragment });
+		this.clearMaterial = new THREE.RawShaderMaterial({ ...common, uniforms: { texelSize, uTexture: { value: null }, value: { value: this.pressureDissipation } }, fragmentShader: clearFragment });
 		this.splatMaterial = new THREE.RawShaderMaterial({ ...common, uniforms: { texelSize, uTarget: { value: null }, uAspect: { value: 1 }, color: { value: new THREE.Vector3() }, point: { value: new THREE.Vector2() }, radius: { value: 1 } }, fragmentShader: splatFragment });
 		this.advectionMaterial = new THREE.RawShaderMaterial({ ...common, uniforms: { texelSize, dyeTexelSize: { value: new THREE.Vector2(1 / DYE_RES, 1 / DYE_RES) }, uVelocity: { value: null }, uSource: { value: null }, dt: { value: 0.016 }, dissipation: { value: 1 } }, fragmentShader: advectionFragment });
 		this.divergenceMaterial = new THREE.RawShaderMaterial({ ...common, uniforms: { texelSize, uVelocity: { value: null } }, fragmentShader: divergenceFragment });
@@ -114,6 +118,15 @@ export class FluidSim extends Layer {
 
 	setAspect(aspect: number): void {
 		this.splatMaterial.uniforms.uAspect.value = aspect;
+	}
+
+	/** Swaps the fluid trail's feel to match the destination mode — called once by Toggle's click handler. */
+	setMode(isBackMode: boolean): void {
+		const preset = isBackMode ? DISSIPATION.back : DISSIPATION.front;
+		this.densityDissipation = preset.density;
+		this.velocityDissipation = preset.velocity;
+		this.pressureDissipation = preset.pressure;
+		this.maxRadius = preset.maxRadius;
 	}
 
 	private renderPass(material: THREE.RawShaderMaterial, target: THREE.WebGLRenderTarget): void {
@@ -163,7 +176,7 @@ export class FluidSim extends Layer {
 		this.renderPass(this.divergenceMaterial, this.divergenceRT);
 
 		this.clearMaterial.uniforms.uTexture.value = this.pressure.read.texture;
-		this.clearMaterial.uniforms.value.value = PRESSURE_DISSIPATION;
+		this.clearMaterial.uniforms.value.value = this.pressureDissipation;
 		this.renderPass(this.clearMaterial, this.pressure.write);
 		this.pressure.swap();
 
@@ -183,14 +196,14 @@ export class FluidSim extends Layer {
 		this.advectionMaterial.uniforms.dyeTexelSize.value.set(1 / SIM_RES, 1 / SIM_RES);
 		this.advectionMaterial.uniforms.uVelocity.value = this.velocity.read.texture;
 		this.advectionMaterial.uniforms.uSource.value = this.velocity.read.texture;
-		this.advectionMaterial.uniforms.dissipation.value = VELOCITY_DISSIPATION;
+		this.advectionMaterial.uniforms.dissipation.value = this.velocityDissipation;
 		this.renderPass(this.advectionMaterial, this.velocity.write);
 		this.velocity.swap();
 
 		this.advectionMaterial.uniforms.dyeTexelSize.value.set(1 / DYE_RES, 1 / DYE_RES);
 		this.advectionMaterial.uniforms.uVelocity.value = this.velocity.read.texture;
 		this.advectionMaterial.uniforms.uSource.value = this.density.read.texture;
-		this.advectionMaterial.uniforms.dissipation.value = DENSITY_DISSIPATION;
+		this.advectionMaterial.uniforms.dissipation.value = this.densityDissipation;
 		this.renderPass(this.advectionMaterial, this.density.write);
 		this.density.swap();
 
@@ -200,7 +213,7 @@ export class FluidSim extends Layer {
 
 	/** Called once per frame from the route before layer.loop() runs — see Task 6 Step 3. */
 	updateRadiusFromSpeed(speed: number): void {
-		const target = Math.min(Math.max(speed, 0), MAX_RADIUS) * 0.01;
+		const target = Math.min(Math.max(speed, 0), this.maxRadius) * 0.01;
 		this.radius += (target - this.radius) * 0.1;
 	}
 
