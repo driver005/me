@@ -14,6 +14,11 @@ uniform float uCurveZ;
 
 uniform float uCurveX;
 
+/** 0 = vertical strip (home gallery — items translate along Y, this shader's original axis).
+ *  1 = horizontal strip (a sub-page carousel — items translate along X). Generalizes the speed-warp
+ *  below so both carousels get it, instead of it being silently Y-only. */
+uniform float uAxis;
+
 
 void main() {
     vUv = uv;
@@ -34,14 +39,22 @@ void main() {
     float screenY = ndcY * 0.5 + 0.5;
 
 
-    float distanceFromCentre = abs((modelViewMatrix * vec4(posA, 1.0)).y);
+    vec4 mvA = modelViewMatrix * vec4(posA, 1.0);
+
+    float distanceFromCentre = abs(mix(mvA.y, mvA.x, uAxis));
 
     float warp = 1.0 - pow(distanceFromCentre, 2.) * mix(-.00015, -(uSpeed*.2), uProgress);
 
 
     float mask = 1.0 - smoothstep(.5, .6, screenY) * (1.0 - uWarp);
 
-    pos.x *= mix(1.0, warp, mask * uMode);
+    float warpMix = mix(1.0, warp, mask * uMode);
+
+    // Vertical strip squashes width (pos.x) as it speeds past; horizontal squashes height (pos.y)
+    // instead — same effect, perpendicular to whichever axis the strip actually scrolls along.
+    pos.x *= mix(warpMix, 1.0, uAxis);
+
+    pos.y *= mix(1.0, warpMix, uAxis);
 
 
     vec2 ndc = (uv - 0.5) * 2.0;

@@ -33,6 +33,7 @@ export class Card {
 				uHover: { value: 0 },
 				uProgress: { value: 0 },
 				uWarp: { value: 0 },
+				uAxis: { value: 0 },
 				uCurveZ: scene.uniforms.uCurveZ,
 				uCurveX: scene.uniforms.uCurveX,
 				uMode: scene.uniforms.uMode,

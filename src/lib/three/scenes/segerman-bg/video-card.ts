@@ -53,7 +53,8 @@ export class VideoCard {
 				uSpeed: { value: 0 },
 				uHover: { value: 0 },
 				uProgress: { value: 1 },
-				uWarp: { value: 1 }
+				uWarp: { value: 1 },
+				uAxis: { value: 0 }
 			},
 			vertexShader: cardVertex,
 			fragmentShader: videoFragment,

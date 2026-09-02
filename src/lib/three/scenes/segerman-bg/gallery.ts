@@ -144,15 +144,19 @@ export class Gallery implements Scrollable {
 		const wantsImage = mediaType === 'both' || mediaType === 'image';
 		const wantsVideo = mediaType === 'both' || mediaType === 'video';
 
+		const uAxis = this.axis === 'horizontal' ? 1 : 0;
+
 		for (const project of projects) {
 			if (wantsImage && project.textureUrl) {
 				const card = new Card(scene, { textureUrl: project.textureUrl, width: itemWidth, height: itemHeight });
+				card.material.uniforms.uAxis.value = uAxis;
 				this.group.add(card.mesh);
 				this.cards.push(card);
 			}
 
 			if (wantsVideo && project.videoUrl) {
 				const videoCard = new VideoCard(scene, { videoUrl: project.videoUrl, width: itemWidth, height: itemHeight });
+				videoCard.material.uniforms.uAxis.value = uAxis;
 				this.videoGroup.add(videoCard.mesh);
 				if (!this.hoverNav) {
 					// No hover to reveal it later — this row shows video immediately. setOffsetIn() also
