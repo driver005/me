@@ -48,7 +48,14 @@ void main() {
 
     float mask = 1.0 - smoothstep(.5, .6, screenY) * (1.0 - uWarp);
 
-    float warpMix = mix(1.0, warp, mask * uMode);
+    // The vertical strip is part of the home front/back toggle, so its squash fades out along with
+    // uMode (no distortion once the view goes immersive) — that's the source's own behavior. A
+    // horizontal strip (a sub-page carousel) isn't part of that toggle and sits at uMode≈0 permanently
+    // (see +layout.svelte's route effect), so gating on uMode there would silence the effect entirely
+    // — bypass the gate (force it to 1) whenever uAxis says this is a horizontal strip.
+    float modeGate = mix(uMode, 1.0, uAxis);
+
+    float warpMix = mix(1.0, warp, mask * modeGate);
 
     // Vertical strip squashes width (pos.x) as it speeds past; horizontal squashes height (pos.y)
     // instead — same effect, perpendicular to whichever axis the strip actually scrolls along.
