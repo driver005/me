@@ -49,7 +49,11 @@ export class Scene {
 			uCurveX: { value: 0.00005 },
 			uCurveZ: { value: 0.01 },
 			uToggleCoords: { value: new THREE.Vector2(0.9, 0.9) },
-			uToggleProgress: { value: 0 }
+			uToggleProgress: { value: 0 },
+			uDirection: { value: 0 },
+			uProgressFront: { value: 0 },
+			uProgressBack: { value: 0 },
+			uWarp: { value: 0 }
 		};
 		this.uniforms.uIsTouch.value = this.isTouch ? 1 : 0;
 

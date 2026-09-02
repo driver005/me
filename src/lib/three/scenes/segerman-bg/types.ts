@@ -10,6 +10,10 @@ export interface SceneUniforms {
 	uCurveZ: { value: number };
 	uToggleCoords: { value: THREE.Vector2 };
 	uToggleProgress: { value: number };
+	uDirection: { value: number };
+	uProgressFront: { value: number };
+	uProgressBack: { value: number };
+	uWarp: { value: number };
 }
 
 export interface PointerState {

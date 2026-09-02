@@ -111,7 +111,11 @@ export class Compositor {
 				uMode: scene.uniforms.uMode,
 				uRes: scene.uniforms.uRes,
 				uToggleCoords: scene.uniforms.uToggleCoords,
-				uToggleProgress: scene.uniforms.uToggleProgress
+				uToggleProgress: scene.uniforms.uToggleProgress,
+				uDirection: scene.uniforms.uDirection,
+				uProgressFront: scene.uniforms.uProgressFront,
+				uProgressBack: scene.uniforms.uProgressBack,
+				uWarp: scene.uniforms.uWarp
 			},
 			vertexShader: fullscreenVertex,
 			fragmentShader: outputFragment

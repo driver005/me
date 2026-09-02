@@ -73,9 +73,14 @@ uniform float uMode;
 uniform vec2 uRes;
 uniform vec2 uToggleCoords;
 uniform float uToggleProgress;
+uniform float uDirection;
+uniform float uProgressFront;
+uniform float uProgressBack;
+uniform float uWarp;
 
 void main() {
     vec2 uv0 = vUv;
+    float warp = uWarp;
     float noiseAmt = mix(5., 3.5, uIsTouch);
 
     vec2 off = vec2(
@@ -85,15 +90,42 @@ void main() {
     float n = snoise(vec3(off, uTime * 0.1) * noiseAmt);
 
     float axis = mix(uv0.y, uv0.x, uIsTouch);
-    float t = axis;
+    float altAxis = mix(uv0.x, uv0.y, uIsTouch);
+    float t = mix(axis, 1.0 - axis, uDirection);
 
-    vec4 back = texture2D(tBack, uv0);
-    vec4 front = texture2D(tFront, uv0);
+    float x = altAxis * 2.0 - 1.0;
+    float arc = sqrt(max(0.0, 1.0 - x*x));
+    float dirSign = mix(-1.0, 1.0, uDirection);
 
-    float edgePosFront = -0.05 + n * 0.05;
-    float edgeFront = smoothstep(edgePosFront - 0.02, edgePosFront + 0.01, t);
+    vec2 uv = uv0;
+    vec4 back;
+    vec4 front;
 
-    vec3 fluid = texture2D(tFluid, uv0).rgb;
+    if (warp > 0.0) {
+        float bulgeMaskBack = smoothstep(0.0, 0.9, uProgressBack) * (1.0 - smoothstep(0.1, 1.0, uProgressBack));
+        float tB = t + dirSign * arc * 0.3 * bulgeMaskBack;
+        float edgePosBack = mix(mix(-0.05, -0.3, uDirection), mix(1.3, 1.05, uDirection), uProgressBack) + n * 0.05;
+        float edgeBandBack = smoothstep(0.4, 0.0, abs(tB - edgePosBack));
+
+        uv += (n * 0.3) * (edgeBandBack * 0.4 * warp);
+        float chroma = edgeBandBack * 0.02 * warp;
+
+        vec2 rUV = uv + vec2(chroma, 0.0);
+        vec2 bUV = uv - vec2(chroma, 0.0);
+
+        back = vec4(texture2D(tBack, rUV).r, texture2D(tBack, uv).g, texture2D(tBack, bUV).b, texture2D(tBack, uv).a);
+        front = vec4(texture2D(tFront, rUV).r, texture2D(tFront, uv).g, texture2D(tFront, bUV).b, texture2D(tFront, uv).a);
+    } else {
+        back = texture2D(tBack, uv);
+        front = texture2D(tFront, uv);
+    }
+
+    float bulgeMaskFront = smoothstep(0.0, 0.9, uProgressFront) * (1.0 - smoothstep(0.1, 1.0, uProgressFront));
+    float tFrontEdge = t + dirSign * arc * 0.3 * bulgeMaskFront;
+    float edgePosFront = mix(mix(-0.05, -0.3, uDirection), mix(1.3, 1.05, uDirection), uProgressFront) + n * 0.05;
+    float edgeFront = smoothstep(edgePosFront - 0.02, edgePosFront + 0.01, tFrontEdge);
+
+    vec3 fluid = texture2D(tFluid, uv).rgb;
     float intensity = length(fluid);
     float fluidMask = 1.0 - smoothstep(0.001, 0.003, intensity);
 
@@ -108,7 +140,7 @@ void main() {
         float blobRadius = (0.085 + n * 0.014) * uToggleProgress * uMode;
         float toggleMask = 1.0 - smoothstep(blobRadius - 0.001, blobRadius + 0.001, distToToggle);
 
-        vec2 windowUV = uv0 + n * 0.0015 * toggleMask;
+        vec2 windowUV = uv + n * 0.0015 * toggleMask;
         float windowChroma = toggleMask * 0.001 + n * .0001;
         vec4 windowBack = vec4(
             texture2D(tBack, windowUV + vec2(windowChroma, 0.0)).r,
