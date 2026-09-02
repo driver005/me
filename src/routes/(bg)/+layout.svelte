@@ -300,7 +300,10 @@
 			videos: projects.map((p) => p.videoUrl)
 		});
 
-		gallery = new Gallery(scene, projects);
+		// Shifted right so the Home strip doesn't sit dead-center over the Earth (see raymarch-planet.ts
+		// — that planet renders centered by design now that it actually compiles). Same world units as
+		// the mesh Planet's own per-page offsets (planet.ts's PLANET_PAGES, e.g. home's x:62).
+		gallery = new Gallery(scene, projects, { center: { x: 30, y: 0, z: 0 } });
 		gallery.playEntrance();
 
 		scroll = new Scroll(scene, gallery);
