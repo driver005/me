@@ -29,9 +29,7 @@ export class InfoPortrait {
 		this.scene = scene;
 		this.gallery = gallery;
 
-		this.texture = new THREE.TextureLoader().load('/textures/segerman-bg/rafi-info.webp', (loaded) => {
-			this.material.uniforms.uSizes.value.set(loaded.image.width, loaded.image.height);
-		});
+		this.texture = new THREE.TextureLoader().load('/textures/segerman-bg/rafi-info.webp');
 		this.texture.generateMipmaps = false;
 		this.texture.minFilter = THREE.LinearFilter;
 		this.texture.magFilter = THREE.LinearFilter;
@@ -42,13 +40,7 @@ export class InfoPortrait {
 				uMode: scene.uniforms.uMode,
 				uScale: { value: scene.isTouch ? 0 : 1 },
 				// 0, not the source's own CRT-style curve — flat instead of bulging in the middle.
-				uCurveStrength: { value: 0 },
-				// "Cover" UV mapping (fragment.glsl, same formula as Card's) — the plane now stretches to
-				// fill its half/full viewport exactly (updateLayout(), below), so without this the image
-				// would distort instead of cropping. uSizes is set once the real image dims load, above;
-				// uPlaneSizes is kept in sync with mesh.scale by updateLayout() itself.
-				uSizes: { value: new THREE.Vector2(1, 1) },
-				uPlaneSizes: { value: new THREE.Vector2(1, 1) }
+				uCurveStrength: { value: 0 }
 			},
 			vertexShader: portraitVertex,
 			fragmentShader: portraitFragment
@@ -73,9 +65,7 @@ export class InfoPortrait {
 	 *  page's own text column, which occupies the left half there); the FULL viewport below it, where
 	 *  the two merge and the text lays directly over the portrait instead (info/+page.svelte switches
 	 *  its text to black in that state, for legibility against the bright portrait instead of the dark
-	 *  space background). Filling exactly (not aspect-fit) relies on the fragment shader's own "cover"
-	 *  UV mapping to crop the image instead of stretching it — see uPlaneSizes below and fragment.glsl.
-	 */
+	 *  space background). */
 	private updateLayout(): void {
 		const isSplit = window.innerWidth >= SPLIT_BREAKPOINT_PX;
 		const width = isSplit ? this.scene.widthAtZ / 2 : this.scene.widthAtZ;
@@ -83,7 +73,6 @@ export class InfoPortrait {
 
 		this.mesh.scale.set(width, height, 1);
 		this.mesh.position.x = isSplit ? this.scene.widthAtZ / 4 : 0;
-		this.material.uniforms.uPlaneSizes.value.set(width, height);
 	}
 
 	dispose(): void {
