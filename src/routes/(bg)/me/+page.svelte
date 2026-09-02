@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
-	import SmoothScroll from '$lib/ui/module/smooth-scroll.svelte';
-	import Cursor from '$lib/ui/module/cursor.svelte';
-	import ScrollProgress from '$lib/ui/module/scroll-progress.svelte';
-	import AppNav from '$lib/ui/module/app-nav.svelte';
-	import AdrianOverlay from '$lib/ui/module/adrian-overlay.svelte';
-	import HorizontalScroll from '$lib/ui/module/horizontal-scroll.svelte';
+	import SmoothScroll from '$lib/design/module/smooth-scroll.svelte';
+	import Cursor from '$lib/design/module/cursor.svelte';
+	import ScrollProgress from '$lib/design/module/scroll-progress.svelte';
+	import AppNav from '$lib/design/module/app-nav.svelte';
+	import AdrianOverlay from '$lib/design/module/adrian-overlay.svelte';
+	import HorizontalScroll from '$lib/design/module/horizontal-scroll.svelte';
 	import { ArrowLeft } from 'lucide-svelte';
 	import SvelteSeo from 'svelte-seo';
 </script>
@@ -34,7 +34,7 @@
 </svelte:head>
 
 <SmoothScroll>
-	<div class="grain min-h-screen bg-[#0A0A0A] text-[#F3F2EE]">
+	<div class="grain min-h-screen bg-[#0A0A0A]/85 text-[#F3F2EE] backdrop-blur-sm">
 		<Cursor />
 		<ScrollProgress />
 		<AppNav scrollHide={true} />

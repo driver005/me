@@ -168,11 +168,11 @@
 		gallery.setHomeVisible(isHome);
 
 		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
-		// /gallery reuses the 'info' treatment (no dedicated planet look was asked for) rather than
-		// falling through to 'error', which parks the planet off-screen at z:-200 — fine for a route
-		// that's never actually shown, wrong for a real page.
-		const pageId: PlanetPageId =
-			isHome ? 'home' : workSlug ? 'work' : pathname === '/about' || pathname === '/gallery' ? 'info' : 'error';
+		// Every non-home, non-work route reachable inside this (bg) group gets the 'info' treatment —
+		// 'error' parks the planet off-screen at z:-200 and zeroes glow/fog, which is correct for a
+		// route that's never actually shown but wrong for any real page, so nothing under this group
+		// should ever hit it.
+		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : 'info';
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
 
 		// Which planet shows: the mesh-based one (still tweened per-project via .animate(), unchanged)

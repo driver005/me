@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import PageShell from '$lib/ui/module/page-shell.svelte';
+import { prefersReducedMotion } from '$lib/util/reduced-motion';
+  import PageShell from '$lib/design/module/page-shell.svelte';
   import { m } from '$lib/paraglide/messages';
   import SvelteSeo from 'svelte-seo';
   import gsap from 'gsap';
@@ -10,7 +11,7 @@
 
   $effect(() => {
     if (!browser || !contentRef) return;
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReduced = prefersReducedMotion();
     if (prefersReduced) return;
 
     const ctx = gsap.context(() => {
