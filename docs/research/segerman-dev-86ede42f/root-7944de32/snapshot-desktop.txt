@@ -1,0 +1,6 @@
+## Latest page snapshot
+uid=1_0 RootWebArea "Raphael Segerman | Creative Developer" url="https://segerman.dev/"
+  uid=1_1 link "Skip to content" url="https://segerman.dev/#page-content"
+    uid=1_2 StaticText "Skip to content"
+  uid=1_3 StaticText "80"
+  uid=1_4 StaticText "%"

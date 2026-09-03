@@ -2,9 +2,9 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import gsap from 'gsap';
-	import type { Scene } from '$lib/three/scenes/segerman-bg/scene';
-	import type { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
-	import type { Texts } from '$lib/three/scenes/segerman-bg/texts';
+	import type { Scene } from '$lib/three/scenes/scene';
+	import type { FluidSim } from '$lib/three/scenes/fluid';
+	import type { Texts } from '$lib/three/scenes/texts';
 
 	// isBackMode is bindable, not owned locally — the route layout also drives it (forcing back mode on
 	// every sub-route). A locally-owned copy here previously went stale on navigation: this button's

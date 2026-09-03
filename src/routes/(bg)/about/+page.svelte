@@ -1,9 +1,9 @@
 <!-- src/routes/(bg)/about/+page.svelte -->
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import { INFO_CONTENT } from '$lib/three/scenes/segerman-bg/info-content';
-	import { InfoPortrait } from '$lib/three/scenes/segerman-bg/info-portrait';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
+	import { INFO_CONTENT } from '$lib/three/scenes/info-content';
+	import { InfoPortrait } from '$lib/three/scenes/info-portrait';
+	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
 
 	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
 
@@ -46,6 +46,18 @@
 	<div class="flex flex-wrap gap-2 text-xs text-black/60 md:text-white/60">
 		{#each INFO_CONTENT.awards as award (award)}
 			<span>{award}</span>
+		{/each}
+	</div>
+	<div class="pointer-events-auto flex flex-wrap gap-x-4 gap-y-1 text-xs">
+		{#each INFO_CONTENT.links as link (link.href)}
+			<a
+				href={link.href}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="underline text-black/70 hover:text-black md:text-white/70 md:hover:text-white"
+			>
+				{link.label}
+			</a>
 		{/each}
 	</div>
 </div>

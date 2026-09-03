@@ -1,0 +1,3 @@
+Script ran on page and returned:
+```json
+"{\"ls\":{},\"htmlBefore\":\"loaded lenis\",\"htmlAfter\":\"loaded lenis\",\"bodyBg\":\"rgb(255, 255, 255)\",\"toggledClass\":\"toggle-inner\"}"

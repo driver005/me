@@ -1,0 +1,3 @@
+Script ran on page and returned:
+```json
+"{\"before\":\"1\",\"after\":\"1\",\"copiedText\":\"Email copied!\",\"btnClass\":\"nav-link nav-link-contact link copied-active\"}"

@@ -13,27 +13,27 @@
 	import gsap from 'gsap';
 	import * as THREE from 'three';
 	import { m } from '$lib/paraglide/messages';
-	import EngineRoot from '$lib/three/scenes/segerman-bg/EngineRoot.svelte';
-	import type { Scene } from '$lib/three/scenes/segerman-bg/scene';
-	import { Stars } from '$lib/three/scenes/segerman-bg/stars';
-	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
-	import { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
-	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
-	import { RaymarchPlanet, PLANET_LOOKS, hexToRgb } from '$lib/three/scenes/segerman-bg/raymarch-planet';
+	import EngineRoot from '$lib/three/scenes/EngineRoot.svelte';
+	import type { Scene } from '$lib/three/scenes/scene';
+	import { Stars } from '$lib/three/scenes/stars';
+	import { Fog } from '$lib/three/scenes/fog';
+	import { FluidSim } from '$lib/three/scenes/fluid';
+	import { Planet } from '$lib/three/scenes/planet';
+	import { RaymarchPlanet, PLANET_LOOKS, hexToRgb, getHillBiasForSkill } from '$lib/three/scenes/raymarch-planet';
 	import { skills } from '$lib/data';
-	import { PlanetSwitcher } from '$lib/three/scenes/segerman-bg/planet-switcher';
-	import { Front } from '$lib/three/scenes/segerman-bg/front';
-	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
-	import type { PlanetPageId } from '$lib/three/scenes/segerman-bg/planet';
-	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
-	import { NameText, NAME_TEXT_LAYER } from '$lib/three/scenes/segerman-bg/name-text';
-	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
-	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
-	import { Images } from '$lib/three/scenes/segerman-bg/images';
-	import { Video } from '$lib/three/scenes/segerman-bg/video';
-	import { Texts } from '$lib/three/scenes/segerman-bg/texts';
+	import { PlanetSwitcher } from '$lib/three/scenes/planet-switcher';
+	import { Front } from '$lib/three/scenes/front';
+	import { Compositor } from '$lib/three/scenes/compositor';
+	import type { PlanetPageId } from '$lib/three/scenes/planet';
+	import { Gallery } from '$lib/three/scenes/gallery';
+	import { WORK_PROJECTS } from '$lib/three/scenes/work-content';
+	import { SPIRAL_MOBILE_BREAKPOINT } from '$lib/three/scenes/spiral-layout';
+	import { Scroll } from '$lib/three/scenes/scroll';
+	import { Images } from '$lib/three/scenes/images';
+	import { Video } from '$lib/three/scenes/video';
+	import { Texts } from '$lib/three/scenes/texts';
 	import Toggle from './Toggle.svelte';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
+	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -41,7 +41,8 @@
 		getScene: () => scene,
 		getGallery: () => gallery,
 		getReady: () => webglReady,
-		getEarthPlanet: () => earthPlanet
+		getEarthPlanet: () => earthPlanet,
+		getFluidTexture: () => fluid?.texture ?? null
 	});
 
 	const MIN_LOADER_DURATION = 1200;
@@ -74,16 +75,22 @@
 	 *  these instead. */
 	let planetSwitcher: PlanetSwitcher | null = null;
 	let earthPlanet: RaymarchPlanet | null = null;
-	let moonPlanet: RaymarchPlanet | null = null;
+	/** /about's own close-up Earth — a SEPARATE instance from `earthPlanet` (Home/skills' shared one),
+	 *  not just a retint: bigger radius (uPlanetRadius), spin frozen (uPlanetSpinSpeed: 0), rotated to
+	 *  a fixed longitude (uRotationOffset) instead of the live uTime-driven spin every other Earth
+	 *  view has — see its own construction below for the exact values. Being a distinct object (not
+	 *  `earthPlanet` itself) is also what keeps +layout.svelte's own generic "click Earth -> /about"
+	 *  handler from firing here — that handler only ever checks `planetSwitcher.activeSource ===
+	 *  earthPlanet`, which is never true while this one is active. */
+	let aboutEarthPlanet: RaymarchPlanet | null = null;
 	let marsPlanet: RaymarchPlanet | null = null;
-	/** Shared across every /skills/[slug] visit — retinted per skill via setAtmosphereColor() in the
+	/** Shared across every /skills/[slug] visit — retinted per skill via setTintColor() in the
 	 *  route effect below, rather than constructing a fresh RaymarchPlanet (its own render targets,
 	 *  blur passes, texture loads) for each of the 20 skills. */
 	let skillPlanet: RaymarchPlanet | null = null;
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
 	let gallery: Gallery | null = null;
-	let nameText: NameText | null = null;
 	let scroll: Scroll | null = null;
 	let images: Images | null = null;
 	let video: Video | null = null;
@@ -161,7 +168,7 @@
 			!fog ||
 			!planetSwitcher ||
 			!earthPlanet ||
-			!moonPlanet ||
+			!aboutEarthPlanet ||
 			!marsPlanet ||
 			!skillPlanet
 		)
@@ -173,9 +180,10 @@
 		routeModeTimeline.to(scene.uniforms.uProgressFront, { value: isHome ? 0 : 1, duration: 1, ease: 'power2.inOut' }, 0);
 		// Sub-routes add their own 3D content (Work's media carousel, About's portrait) into the same
 		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
-		// underneath a project/about page's own content.
-		gallery.setHomeVisible(isHome);
-		nameText?.setVisible(isHome);
+		// underneath a project/about page's own content. Home itself no longer shows these either —
+		// its own +page.svelte renders the project carousel as a Spiral overlay instead (this
+		// instance now exists only to lend its videoScene to Work's media carousel).
+		gallery.setHomeVisible(false);
 
 		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
 		// Every non-home, non-work route reachable inside this (bg) group gets the 'info' treatment —
@@ -198,9 +206,10 @@
 		} else if (isHome || pathname === '/skills') {
 			planetSwitcher.setActive(earthPlanet);
 		} else if (pathname === '/about') {
-			planetSwitcher.setActive(moonPlanet);
+			planetSwitcher.setActive(aboutEarthPlanet);
 		} else if (skill) {
-			skillPlanet.setAtmosphereColor(hexToRgb(skill.primaryColor));
+			skillPlanet.setTintColor(hexToRgb(skill.primaryColor));
+			skillPlanet.setTerrainBias(getHillBiasForSkill(skill));
 			planetSwitcher.setActive(skillPlanet);
 		} else {
 			planetSwitcher.setActive(marsPlanet);
@@ -211,19 +220,35 @@
 		fog.setEnabled(isHome);
 	});
 
-	const clickRaycaster = new THREE.Raycaster();
-	// Raycaster has its own layer mask (default: layer 0 only) — nameText's meshes are exclusively on
-	// NAME_TEXT_LAYER (see images.ts's front-pass exclusion), so without this the raycaster would
-	// never register a hit on them at all, regardless of where the click actually lands.
-	clickRaycaster.layers.enable(NAME_TEXT_LAYER);
-
+	// Click Earth (the raymarched backdrop, not any DOM/mesh content on top of it) -> /about — generic
+	// across every route that shows it (Home, /skills — see the route effect's own
+	// planetSwitcher.setActive(earthPlanet) calls), driven by planetSwitcher.activeSource's identity
+	// rather than a route-name check, so a future route that switches to earthPlanet gets this for
+	// free. RaymarchPlanet.raycastHit() is the shader's own ray-sphere test (see its own comment) —
+	// this is genuinely just "is the shader showing Earth under the cursor", not a bespoke per-page
+	// hit-test.
+	//
+	// /skills excluded here on purpose: that page's own click handler (skills/+page.svelte) already
+	// combines its moon-click test with this exact same raycastHit() call, checked AFTER a moon-miss
+	// (a moon in front of Earth from the camera's own viewpoint should win the click, not Earth behind
+	// it) — running this same check again here, unconditionally, would race that page's own listener
+	// on the same 'click' event and could fire both a moon navigation and an Earth one together.
+	//
+	// Home excluded below SPIRAL_MOBILE_BREAKPOINT for a related reason: Home's own spiral carousel
+	// recenters its centerpiece cube to dead center there too (see spiral-layout.ts), landing right on
+	// top of Earth's own on-screen position — clicking that shared spot should hit the cube (its own,
+	// separate click listener in spiral-carousel.ts handles that), not fall through to /about as well.
 	function handleCanvasClick(): void {
-		// ADRIAN is only actually shown on Home (see nameText?.setVisible(isHome) above) — raycastHit()
-		// itself doesn't check that (Mesh.raycast() ignores .visible; see its own comment), so this
-		// guard is what actually keeps clicks elsewhere from hitting its now-invisible geometry.
-		if (nameText && isHomeRoute && scene) {
-			clickRaycaster.setFromCamera(new THREE.Vector2(scene.pointer.nx, scene.pointer.ny), scene.camera);
-			if (nameText.raycastHit(clickRaycaster)) {
+		if (
+			scene &&
+			planetSwitcher &&
+			earthPlanet &&
+			planetSwitcher.activeSource === earthPlanet &&
+			page.url.pathname !== '/skills' &&
+			!(isHomeRoute && scene.uniforms.uRes.value.x < SPIRAL_MOBILE_BREAKPOINT)
+		) {
+			const aspect = window.innerWidth / window.innerHeight;
+			if (earthPlanet.raycastHit(scene.pointer.nx, scene.pointer.ny, aspect)) {
 				goto('/about');
 				return;
 			}
@@ -294,14 +319,34 @@
 			},
 			EARTH_SCREEN_POSITION
 		);
-		moonPlanet = new RaymarchPlanet(
+		// /about's own close-up Earth (see the `aboutEarthPlanet` var's own comment for why this is a
+		// separate instance from `earthPlanet`, not a retint of it). uPlanetRadius bumped well past the
+		// default 2 for the "close up" look; spin frozen (uPlanetSpinSpeed: 0) instead of the live
+		// uTime-driven spin every other Earth view has.
+		//
+		// rotationOffset/latitudeTilt aim at Germany (~51°N, ~10°E) — computed, not visually verified:
+		// solving target dir = (cos(lat)sin(lon), sin(lat), cos(lat)cos(lon)) [sphereProjection()'s own
+		// convention: longitude=atan(dir.x,dir.z), latitude=asin(dir.y)] against what PLANET_ROTATION =
+		// rotateX(latitudeTilt) * rotateY(rotationOffset) actually produces starting from the unrotated
+		// near side (0,0,1) gives rotationOffset ≈ -0.109 rad, latitudeTilt ≈ -0.897 rad (both first-
+		// order estimates: an initial longitude-only pass showed Africa, close to but not exactly
+		// Germany's own longitude, and had no latitude term at all — hence "rotate up" being needed).
+		// Nudge either value directly if Germany isn't actually centered once you look.
+		aboutEarthPlanet = new RaymarchPlanet(
 			scene,
 			{
-				type: 'planet',
-				textures: { color: textureLoader.load('/textures/planets/2k_moon.jpeg'), stars: starsTexture },
-				look: PLANET_LOOKS.moon
+				type: 'earth',
+				textures: {
+					color: textureLoader.load('/textures/planets/2k_earth_color.jpeg'),
+					clouds: textureLoader.load('/textures/planets/2k_earth_clouds.jpeg'),
+					specular: textureLoader.load('/textures/planets/2k_earth_specular.jpeg'),
+					bump: textureLoader.load('/textures/planets/2k_earth_bump.jpg'),
+					night: textureLoader.load('/textures/planets/2k_earth_night.jpeg'),
+					stars: starsTexture
+				}
 			},
-			INFO_SCREEN_POSITION
+			INFO_SCREEN_POSITION,
+			{ radius: 5, rotationOffset: -0.109, spinSpeed: 0, latitudeTilt: -0.897 }
 		);
 		marsPlanet = new RaymarchPlanet(
 			scene,
@@ -312,12 +357,16 @@
 			},
 			INFO_SCREEN_POSITION
 		);
+		// Procedural (procedural.fragment.glsl), not a texture look — fully generated terrain (see
+		// procedural-terrain.glsl), so it takes a colour tint (setTintColor() below, per skill) the way
+		// a texture-based look never could: the whole surface actually reads as that skill's own colour,
+		// not a colourised photograph of the moon.
 		skillPlanet = new RaymarchPlanet(
 			scene,
 			{
-				type: 'planet',
-				textures: { color: textureLoader.load('/textures/planets/2k_moon.jpeg'), stars: starsTexture },
-				look: PLANET_LOOKS.moon
+				type: 'procedural',
+				textures: { stars: starsTexture },
+				look: { atmosphereColor: [1, 1, 1], atmosphereDensity: 0.05 }
 			},
 			INFO_SCREEN_POSITION
 		);
@@ -343,22 +392,16 @@
 				'/textures/planets/2k_earth_specular.jpeg',
 				'/textures/planets/2k_earth_bump.jpg',
 				'/textures/planets/2k_earth_night.jpeg',
-				'/textures/planets/2k_moon.jpeg',
 				'/textures/planets/2k_mars.jpg',
 				...projects.map((p) => p.textureUrl)
 			],
 			videos: projects.map((p) => p.videoUrl)
 		});
 
-		// Shifted right so the Home strip doesn't sit dead-center over the Earth (see raymarch-planet.ts
-		// — that planet renders centered by design now that it actually compiles). Same world units as
-		// the mesh Planet's own per-page offsets (planet.ts's PLANET_PAGES, e.g. home's x:62).
+		// This instance's own cards are never shown any more (Home's +page.svelte renders a Spiral
+		// overlay instead — see setHomeVisible(false) above) — it stays alive only to lend its
+		// videoScene to Work's media carousel (GalleryOptions.videoScene).
 		gallery = new Gallery(scene, projects, { center: { x: 58, y: 0, z: 0 } });
-		gallery.playEntrance();
-
-		// Big see-through "ADRIAN" on the opposite (left) half, over the Earth — dropped into the same
-		// imageScene/camera/render pass the gallery cards already use, rather than a new render target.
-		nameText = new NameText(scene, gallery.imageScene, { x: -46, y: 0, z: -30 }, ['AD', 'RI', 'AN'], 30, 70, 120);
 
 		scroll = new Scroll(scene, gallery);
 		scene.addLayer(scroll);
@@ -428,14 +471,13 @@
 		routeModeTimeline?.kill();
 		compositor?.dispose();
 		gallery?.dispose();
-		nameText?.dispose();
 		// planetSwitcher is registered with scene.addLayer(), so scene.dispose() below disposes IT — but
 		// it only owns its own placeholder texture (see its own comment), not whichever planet is/was
 		// active, since the mesh `planet` persists across route changes rather than being scoped to one.
 		// All four real planet instances need disposing explicitly here.
 		planet?.dispose();
 		earthPlanet?.dispose();
-		moonPlanet?.dispose();
+		aboutEarthPlanet?.dispose();
 		marsPlanet?.dispose();
 		skillPlanet?.dispose();
 		scene?.dispose();
@@ -451,13 +493,12 @@
 		planet = null;
 		planetSwitcher = null;
 		earthPlanet = null;
-		moonPlanet = null;
+		aboutEarthPlanet = null;
 		marsPlanet = null;
 		skillPlanet = null;
 		front = null;
 		compositor = null;
 		gallery = null;
-		nameText = null;
 		scroll = null;
 		images = null;
 		video = null;

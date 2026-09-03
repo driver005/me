@@ -43,6 +43,13 @@ uniform vec3 uAtmosphereColor;
 uniform float uAtmosphereDensity;
 uniform float uSunIntensity;
 uniform float uAmbientLight;
+// Multiplied straight into the sampled surface colour in intersectPlanet() below — uAtmosphereColor
+// only ever tints the thin edge-glow rim (see atmosphereColor()'s planetEdge falloff, powers of
+// 5-120 — a sliver, not the disc), so retinting it alone can't make a planet actually read as "this
+// skill's own colour"; the moon-cratered surface texture dominates regardless. Default (1,1,1) is a
+// no-op multiply, so every existing look (mars, moon, etc.) is unaffected unless explicitly set —
+// see RaymarchPlanet.setTintColor().
+uniform vec3 uSurfaceTint;
 in vec3 uSunDirection;
 
 //==========================================================//
@@ -234,7 +241,7 @@ Hit intersectPlanet(vec3 ro, vec3 rd) {
   vec3 rotatedPosition = PLANET_ROTATION * (position - uPlanetPosition) + uPlanetPosition;
 
   vec2 textureCoord = sphereProjection(rotatedPosition, uPlanetPosition);
-  vec3 color = texture(uPlanetColor, textureCoord).rgb;
+  vec3 color = texture(uPlanetColor, textureCoord).rgb * uSurfaceTint;
   color = Scurve(color);
 
   vec3 normal = planetNormal(position);

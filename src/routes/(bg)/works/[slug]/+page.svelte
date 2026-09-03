@@ -2,10 +2,9 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
-	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
-	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
-	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
+	import { WORK_PROJECTS } from '$lib/three/scenes/work-content';
+	import { SpiralCarousel } from '$lib/three/scenes/spiral-carousel';
+	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
 
 	const project = $derived(WORK_PROJECTS[page.params.slug ?? '']);
 	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
@@ -14,49 +13,21 @@
 		const slug = page.params.slug;
 		const ready = bgContext.getReady();
 		const scene = bgContext.getScene();
-		const gallery = bgContext.getGallery();
 		const currentProject = slug ? WORK_PROJECTS[slug] : undefined;
-		if (!ready || !slug || !scene || !gallery || !currentProject) return;
+		if (!ready || !scene || !currentProject) return;
 
 		// TODO: real per-project media clips don't exist yet (WorkProject.videoUrl points at a file
-		// that isn't there) — shows the project's real screenshot as a single-item image row instead of
-		// a broken video placeholder. Switch mediaType back to 'video' with a real multi-clip array once
-		// those exist (matches the source's own 5-clips-per-project carousel).
-		const carousel = new Gallery(
-			scene,
-			[{ textureUrl: currentProject.textureUrl }],
-			{
-				axis: 'horizontal',
-				mediaType: 'image',
-				titles: false,
-				hoverNav: false,
-				groupTilt: false,
-				gapFront: 4,
-				gapBack: 4,
-				center: { x: 0, y: 0, z: 5 },
-				// Renders through the home Gallery's own persistent image layer instead of standing up a
-				// new scene/layer for this route — dispose() removes this instance's whole subtree from it
-				// on navigation away.
-				imageScene: gallery.imageScene
-			}
-		);
-		const scroll = new Scroll(scene, carousel);
-
-		// Not registered via scene.addLayer() — Scene has no removeLayer(), and this carousel/scroll
-		// pair is scoped to this page (a fresh pair gets created on every slug change), so a manual
-		// rAF loop scoped to this effect's own lifetime avoids leaking phantom layers across
-		// navigation.
-		let rafId = requestAnimationFrame(function tick() {
-			scroll.loop();
-			carousel.update(0, 0);
-			rafId = requestAnimationFrame(tick);
+		// that isn't there) — one item (the project's real screenshot) instead of a real multi-clip
+		// filmstrip. Switch to a real per-project image array once those exist.
+		const carousel = new SpiralCarousel(scene, [{ src: currentProject.textureUrl }], {
+			mode: 'horizontal',
+			duotone: true,
+			fluidTexture: bgContext.getFluidTexture()
 		});
 
-		return () => {
-			cancelAnimationFrame(rafId);
-			scroll.dispose();
-			carousel.dispose();
-		};
+		// Fully self-driving via scene.appendOutput() (see spiral-carousel.ts) — no manual rAF loop
+		// needed here any more.
+		return () => carousel.dispose();
 	});
 </script>
 

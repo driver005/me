@@ -1,0 +1,3 @@
+Script ran on page and returned:
+```json
+"{\"before\":0,\"after\":0,\"delta\":0,\"projectsTransform\":\"none\"}"

@@ -43,6 +43,16 @@ uniform sampler2D uStars;
 
 uniform vec3 uPlanetPosition;
 uniform float uPlanetRadius;
+// Radians/second of PLANET_ROTATION's own uTime-driven spin (below) — every existing Earth uses .1
+// (unchanged look); only a caller passing RaymarchPlanet's own `overrides.spinSpeed` (see
+// raymarch-planet.ts) ever sets this to something else, e.g. 0 to freeze rotation entirely and let
+// uRotationOffset alone decide which longitude faces the camera, permanently.
+uniform float uPlanetSpinSpeed;
+// Latitude tilt (radians) — see rotateX()'s own comment; 0 (every existing Earth) leaves the equator
+// facing the camera exactly as before. Only a caller passing RaymarchPlanet's own
+// `overrides.latitudeTilt` (e.g. /about's own close-up, aimed at a specific real-world latitude) ever
+// sets this to something else.
+uniform float uLatitudeTilt;
 uniform float uCloudsDensity;
 uniform vec3 uAtmosphereColor;
 uniform float uAtmosphereDensity;
@@ -58,15 +68,22 @@ in vec3 uSunDirection;
 uniform int uMoonCount;
 uniform vec3 uMoonPositions[MAX_MOONS];
 uniform float uMoonRadius;
-uniform sampler2D uMoonTexture;
+// Per-moon tint (a skill's own primaryColor) — see intersectMoonFull()'s own comment.
+uniform vec3 uMoonColors[MAX_MOONS];
+// Per-moon water/hills bias (a skill's own typeSafety — see raymarch-planet.ts's
+// getHillBiasForSkill()) — see procedural-terrain.glsl's terrainBandColor().
+uniform float uMoonHillBias[MAX_MOONS];
 
 //==========================================================//
 //  Constants (could be turned into controllable uniforms)  //
 //==========================================================//
 
 // Planet geometry
+// Kept separate from uPlanetSpinSpeed below on purpose — freezing a close-up planet's own surface
+// spin (see uPlanetSpinSpeed's own comment) shouldn't also freeze the distant background starfield's
+// slow parallax drift (spaceColor(), which still uses this constant directly).
 #define ROTATION_SPEED .1
-#define PLANET_ROTATION rotateY(uTime * ROTATION_SPEED + uRotationOffset)
+#define PLANET_ROTATION rotateX(uLatitudeTilt) * rotateY(uTime * uPlanetSpinSpeed + uRotationOffset)
 
 // Planet colors
 #define CLOUD_COLOR vec3(1., 1., 1.)
@@ -159,6 +176,20 @@ mat3 rotateY(float angle) {
   );
 }
 
+// rotateY alone (PLANET_ROTATION, below) only ever spins the sphere around its own poles — the
+// camera-facing point's own latitude (dir.y in sphereProjection() below) never moves, so it can bring
+// any LONGITUDE into view but never a different latitude. This is the second axis that does: tilts
+// the whole sphere around X, raising (or lowering) which latitude band faces the camera.
+mat3 rotateX(float angle) {
+  float c = cos(angle);
+  float s = sin(angle);
+  return mat3(//
+  vec3(1, 0, 0),//
+  vec3(0, c, s),//
+  vec3(0, -s, c)//
+  );
+}
+
 // Zavie - https://www.shadertoy.com/view/lslGzl
 vec3 simpleReinhardToneMapping(vec3 color) {
   float exposure = 1.5;
@@ -192,13 +223,22 @@ float planetDist(in vec3 ro, in vec3 rd) {
 vec3 planetNormal(vec3 p) {
   vec3 rd = uPlanetPosition - p;
   float dist = planetDist(p, rd);
-  // if e is too small it causes artifacts on mobile, so I interpolate 
+  // if e is too small it causes artifacts on mobile, so I interpolate
   // between .01 (large screens) and .03 (small screens)
   vec2 e = vec2(max(.01, .03 * smoothstep(1300., 300., uResolution.x)), 0);
 
   vec3 normal = dist - vec3(planetDist(p - e.xyy, rd), planetDist(p - e.yxy, rd), planetDist(p + e.yyx, rd));
   return normalize(normal);
 }
+
+#include "./procedural-terrain.glsl"
+
+// Terrain scale for the little moons: much higher than the planet's own uTerrainScale (~1) because a
+// moon's radius (see skill-moons.ts's MOON_RADIUS) is a fraction of the planet's — sampling the same
+// terrain noise at planet scale would barely vary across such a small sphere. Matches the multiplier
+// jsulpis's own procedural.fragment.glsl used for its (similarly tiny) built-in moon.
+#define MOON_TERRAIN_SCALE 12.
+#define MOON_NOISE_STRENGTH 1.
 
 vec3 spaceColor(vec3 direction) {
   vec3 backgroundCoord = direction * rotateY(uTime * ROTATION_SPEED / 3. + 1.5);
@@ -263,40 +303,52 @@ Hit intersectPlanet(vec3 ro, vec3 rd) {
   return Hit(len, normal, Material(color, 1., specular, nightColor));
 }
 
-// A moon is a plain textured sphere (no bump/clouds/night-side treatment like the planet gets) —
-// deliberately simple, since radiance() below applies the same diffuse+specular lighting to
-// whatever Hit it receives regardless of whether it came from the planet or a moon.
-Hit intersectMoon(vec3 ro, vec3 rd, vec3 moonPosition) {
-  Sphere moon = Sphere(moonPosition, uMoonRadius);
-  float len = sphIntersect(ro, rd, moon);
-
-  if(len < 0.) {
-    return miss;
-  }
-
+// Same procedural terrain generator as the /skills/[slug] skillPlanet (procedural.fragment.glsl) —
+// see procedural-terrain.glsl — coloured by `moonTint` (that skill's own primaryColor, see
+// uMoonColors above) instead of a sampled texture, with a plain analytic sphere normal (no bump/
+// terrain-height displacement — not worth the extra raymarch cost at this radius). Only called for
+// the moon that actually wins intersectScene()'s own cheap pre-pass below, not once per candidate
+// moon — terrainAltitude()'s own 6-octave fbm costs real work, and doing that for every one of up to
+// MAX_MOONS=20 moons on every ray, most of which don't even end up visible at that pixel, would
+// multiply this shader's per-pixel cost by roughly 20x for no visible benefit.
+Hit intersectMoonFull(vec3 ro, vec3 rd, vec3 moonPosition, vec3 moonTint, float moonHillBias, float len) {
   vec3 position = ro + len * rd;
   vec3 normal = normalize(position - moonPosition);
-  vec2 textureCoord = sphereProjection(position, moonPosition);
-  vec3 color = texture(uMoonTexture, textureCoord).rgb;
 
-  return Hit(len, normal, Material(color, 1., 0.15, vec3(0.)));
+  float altitude = terrainAltitude((position - moonPosition), MOON_TERRAIN_SCALE, MOON_NOISE_STRENGTH);
+  float specular;
+  vec3 color = terrainBandColor(altitude, moonTint, moonHillBias, specular);
+
+  return Hit(len, normal, Material(color, 1., specular, vec3(0.)));
 }
 
 // Nearest-hit-wins across the planet and every moon — this is what gives the moons real depth: one
 // in front of the planet from the camera's viewpoint naturally wins here (smaller `len`), one behind
 // naturally loses to the planet's own closer hit, instead of a moon always compositing on top
-// regardless of which side of the planet it's actually on.
+// regardless of which side of the planet it's actually on. A cheap plain-sphere pass first (matching
+// intersectPlanet()'s own initial sphIntersect — bump never changes which surface is nearest by
+// anywhere near enough to flip this, only how that surface looks once shaded) decides the winner
+// before paying intersectMoonFull()'s bump cost, and only for that one moon if it is one — see its
+// own comment.
 Hit intersectScene(vec3 ro, vec3 rd) {
-  Hit best = intersectPlanet(ro, rd);
+  float bestLen = sphIntersect(ro, rd, getPlanet());
+  int bestMoon = -1;
   for(int i = 0; i < MAX_MOONS; i++) {
     if(i >= uMoonCount)
       break;
-    Hit moonHit = intersectMoon(ro, rd, uMoonPositions[i]);
-    if(moonHit.len < best.len) {
-      best = moonHit;
+    float len = sphIntersect(ro, rd, Sphere(uMoonPositions[i], uMoonRadius));
+    if(len >= 0. && (bestLen < 0. || len < bestLen)) {
+      bestLen = len;
+      bestMoon = i;
     }
   }
-  return best;
+  if(bestLen < 0.) {
+    return miss;
+  }
+  if(bestMoon < 0) {
+    return intersectPlanet(ro, rd);
+  }
+  return intersectMoonFull(ro, rd, uMoonPositions[bestMoon], uMoonColors[bestMoon], uMoonHillBias[bestMoon], bestLen);
 }
 
 // alpha out-param — not in the original: this shader was built to be its whole page's own

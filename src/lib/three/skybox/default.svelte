@@ -28,9 +28,7 @@
 
 <T.Color attach="background" args={[bgTween.current[0], bgTween.current[1], bgTween.current[2]]} />
 
-{#if mode.current === 'dark'}
-	<Stars />
-{/if}
+<Stars />
 
 {#await map then texture}
 	<Environment isBackground={false} {texture} />

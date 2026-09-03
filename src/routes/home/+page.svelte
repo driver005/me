@@ -4,15 +4,13 @@
 	import { Canvas } from '@threlte/core';
 	import Sceens from '$lib/three/sceens/default.svelte';
 	import { World } from '@threlte/rapier';
-	import { Loader } from '$lib/ui/page';
 	import { browser } from '$app/environment';
 	import { onMount, setContext } from 'svelte';
 	import { m } from '$lib/paraglide/messages';
 	import SvelteSeo from 'svelte-seo';
-	import { toggleMode } from 'mode-watcher';
+	import { toggleMode, setMode } from 'mode-watcher';
 
 	let isMounted = $state(false);
-	let hasEntered = $state(false);
 
 	let helper = $state({ value: true });
 	let friendly = $state({ value: false });
@@ -25,6 +23,13 @@
 	onMount(() => {
 		if (!browser) return;
 		isMounted = true;
+		// Dark/light mode (right-click / two-finger-tap to toggle, below) only really means anything on
+		// this page — its skybox/lighting/postprocessing are the only things that read `mode.current`
+		// (see skybox/default.svelte etc.) anywhere in the app. Reset to light on every entry so a
+		// dark-mode toggle from an earlier visit doesn't carry over via mode-watcher's own persisted
+		// state (the root layout's own setMode('light') only runs once, on the very first page load —
+		// not on a later client-side navigation back to this route).
+		setMode('light');
 	});
 </script>
 
@@ -60,12 +65,9 @@
 </svelte:head>
 
 {#if isMounted}
-	<Loader bind:hasEntered />
 	<div
-		class:opacity-0={!hasEntered}
-		class:pointer-events-none={!hasEntered}
 		class="absolute inset-0"
-		aria-hidden={!hasEntered}
+		aria-hidden="true"
 		oncontextmenu={(e) => { e.preventDefault(); toggleMode(); }}
 		ontouchstart={(e) => { if (e.touches.length >= 2) { e.preventDefault(); toggleMode(); } }}
 	>
@@ -79,12 +81,11 @@
 		</CanvasPortal>
 	</div>
 
-	{#if hasEntered}
-		<div
-			class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 font-mono text-[9px] uppercase tracking-[0.3em] text-[#555] text-center pointer-events-none animate-[fadeIn_0.6s_ease-out,autoHide_4s_2s_ease-out_forwards]"
-		>
-			right click · two-finger tap → toggle dark mode
-		</div>
+	<div
+		class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 font-mono text-[9px] uppercase tracking-[0.3em] text-[#555] text-center pointer-events-none animate-[fadeIn_0.6s_ease-out,autoHide_4s_2s_ease-out_forwards]"
+	>
+		right click · two-finger tap → toggle dark mode
+	</div>
 {/if}
 
 <style>
@@ -97,4 +98,3 @@
 		100% { opacity: 0; pointer-events: none; }
 	}
 </style>
-{/if}

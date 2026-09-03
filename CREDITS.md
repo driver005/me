@@ -24,9 +24,19 @@ alpha channel instead of a hardcoded 1.0, so only the planet itself actually rep
 behind it.
 
 Files:
-- `src/lib/shaders/jsulpis-planet/vertex.glsl`, `earth.fragment.glsl`, `planet.fragment.glsl`
-- `src/lib/three/scenes/segerman-bg/raymarch-planet.ts` (the Three.js-side wrapper — original code,
+- `src/lib/shaders/jsulpis-planet/vertex.glsl`, `earth.fragment.glsl`, `planet.fragment.glsl`,
+  `procedural.fragment.glsl`, `procedural-terrain.glsl`
+- `src/lib/three/scenes/raymarch-planet.ts` (the Three.js-side wrapper — original code,
   not from the source repo, just wires their shaders into a `THREE.ShaderMaterial`)
+
+`procedural.fragment.glsl`/`procedural-terrain.glsl` port the source repo's separate
+`procedural.fragment.glsl` (the "Procedural Blue Planet" — noise-generated terrain, not a texture),
+used for `/skills/[slug]`'s shared skillPlanet and (via the same shared terrain generator) the little
+orbiting moons on `/skills`. Two changes beyond the alpha one above: the original's `uNoiseTexture`
+(a baked `sampler3D`) doesn't exist in this project, so `procedural-terrain.glsl` replaces it with a
+standard analytic hash-based value noise computed purely in the shader; and the built-in single
+hardcoded moon is removed entirely (this project's moons are the separate, already-existing
+`earthPlanet` orbiting-moons system, not this shader's own).
 
 Real planet/stars textures also come from that repo's own `public/` assets, itself sourced from
 public-domain imagery: Earth from NASA's [Visible Earth / Blue
@@ -40,7 +50,7 @@ from USGS Astrogeology.
 [`hughsk/glsl-noise`](https://github.com/hughsk/glsl-noise/blob/master/simplex/3d.glsl), not the
 newer 2020 `stegu/webgl-noise` revision (`+10.0` / `0.5` / `105.0`).
 
-Used in the WebGL background engine's shaders (`src/lib/shaders/segerman-bg/`):
+Used in the WebGL background engine's shaders (`src/lib/shaders/`):
 `planet/vertex.glsl`, `planet/fragment.glsl`, `card/fragment.glsl`, `video-card/fragment.glsl`,
 `compositor/output-fragment.glsl`.
 

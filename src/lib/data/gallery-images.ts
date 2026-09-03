@@ -8,14 +8,15 @@ function mulberry32(seed: number) {
 	};
 }
 
-export const COLS = 8;
-export const GALLERY_ROWS = 25;
+export const COLS = 4;
+export const GALLERY_ROWS = 13;
 
 export interface GalleryImage {
 	src: string;
 	row: number;
 	col: number;
 	randomY: number;
+	randomX: number;
 }
 
 export function buildGalleryImages(): GalleryImage[] {
@@ -42,7 +43,8 @@ export function buildGalleryImages(): GalleryImage[] {
 				src: `https://picsum.photos/seed/pg${seedId++}/${size}/${size}`,
 				row,
 				col,
-				randomY: Math.round(rng(-100, 100))
+				randomY: Math.round(rng(-100, 100)),
+				randomX: Math.round(rng(-100, 100))
 			});
 		}
 	}

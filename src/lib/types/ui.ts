@@ -51,6 +51,13 @@ export interface SKILL {
   /** Core skills (message === m['skills.core']()) are the favourites — gets a star before the name
    *  wherever it's listed. */
   favourite: boolean;
+  /** Only set for actual programming languages (not frameworks/tools/services) — 'typed' (statically
+   *  type-checked: TypeScript/Rust/C++/Java/Go) biases that skill's /skills moon and, on
+   *  /skills/[slug], the shared skillPlanet's own procedural terrain toward hills/rock ("a lot of
+   *  hills"); 'dynamic' (JavaScript/Python) biases it toward water ("a lot of water") instead — see
+   *  raymarch-planet.ts's getHillBiasForSkill(). Left unset for everything else, which renders with
+   *  the generator's own neutral default mix. */
+  typeSafety?: 'typed' | 'dynamic';
 }
 
 

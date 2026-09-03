@@ -322,7 +322,8 @@ export const skills: SKILL[] = [
 		border: 'border-blue-500',
 		color: 'text-blue-500',
 		primaryColor: '#3b82f6',
-		favourite: false
+		favourite: false,
+		typeSafety: 'typed'
 	},
 	{
 		name: 'JavaScript',
@@ -332,7 +333,8 @@ export const skills: SKILL[] = [
 		border: 'border-yellow-400',
 		color: 'text-yellow-400',
 		primaryColor: '#facc15',
-		favourite: true
+		favourite: true,
+		typeSafety: 'dynamic'
 	},
 	{
 		name: 'Tailwind',
@@ -352,7 +354,8 @@ export const skills: SKILL[] = [
 		border: 'border-orange-700',
 		color: 'text-orange-700',
 		primaryColor: '#c2410c',
-		favourite: true
+		favourite: true,
+		typeSafety: 'typed'
 	},
 	{
 		name: 'C++',
@@ -362,7 +365,8 @@ export const skills: SKILL[] = [
 		border: 'border-blue-600',
 		color: 'text-blue-600',
 		primaryColor: '#2563eb',
-		favourite: true
+		favourite: true,
+		typeSafety: 'typed'
 	},
 	{
 		name: 'Java',
@@ -372,7 +376,8 @@ export const skills: SKILL[] = [
 		border: 'border-red-500',
 		color: 'text-red-500',
 		primaryColor: '#ef4444',
-		favourite: true
+		favourite: true,
+		typeSafety: 'typed'
 	},
 	{
 		name: 'Go',
@@ -382,7 +387,8 @@ export const skills: SKILL[] = [
 		border: 'border-cyan-500',
 		color: 'text-cyan-500',
 		primaryColor: '#06b6d4',
-		favourite: true
+		favourite: true,
+		typeSafety: 'typed'
 	},
 	{
 		name: 'React',
@@ -402,7 +408,8 @@ export const skills: SKILL[] = [
 		border: 'border-blue-400',
 		color: 'text-blue-400',
 		primaryColor: '#60a5fa',
-		favourite: true
+		favourite: true,
+		typeSafety: 'dynamic'
 	},
 	{
 		name: 'SQL',
