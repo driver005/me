@@ -64,7 +64,7 @@
      DOM overlay over the shared WebGL background, not SectionPage's chrome (AppNav/Cursor/its own
      "← Back" style), which belongs to the separate design-system page family (contact/faq/services/
      etc.) this page doesn't otherwise resemble any more now that the moons are the whole page. -->
-<div class="pointer-events-none fixed inset-x-0 top-0 z-20 flex flex-col gap-2 p-8 text-white">
+<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-8 text-white">
 	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
 	<p class="max-w-md text-sm text-white/70">
 		Every skill I use, orbiting as its own moon — scroll to spin the ring, click one to read more about it.
