@@ -5,7 +5,6 @@
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
 	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
-	import { NameText } from '$lib/three/scenes/segerman-bg/name-text';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	const project = $derived(WORK_PROJECTS[page.params.slug ?? '']);
@@ -43,20 +42,6 @@
 		);
 		const scroll = new Scroll(scene, carousel);
 
-		// Big glass 3D title, same treatment as Home's "ADRIAN" (see name-text.ts) — replaces the old
-		// small flat DOM heading. Single row, one cell per letter (cellSize also doubles as fontSize's
-		// reference the same way Home's grid does), positioned above the featured image rather than on
-		// top of it.
-		const title = new NameText(
-			scene,
-			gallery.imageScene,
-			{ x: 0, y: 30, z: -20 },
-			[currentProject.title.toUpperCase()],
-			26,
-			currentProject.title.length * 30,
-			30
-		);
-
 		// Not registered via scene.addLayer() — Scene has no removeLayer(), and this carousel/scroll
 		// pair is scoped to this page (a fresh pair gets created on every slug change), so a manual
 		// rAF loop scoped to this effect's own lifetime avoids leaking phantom layers across
@@ -71,7 +56,6 @@
 			cancelAnimationFrame(rafId);
 			scroll.dispose();
 			carousel.dispose();
-			title.dispose();
 		};
 	});
 </script>
@@ -83,9 +67,7 @@
 {#if project}
 	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-3 p-8 text-white sm:max-w-xl">
 		<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
-		<!-- Title itself is the big 3D "glass" text above (see the $effect above) — keeping an h1 here
-		     for a11y/SEO, visually hidden since the 3D one already carries it. -->
-		<h1 class="sr-only">{project.title}</h1>
+		<h1 class="text-6xl leading-none font-black tracking-tight uppercase sm:text-8xl">{project.title}</h1>
 		<p class="text-sm text-white/70">{project.role} · {project.year}</p>
 		<p class="leading-relaxed text-white/90">{project.description}</p>
 		<a
