@@ -1,5 +1,6 @@
 import type { Scene } from './scene';
 import type { Gallery } from './gallery';
+import type { RaymarchPlanet } from './raymarch-planet';
 
 export const SEGERMAN_BG_CONTEXT = 'segerman-bg';
 
@@ -18,4 +19,8 @@ export interface SegermanBgContext {
 	getScene(): Scene | null;
 	getGallery(): Gallery | null;
 	getReady(): boolean;
+	/** The shared Earth instance — /skills reaches in to drive its orbiting moons (see
+	 *  skill-moons.ts's RaymarchPlanet.setMoons()) the same way Work's media carousel reaches into
+	 *  getGallery(). */
+	getEarthPlanet(): RaymarchPlanet | null;
 }

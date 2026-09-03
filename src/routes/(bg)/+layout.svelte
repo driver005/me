@@ -19,7 +19,8 @@
 	import { Fog } from '$lib/three/scenes/segerman-bg/fog';
 	import { FluidSim } from '$lib/three/scenes/segerman-bg/fluid';
 	import { Planet } from '$lib/three/scenes/segerman-bg/planet';
-	import { RaymarchPlanet, PLANET_LOOKS } from '$lib/three/scenes/segerman-bg/raymarch-planet';
+	import { RaymarchPlanet, PLANET_LOOKS, hexToRgb } from '$lib/three/scenes/segerman-bg/raymarch-planet';
+	import { skills } from '$lib/data';
 	import { PlanetSwitcher } from '$lib/three/scenes/segerman-bg/planet-switcher';
 	import { Front } from '$lib/three/scenes/segerman-bg/front';
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
@@ -39,7 +40,8 @@
 	setContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT, {
 		getScene: () => scene,
 		getGallery: () => gallery,
-		getReady: () => webglReady
+		getReady: () => webglReady,
+		getEarthPlanet: () => earthPlanet
 	});
 
 	const MIN_LOADER_DURATION = 1200;
@@ -74,6 +76,10 @@
 	let earthPlanet: RaymarchPlanet | null = null;
 	let moonPlanet: RaymarchPlanet | null = null;
 	let marsPlanet: RaymarchPlanet | null = null;
+	/** Shared across every /skills/[slug] visit — retinted per skill via setAtmosphereColor() in the
+	 *  route effect below, rather than constructing a fresh RaymarchPlanet (its own render targets,
+	 *  blur passes, texture loads) for each of the 20 skills. */
+	let skillPlanet: RaymarchPlanet | null = null;
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
 	let gallery: Gallery | null = null;
@@ -156,7 +162,8 @@
 			!planetSwitcher ||
 			!earthPlanet ||
 			!moonPlanet ||
-			!marsPlanet
+			!marsPlanet ||
+			!skillPlanet
 		)
 			return;
 		isBackMode = !isHome;
@@ -180,8 +187,11 @@
 
 		// Which planet shows: the mesh-based one (still tweened per-project via .animate(), unchanged)
 		// on /works/, one of the raymarched jsulpis planets everywhere else — home and /skills (its
-		// skill "moons" orbit this one, see skill-moons.ts) both get Earth, /about gets the moon, mars
-		// for everything else not otherwise recognized, so "other sub-paths get other planets" varies.
+		// skill "moons" orbit this one, see skill-moons.ts) both get Earth, /about gets the moon,
+		// /skills/[slug] gets the shared skillPlanet retinted to that skill's own color, mars for
+		// everything else not otherwise recognized.
+		const skillSlug = pathname.startsWith('/skills/') ? pathname.slice('/skills/'.length) : null;
+		const skill = skillSlug ? skills.find((s) => s.slug === skillSlug) : undefined;
 		if (pageId === 'work') {
 			planetSwitcher.setActive(planet);
 			planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
@@ -189,6 +199,9 @@
 			planetSwitcher.setActive(earthPlanet);
 		} else if (pathname === '/about') {
 			planetSwitcher.setActive(moonPlanet);
+		} else if (skill) {
+			skillPlanet.setAtmosphereColor(hexToRgb(skill.primaryColor));
+			planetSwitcher.setActive(skillPlanet);
 		} else {
 			planetSwitcher.setActive(marsPlanet);
 		}
@@ -296,6 +309,15 @@
 				type: 'planet',
 				textures: { color: textureLoader.load('/textures/planets/2k_mars.jpg'), stars: starsTexture },
 				look: PLANET_LOOKS.mars
+			},
+			INFO_SCREEN_POSITION
+		);
+		skillPlanet = new RaymarchPlanet(
+			scene,
+			{
+				type: 'planet',
+				textures: { color: textureLoader.load('/textures/planets/2k_moon.jpeg'), stars: starsTexture },
+				look: PLANET_LOOKS.moon
 			},
 			INFO_SCREEN_POSITION
 		);
@@ -415,6 +437,7 @@
 		earthPlanet?.dispose();
 		moonPlanet?.dispose();
 		marsPlanet?.dispose();
+		skillPlanet?.dispose();
 		scene?.dispose();
 		noiseTexture?.dispose();
 		planetMapTexture?.dispose();
@@ -430,6 +453,7 @@
 		earthPlanet = null;
 		moonPlanet = null;
 		marsPlanet = null;
+		skillPlanet = null;
 		front = null;
 		compositor = null;
 		gallery = null;

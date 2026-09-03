@@ -39,10 +39,18 @@ export interface MILESTONE {
 
 export interface SKILL {
   name: string;
+  /** URL-safe id for /skills/[slug]. */
+  slug: string;
   message: string;
   img: string;
   border: string;
   color: string;
+  /** Hex form of `color` (Tailwind class → real value) — needed anywhere Tailwind classes can't
+   *  reach, e.g. tinting the /skills/[slug] background planet's shader uniform. */
+  primaryColor: string;
+  /** Core skills (message === m['skills.core']()) are the favourites — gets a star before the name
+   *  wherever it's listed. */
+  favourite: boolean;
 }
 
 

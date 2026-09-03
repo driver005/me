@@ -50,6 +50,16 @@ uniform float uSunIntensity;
 uniform float uAmbientLight;
 in vec3 uSunDirection;
 
+// Orbiting "moons" (not part of jsulpis's original shader — added so /skills's skill icons get real
+// raymarched depth/occlusion against the planet, instead of being composited as a flat layer always
+// in front of it). uMoonCount defaults to 0 (see raymarch-planet.ts), which makes intersectScene()
+// below identical to the original intersectPlanet()-only behavior — Home's Earth is untouched.
+#define MAX_MOONS 20
+uniform int uMoonCount;
+uniform vec3 uMoonPositions[MAX_MOONS];
+uniform float uMoonRadius;
+uniform sampler2D uMoonTexture;
+
 //==========================================================//
 //  Constants (could be turned into controllable uniforms)  //
 //==========================================================//
@@ -253,8 +263,40 @@ Hit intersectPlanet(vec3 ro, vec3 rd) {
   return Hit(len, normal, Material(color, 1., specular, nightColor));
 }
 
+// A moon is a plain textured sphere (no bump/clouds/night-side treatment like the planet gets) —
+// deliberately simple, since radiance() below applies the same diffuse+specular lighting to
+// whatever Hit it receives regardless of whether it came from the planet or a moon.
+Hit intersectMoon(vec3 ro, vec3 rd, vec3 moonPosition) {
+  Sphere moon = Sphere(moonPosition, uMoonRadius);
+  float len = sphIntersect(ro, rd, moon);
+
+  if(len < 0.) {
+    return miss;
+  }
+
+  vec3 position = ro + len * rd;
+  vec3 normal = normalize(position - moonPosition);
+  vec2 textureCoord = sphereProjection(position, moonPosition);
+  vec3 color = texture(uMoonTexture, textureCoord).rgb;
+
+  return Hit(len, normal, Material(color, 1., 0.15, vec3(0.)));
+}
+
+// Nearest-hit-wins across the planet and every moon — this is what gives the moons real depth: one
+// in front of the planet from the camera's viewpoint naturally wins here (smaller `len`), one behind
+// naturally loses to the planet's own closer hit, instead of a moon always compositing on top
+// regardless of which side of the planet it's actually on.
 Hit intersectScene(vec3 ro, vec3 rd) {
-  return intersectPlanet(ro, rd);
+  Hit best = intersectPlanet(ro, rd);
+  for(int i = 0; i < MAX_MOONS; i++) {
+    if(i >= uMoonCount)
+      break;
+    Hit moonHit = intersectMoon(ro, rd, uMoonPositions[i]);
+    if(moonHit.len < best.len) {
+      best = moonHit;
+    }
+  }
+  return best;
 }
 
 // alpha out-param — not in the original: this shader was built to be its whole page's own

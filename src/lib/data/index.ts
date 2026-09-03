@@ -306,143 +306,203 @@ export const dock: DOCK = {
 export const skills: SKILL[] = [
 	{
 		name: 'SvelteKit',
+		slug: 'sveltekit',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/sveltekit',
 		border: 'border-orange-500',
-		color: 'text-orange-500'
+		color: 'text-orange-500',
+		primaryColor: '#f97316',
+		favourite: false
 	},
 	{
 		name: 'TypeScript',
+		slug: 'typescript',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/typescript',
 		border: 'border-blue-500',
-		color: 'text-blue-500'
+		color: 'text-blue-500',
+		primaryColor: '#3b82f6',
+		favourite: false
 	},
 	{
 		name: 'JavaScript',
+		slug: 'javascript',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/javascript',
 		border: 'border-yellow-400',
-		color: 'text-yellow-400'
+		color: 'text-yellow-400',
+		primaryColor: '#facc15',
+		favourite: true
 	},
 	{
 		name: 'Tailwind',
+		slug: 'tailwind',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/tailwind',
 		border: 'border-sky-400',
-		color: 'text-sky-400'
+		color: 'text-sky-400',
+		primaryColor: '#38bdf8',
+		favourite: true
 	},
 	{
 		name: 'Rust',
+		slug: 'rust',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/rust',
 		border: 'border-orange-700',
-		color: 'text-orange-700'
+		color: 'text-orange-700',
+		primaryColor: '#c2410c',
+		favourite: true
 	},
 	{
 		name: 'C++',
+		slug: 'cpp',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/cpp',
 		border: 'border-blue-600',
-		color: 'text-blue-600'
+		color: 'text-blue-600',
+		primaryColor: '#2563eb',
+		favourite: true
 	},
 	{
 		name: 'Java',
+		slug: 'java',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/java',
 		border: 'border-red-500',
-		color: 'text-red-500'
+		color: 'text-red-500',
+		primaryColor: '#ef4444',
+		favourite: true
 	},
 	{
 		name: 'Go',
+		slug: 'go',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/golang',
 		border: 'border-cyan-500',
-		color: 'text-cyan-500'
+		color: 'text-cyan-500',
+		primaryColor: '#06b6d4',
+		favourite: true
 	},
 	{
 		name: 'React',
+		slug: 'react',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/react',
 		border: 'border-sky-500',
-		color: 'text-sky-500'
+		color: 'text-sky-500',
+		primaryColor: '#0ea5e9',
+		favourite: false
 	},
 	{
 		name: 'Python',
+		slug: 'python',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/python',
 		border: 'border-blue-400',
-		color: 'text-blue-400'
+		color: 'text-blue-400',
+		primaryColor: '#60a5fa',
+		favourite: true
 	},
 	{
 		name: 'SQL',
+		slug: 'sql',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/sql',
 		border: 'border-indigo-500',
-		color: 'text-indigo-500'
+		color: 'text-indigo-500',
+		primaryColor: '#6366f1',
+		favourite: true
 	},
 	{
 		name: 'NoSQL',
+		slug: 'nosql',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/nosql',
 		border: 'border-emerald-500',
-		color: 'text-emerald-500'
+		color: 'text-emerald-500',
+		primaryColor: '#10b981',
+		favourite: false
 	},
 	{
 		name: 'AWS',
+		slug: 'aws',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/aws',
 		border: 'border-orange-400',
-		color: 'text-orange-400'
+		color: 'text-orange-400',
+		primaryColor: '#fb923c',
+		favourite: false
 	},
 	{
 		name: 'Docker',
+		slug: 'docker',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/docker',
 		border: 'border-blue-500',
-		color: 'text-blue-500'
+		color: 'text-blue-500',
+		primaryColor: '#3b82f6',
+		favourite: true
 	},
 	{
 		name: 'Kubernetes',
+		slug: 'kubernetes',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/kubernetes',
 		border: 'border-blue-600',
-		color: 'text-blue-600'
+		color: 'text-blue-600',
+		primaryColor: '#2563eb',
+		favourite: false
 	},
 	{
 		name: 'GitHub Actions',
+		slug: 'github-actions',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/githubactions',
 		border: 'border-blue-300',
-		color: 'text-blue-300'
+		color: 'text-blue-300',
+		primaryColor: '#93c5fd',
+		favourite: true
 	},
 	{
 		name: 'Vercel',
+		slug: 'vercel',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/vercel',
 		border: 'border-slate-400',
-		color: 'text-slate-400'
+		color: 'text-slate-400',
+		primaryColor: '#94a3b8',
+		favourite: false
 	},
 	{
 		name: 'PostgreSQL',
+		slug: 'postgresql',
 		message: m['skills.core'](),
 		img: 'https://avatar.vercel.sh/postgresql',
 		border: 'border-indigo-400',
-		color: 'text-indigo-400'
+		color: 'text-indigo-400',
+		primaryColor: '#818cf8',
+		favourite: true
 	},
 	{
 		name: 'Redis',
+		slug: 'redis',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/redis',
 		border: 'border-red-600',
-		color: 'text-red-600'
+		color: 'text-red-600',
+		primaryColor: '#dc2626',
+		favourite: false
 	},
 	{
 		name: 'Sentry',
+		slug: 'sentry',
 		message: m['skills.other'](),
 		img: 'https://avatar.vercel.sh/sentry',
 		border: 'border-purple-400',
-		color: 'text-purple-400'
+		color: 'text-purple-400',
+		primaryColor: '#c084fc',
+		favourite: false
 	}
 ];
 

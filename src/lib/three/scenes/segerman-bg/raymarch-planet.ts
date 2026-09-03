@@ -54,6 +54,17 @@ export interface RaymarchPlanetLook {
 	ambientLight?: number;
 }
 
+/** Must match earth.fragment.glsl's own `#define MAX_MOONS 20` — the uMoonPositions array's
+ *  fixed GLSL size. */
+const MAX_MOONS = 20;
+
+/** '#rrggbb' -> [r,g,b] in 0-1, for feeding a CSS-style hex color (e.g. a skill's `primaryColor`)
+ *  into a shader's vec3 uniform. */
+export function hexToRgb(hex: string): [number, number, number] {
+	const value = parseInt(hex.replace('#', ''), 16);
+	return [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
+}
+
 export const PLANET_LOOKS: Record<string, RaymarchPlanetLook> = {
 	mercury: { atmosphereColor: [1, 1, 1], atmosphereDensity: 0.05 },
 	venus: { atmosphereColor: [0.9, 0.3, 0], atmosphereDensity: 0.1, bumpStrength: 0.005 },
@@ -129,7 +140,15 @@ export class RaymarchPlanet {
 					uEarthSpecular: { value: variant.textures.specular },
 					uEarthBump: { value: variant.textures.bump },
 					uEarthNight: { value: variant.textures.night },
-					uStars: { value: variant.textures.stars }
+					uStars: { value: variant.textures.stars },
+					// Orbiting moons (see earth.fragment.glsl's own comment) — off by default
+					// (uMoonCount: 0), so Home's Earth renders byte-identical to before this existed.
+					// The array must still be MAX_MOONS long even while unused, or THREE errors setting
+					// a shorter array against the shader's fixed-size uniform declaration.
+					uMoonCount: { value: 0 },
+					uMoonPositions: { value: Array.from({ length: MAX_MOONS }, () => new THREE.Vector3()) },
+					uMoonRadius: { value: 1 },
+					uMoonTexture: { value: variant.textures.color }
 				},
 				vertexShader: raymarchVertex,
 				fragmentShader: earthFragment
@@ -155,6 +174,32 @@ export class RaymarchPlanet {
 
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		this.mesh.frustumCulled = false;
+	}
+
+	/** Retints this planet's atmosphere at runtime — used for the single shared "skill" planet
+	 *  (/skills/[slug]) instead of constructing a fresh RaymarchPlanet (with its own render targets,
+	 *  blur passes, texture loads) per skill. Only meaningful for `type: 'planet'` instances — the
+	 *  'earth' variant's uAtmosphereColor exists too but nothing currently retints it. */
+	setAtmosphereColor(rgb: [number, number, number]): void {
+		(this.material.uniforms.uAtmosphereColor.value as THREE.Vector3).set(...rgb);
+	}
+
+	/** Only meaningful for `type: 'earth'` instances — feeds the /skills page's orbiting moons into
+	 *  the raymarch scene itself (see earth.fragment.glsl's intersectScene()) for real depth/occlusion
+	 *  against the planet, called every frame by SkillMoons.update() while active. `positions` are in
+	 *  this shader's own fake-camera space (world_x = 6 * uv.x — same space `screenPosition` above is
+	 *  in), capped silently at MAX_MOONS. Pass an empty array (or just don't call this) to turn moons
+	 *  back off — e.g. when navigating away from /skills while this same shared earthPlanet is still
+	 *  active on Home. */
+	setMoons(positions: THREE.Vector3[], radius: number, texture: THREE.Texture): void {
+		const uniforms = this.material.uniforms;
+		if (!uniforms.uMoonPositions) return; // no-op on the 'planet' variant, which has no moon uniforms
+		const count = Math.min(positions.length, MAX_MOONS);
+		uniforms.uMoonCount.value = count;
+		const target = uniforms.uMoonPositions.value as THREE.Vector3[];
+		for (let i = 0; i < count; i++) target[i].copy(positions[i]);
+		uniforms.uMoonRadius.value = radius;
+		uniforms.uMoonTexture.value = texture;
 	}
 
 	get texture(): THREE.Texture {

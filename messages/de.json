@@ -223,6 +223,108 @@
 		"other": "Zusätzliches",
 		"button": "Skills ansehen"
 	},
+	"skill_detail": {
+		"sveltekit": {
+			"description": "My go-to framework for building fast, full-stack web apps — this site is built with it.",
+			"pro": "Ships almost no runtime — components compile down to tight vanilla JS, so pages stay small and fast by default.",
+			"contra": "Smaller ecosystem than React means fewer ready-made libraries and community answers for edge cases."
+		},
+		"typescript": {
+			"description": "My default for anything beyond a quick script — types catch mistakes long before they hit production.",
+			"pro": "Catches whole categories of bugs at compile time and makes refactoring large codebases far less scary.",
+			"contra": "Build step and type-fighting add real friction, especially with loosely-typed third-party libraries."
+		},
+		"javascript": {
+			"description": "The language everything else on the web is built on — I still reach for it directly when TypeScript is overkill.",
+			"pro": "Runs everywhere without a build step and has the largest ecosystem of any language on earth.",
+			"contra": "No types by default means bugs that TypeScript would catch instantly slip through until runtime."
+		},
+		"tailwind": {
+			"description": "How I style almost everything now — utility classes right in the markup, no context-switching to a stylesheet.",
+			"pro": "Fast to build and change UI with, and the design stays consistent since you're picking from a fixed scale.",
+			"contra": "Markup gets noisy with long class strings, and it takes a while to learn where the useful defaults are."
+		},
+		"rust": {
+			"description": "My pick when performance and correctness actually matter — the compiler is strict, but it's strict for good reason.",
+			"pro": "Memory safety without a garbage collector, plus a compiler that catches concurrency bugs before they ship.",
+			"contra": "Steep learning curve — the borrow checker fights you constantly until the ownership model clicks."
+		},
+		"cpp": {
+			"description": "Where I go for raw performance and low-level control, especially in resource-constrained environments.",
+			"pro": "Extremely fast, gives you direct control over memory and hardware, and still runs almost everywhere.",
+			"contra": "Manual memory management is easy to get wrong, and compile times/tooling lag behind newer languages."
+		},
+		"java": {
+			"description": "Solid, boring-in-a-good-way — reliable for backend services that need to run unattended for years.",
+			"pro": "Mature ecosystem, strong tooling, and the JVM's stability make it a safe long-term bet for big systems.",
+			"contra": "Verbose compared to newer languages, and startup/memory overhead can be heavy for small services."
+		},
+		"go": {
+			"description": "My choice for backend services and CLI tools where simplicity and fast builds matter more than expressiveness.",
+			"pro": "Compiles fast, deploys as a single binary, and its concurrency model (goroutines) is genuinely pleasant.",
+			"contra": "Deliberately minimal — no generics-heavy patterns or exceptions means more boilerplate in places."
+		},
+		"react": {
+			"description": "I know it well and reach for it when a project already lives in that ecosystem or needs its library depth.",
+			"pro": "Huge ecosystem and hiring pool — almost any problem already has a well-tested library for it.",
+			"contra": "More boilerplate and runtime overhead than SvelteKit for the same result, and JSX takes getting used to."
+		},
+		"python": {
+			"description": "My tool for scripting, data work, and anything where getting something running fast matters more than raw speed.",
+			"pro": "Extremely readable and fast to write in, with an enormous library ecosystem for almost any task.",
+			"contra": "Slow compared to compiled languages, and dynamic typing lets bugs slip through without discipline."
+		},
+		"sql": {
+			"description": "The language I reach for whenever data has real structure and relationships worth enforcing.",
+			"pro": "Declarative and precise — the database figures out how to answer the question, not you.",
+			"contra": "Complex queries get hard to read fast, and schema migrations on live data need real care."
+		},
+		"nosql": {
+			"description": "Useful when the data doesn't fit neatly into rows and columns, or the schema needs to stay flexible.",
+			"pro": "Flexible schema and horizontal scaling make it a good fit for unstructured or fast-changing data.",
+			"contra": "Weaker consistency guarantees by default, and enforcing structure has to happen in application code instead."
+		},
+		"aws": {
+			"description": "My default cloud when a project needs real infrastructure — compute, storage, queues, all in one place.",
+			"pro": "Covers essentially every infrastructure need, with the maturity and reliability that comes from being first.",
+			"contra": "Pricing and IAM permissions are genuinely confusing, and it's easy to over-provision without noticing."
+		},
+		"docker": {
+			"description": "How I make sure 'works on my machine' actually means something — every project ships in a container.",
+			"pro": "Consistent environments across dev, CI, and production, and it makes onboarding a new machine trivial.",
+			"contra": "Adds a layer of indirection to debug, and images can bloat fast without deliberate care."
+		},
+		"kubernetes": {
+			"description": "For when Docker alone isn't enough — orchestrating containers at a scale that needs real automation.",
+			"pro": "Self-healing, scriptable infrastructure that scales services up and down without manual intervention.",
+			"contra": "Genuinely complex to operate — the learning curve and operational overhead are steep for small projects."
+		},
+		"github-actions": {
+			"description": "My default CI/CD — tests, builds, and deploys run automatically on every push, right where the code lives.",
+			"pro": "Lives right next to the code, so pipelines are versioned with the repo and easy to review in a PR.",
+			"contra": "YAML config gets unwieldy fast for complex pipelines, and debugging a failing action can be slow."
+		},
+		"vercel": {
+			"description": "Where I deploy most frontend projects — push to main and it's live, with previews on every PR.",
+			"pro": "Zero-config deploys with instant preview URLs per branch — genuinely the fastest path from commit to live.",
+			"contra": "Costs scale quickly past the free tier, and some platform-specific features create lock-in."
+		},
+		"postgresql": {
+			"description": "My default relational database — solid, standards-compliant, and rarely the thing that goes wrong.",
+			"pro": "Rock-solid, standards-compliant SQL with rich extensions (JSONB, full-text search) most projects never outgrow.",
+			"contra": "Vertical scaling has real limits eventually, and tuning it well takes genuine operational knowledge."
+		},
+		"redis": {
+			"description": "My go-to for caching and anything that needs to be fast and ephemeral — sessions, rate limits, queues.",
+			"pro": "Blazing fast in-memory operations make it ideal for caching, sessions, and simple pub/sub.",
+			"contra": "Data doesn't durably persist by default, and memory cost scales directly with dataset size."
+		},
+		"sentry": {
+			"description": "How I actually find out something broke in production before a user has to tell me.",
+			"pro": "Catches and contextualizes real production errors — stack traces, breadcrumbs, and the request that caused it.",
+			"contra": "Noisy without tuning — needs real effort to filter signal from low-value alerts."
+		}
+	},
 	"help": {
 		"title": "Brauchst du Hilfe?",
 		"catchline": "Kurzer Guide zum Überleben.",
