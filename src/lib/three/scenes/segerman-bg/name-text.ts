@@ -184,6 +184,14 @@ export class NameText {
 		this.group.visible = visible;
 	}
 
+	/** Whether the given raycaster hits any of this text's meshes — Mesh.raycast() doesn't itself
+	 *  check .visible (that only affects the renderer's own traversal), so callers on a route where
+	 *  this text is hidden (setVisible(false)) need to skip calling this entirely, not rely on it to
+	 *  return false. */
+	raycastHit(raycaster: THREE.Raycaster): boolean {
+		return raycaster.intersectObjects(this.meshes, false).length > 0;
+	}
+
 	dispose(): void {
 		for (const tween of this.floatTweens) tween.kill();
 		for (const mesh of this.meshes) mesh.geometry.dispose();

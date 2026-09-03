@@ -179,13 +179,13 @@
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
 
 		// Which planet shows: the mesh-based one (still tweened per-project via .animate(), unchanged)
-		// on /works/, one of the raymarched jsulpis planets everywhere else — home always gets Earth,
-		// other routes get a different one each (moon for /about, mars for /gallery and anything not
-		// otherwise recognized) so "other sub-paths get other planets" actually varies.
+		// on /works/, one of the raymarched jsulpis planets everywhere else — home and /skills (its
+		// skill "moons" orbit this one, see skill-moons.ts) both get Earth, /about gets the moon, mars
+		// for everything else not otherwise recognized, so "other sub-paths get other planets" varies.
 		if (pageId === 'work') {
 			planetSwitcher.setActive(planet);
 			planet.animate(pageId, project ? { light: project.lightColor, dark: project.darkColor } : undefined);
-		} else if (isHome) {
+		} else if (isHome || pathname === '/skills') {
 			planetSwitcher.setActive(earthPlanet);
 		} else if (pathname === '/about') {
 			planetSwitcher.setActive(moonPlanet);
@@ -198,7 +198,19 @@
 		fog.setEnabled(isHome);
 	});
 
+	const clickRaycaster = new THREE.Raycaster();
+
 	function handleCanvasClick(): void {
+		// ADRIAN is only actually shown on Home (see nameText?.setVisible(isHome) above) — raycastHit()
+		// itself doesn't check that (Mesh.raycast() ignores .visible; see its own comment), so this
+		// guard is what actually keeps clicks elsewhere from hitting its now-invisible geometry.
+		if (nameText && isHomeRoute && scene) {
+			clickRaycaster.setFromCamera(new THREE.Vector2(scene.pointer.nx, scene.pointer.ny), scene.camera);
+			if (nameText.raycastHit(clickRaycaster)) {
+				goto('/about');
+				return;
+			}
+		}
 		if (!gallery || gallery.hoveredIndex === null) return;
 		const project = gallery.projects[gallery.hoveredIndex];
 		if (project) goto(`/works/${project.slug}`);
@@ -211,6 +223,15 @@
 			webglSupported = false;
 			webglFailed = true;
 		}
+
+		// app.css sets `body { cursor: none }` site-wide, meant to pair with the design-system pages'
+		// own custom <Cursor> component (src/lib/design/module/cursor.svelte) — this (bg) group never
+		// renders that, so without this the pointer is genuinely invisible here, especially over the
+		// dark background.
+		document.body.style.cursor = 'auto';
+		return () => {
+			document.body.style.cursor = '';
+		};
 	});
 
 	function handleEngineReady(readyScene: Scene): void {
