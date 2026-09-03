@@ -501,7 +501,7 @@
 		</nav>
 	{/if}
 	{@render children()}
-	{#if loaderVisible}
+	{#if loaderVisible && !page.url.pathname.startsWith('/skills')}
 		<div
 			class="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-[#00031f]"
 			out:fade={{ duration: 500 }}

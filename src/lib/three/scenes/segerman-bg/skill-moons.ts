@@ -1,17 +1,30 @@
 import * as THREE from 'three';
 import type { RaymarchPlanet } from './raymarch-planet';
+import type { Scrollable } from './scroll';
 
 export interface SkillMoonItem {
 	name: string;
 	slug: string;
 }
 
+export interface SkillMoonScreenPosition {
+	slug: string;
+	name: string;
+	x: number;
+	y: number;
+	/** Farther from the camera than the planet's own center — likely occluded, per the same
+	 *  approximation raycastHit() uses. A label caller should hide these rather than show a name
+	 *  floating over a moon that (probably) isn't actually visible. */
+	visible: boolean;
+}
+
 /** Must match RaymarchPlanet's own uPlanetRadius default for the earth variant. */
 const PLANET_RADIUS = 2;
 const ORBIT_RADIUS = PLANET_RADIUS * 1.8;
 const MOON_RADIUS = PLANET_RADIUS * 0.16;
-/** How many full turns the whole orbit makes across the page's entire scroll range. */
-const ROTATIONS_PER_SCROLL = 1.5;
+/** scrollPosition (raw, unbounded — see Scroll/Scrollable) units per full radian of orbit rotation.
+ *  Tuned by feel against Scroll's own SCROLL_SPEED-scaled deltas, not derived from anything. */
+const SCROLL_TO_RADIANS = 0.01;
 /** Matches earth.fragment.glsl's CAMERA_POSITION.z and the FOCAL_LENGTH that macro computes for
  *  uPlanetPosition.z always being -10 for the Earth variant — see the projection math below. */
 const CAMERA_Z = 6;
@@ -32,33 +45,48 @@ const FOCAL_LENGTH = CAMERA_Z / (CAMERA_Z - -10);
  * The orbit is a real 3D circle in the planet's XZ plane (not the XY "flat ring facing the camera"
  * that would have been simpler) — angle drives both x AND z, so half the orbit sits nearer the
  * camera than the planet (passes in front) and half sits farther (passes behind).
+ *
+ * Implements Scrollable (see scroll.ts) so the page can drive it with the engine's existing Scroll
+ * class — the same infinite, unbounded wheel/touch accumulator the Home gallery and Work's media
+ * carousel already use — instead of a finite scroll-through-a-tall-div ScrollTrigger setup, which
+ * necessarily caps out once you reach the bottom of that div.
  */
-export class SkillMoons {
+export class SkillMoons implements Scrollable {
 	private texture: THREE.Texture;
 	private planet: RaymarchPlanet;
-	private slugs: string[];
+	private skills: SkillMoonItem[];
 	private baseAngles: number[];
 	private positions: THREE.Vector3[];
 	private planetPosition: THREE.Vector3;
+	private rotation = 0;
 
 	constructor(planet: RaymarchPlanet, planetPosition: { x: number; y: number; z: number }, skills: SkillMoonItem[]) {
 		this.planet = planet;
 		this.planetPosition = new THREE.Vector3(planetPosition.x, planetPosition.y, planetPosition.z);
-		this.slugs = skills.map((s) => s.slug);
+		this.skills = skills;
 		this.baseAngles = skills.map((_s, index) => (index / skills.length) * Math.PI * 2);
 		this.positions = skills.map(() => new THREE.Vector3());
 
 		this.texture = new THREE.TextureLoader().load('/textures/planets/2k_moon.jpeg');
 		this.texture.colorSpace = THREE.SRGBColorSpace;
+
+		this.recomputePositions();
 	}
 
-	/** `progress` is 0-1 scroll-through-page progress (from the page's own ScrollTrigger) — the whole
-	 *  orbit rotates with it. Recomputes every moon's real 3D position and pushes them into the shared
-	 *  earthPlanet's shader uniforms each frame. */
-	update(progress: number): void {
-		const rotation = progress * ROTATIONS_PER_SCROLL * Math.PI * 2;
+	/** Scrollable's own contract — Scroll (see scroll.ts) sets this every frame from its own eased,
+	 *  unbounded accumulator. Raw units, not radians directly (see SCROLL_TO_RADIANS). */
+	get scrollPosition(): number {
+		return this.rotation / SCROLL_TO_RADIANS;
+	}
+
+	set scrollPosition(value: number) {
+		this.rotation = value * SCROLL_TO_RADIANS;
+		this.recomputePositions();
+	}
+
+	private recomputePositions(): void {
 		for (let i = 0; i < this.baseAngles.length; i++) {
-			const angle = this.baseAngles[i] + rotation;
+			const angle = this.baseAngles[i] + this.rotation;
 			this.positions[i].set(
 				this.planetPosition.x + Math.cos(angle) * ORBIT_RADIUS,
 				this.planetPosition.y,
@@ -68,33 +96,51 @@ export class SkillMoons {
 		this.planet.setMoons(this.positions, MOON_RADIUS, this.texture);
 	}
 
+	private projectToNdc(pos: THREE.Vector3, aspect: number): { x: number; y: number } {
+		const depthFactor = FOCAL_LENGTH * (CAMERA_Z - pos.z);
+		return { x: ((pos.x / depthFactor) * 2) / aspect, y: (pos.y / depthFactor) * 2 };
+	}
+
 	/** Slug of the moon nearest the given NDC click coordinates, or null if none are close enough —
 	 *  used for click-to-navigate to /skills/[slug]. There's no real GPU raymarch hit-test available
-	 *  from JS, so this projects each moon's current 3D position (as of the last update() call) into
-	 *  the shader's own fake-camera NDC space (inverting earth.fragment.glsl's vertex-shader math) and
-	 *  picks the nearest within a fixed screen-space radius — an approximation, not a pixel-exact
-	 *  match to what's actually rendered, but a decent one at this scale. A moon farther from the
-	 *  camera than the planet's own center (more likely occluded by it, per the same GPU raymarch this
-	 *  doesn't have access to here) is excluded, rather than risk navigating to a moon that isn't
-	 *  actually visible. */
+	 *  from JS, so this projects each moon's current 3D position into the shader's own fake-camera
+	 *  NDC space (inverting earth.fragment.glsl's vertex-shader math) and picks the nearest within a
+	 *  fixed screen-space radius — an approximation, not a pixel-exact match to what's actually
+	 *  rendered, but a decent one at this scale. A moon farther from the camera than the planet's own
+	 *  center (more likely occluded by it, per the same GPU raymarch this doesn't have access to here)
+	 *  is excluded, rather than risk navigating to a moon that isn't actually visible. */
 	raycastHit(ndcX: number, ndcY: number, aspect: number): string | null {
 		let bestSlug: string | null = null;
 		let bestDist = Infinity;
 		for (let i = 0; i < this.positions.length; i++) {
 			const pos = this.positions[i];
-			if (pos.z < this.planetPosition.z) continue; // farther than the planet's own center — likely occluded
+			if (pos.z < this.planetPosition.z) continue;
 
-			const depthFactor = FOCAL_LENGTH * (CAMERA_Z - pos.z);
-			const moonNdcX = ((pos.x / depthFactor) * 2) / aspect;
-			const moonNdcY = (pos.y / depthFactor) * 2;
-
-			const dist = Math.hypot(ndcX - moonNdcX, ndcY - moonNdcY);
+			const ndc = this.projectToNdc(pos, aspect);
+			const dist = Math.hypot(ndcX - ndc.x, ndcY - ndc.y);
 			if (dist < 0.06 && dist < bestDist) {
 				bestDist = dist;
-				bestSlug = this.slugs[i];
+				bestSlug = this.skills[i].slug;
 			}
 		}
 		return bestSlug;
+	}
+
+	/** Every moon's current on-screen CSS-pixel position, for a caller to render name labels over
+	 *  them (so it's clear which moon is which skill before clicking) — same projection raycastHit()
+	 *  uses, just in pixels instead of NDC and for every moon rather than a nearest-match search. */
+	getScreenPositions(viewportWidth: number, viewportHeight: number): SkillMoonScreenPosition[] {
+		const aspect = viewportWidth / viewportHeight;
+		return this.positions.map((pos, i) => {
+			const ndc = this.projectToNdc(pos, aspect);
+			return {
+				slug: this.skills[i].slug,
+				name: this.skills[i].name,
+				x: (ndc.x * 0.5 + 0.5) * viewportWidth,
+				y: (1 - (ndc.y * 0.5 + 0.5)) * viewportHeight,
+				visible: pos.z >= this.planetPosition.z
+			};
+		});
 	}
 
 	dispose(): void {

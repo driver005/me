@@ -1,43 +1,35 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { goto } from '$app/navigation';
-	import SectionPage from '$lib/design/module/section-page.svelte';
 	import SvelteSeo from 'svelte-seo';
 	import { m } from '$lib/paraglide/messages';
 	import { skills } from '$lib/data';
-	import gsap from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { SkillMoons } from '$lib/three/scenes/segerman-bg/skill-moons';
+	import { SkillMoons, type SkillMoonScreenPosition } from '$lib/three/scenes/segerman-bg/skill-moons';
+	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/segerman-bg/context';
 
 	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
 
-	let scrollSection: HTMLElement | null = $state(null);
+	let labels: SkillMoonScreenPosition[] = $state([]);
 
 	$effect(() => {
 		const ready = bgContext.getReady();
 		const scene = bgContext.getScene();
 		const earthPlanet = bgContext.getEarthPlanet();
-		if (!ready || !scene || !earthPlanet || !scrollSection) return;
-
-		gsap.registerPlugin(ScrollTrigger);
+		if (!ready || !scene || !earthPlanet) return;
 
 		// Same shader-space position the route layout gives earthPlanet on this route (screenPosition
 		// param — dead center, {x:0,y:0}) at its fixed z:-10 (see raymarch-planet.ts's commonUniforms).
 		const moons = new SkillMoons(earthPlanet, { x: 0, y: 0, z: -10 }, skills.map((s) => ({ name: s.name, slug: s.slug })));
 
-		let progress = 0;
-		const trigger = ScrollTrigger.create({
-			trigger: scrollSection,
-			start: 'top top',
-			end: 'bottom bottom',
-			onUpdate: (self) => {
-				progress = self.progress;
-			}
-		});
+		// Scroll (see scroll.ts) — the same infinite, unbounded wheel/touch-driven accumulator the
+		// Home gallery and Work's media carousel already use, rather than a scroll-through-a-tall-div
+		// setup that necessarily caps out at the bottom of that div.
+		const scroll = new Scroll(scene, moons);
 
 		let rafId = requestAnimationFrame(function tick() {
-			moons.update(progress);
+			scroll.loop();
+			labels = moons.getScreenPositions(window.innerWidth, window.innerHeight);
 			rafId = requestAnimationFrame(tick);
 		});
 
@@ -56,9 +48,10 @@
 
 		return () => {
 			cancelAnimationFrame(rafId);
-			trigger.kill();
+			scroll.dispose();
 			domCanvas.removeEventListener('click', onCanvasClick);
 			moons.dispose();
+			labels = [];
 		};
 	});
 </script>
@@ -67,13 +60,24 @@
 	<SvelteSeo title={`${m['skills.title']()} — ${m['seo.author']()}`} />
 </svelte:head>
 
-<!-- SectionPage's default backdrop (bg-.../85 + blur) is there for pages with text over it — this
-     page has none, so override it to transparent or it just dims/blurs the WebGL scene (moons/Earth)
-     it exists to show. -->
-<SectionPage dark class="bg-transparent backdrop-blur-none">
-	<!-- The skill icons render as real raymarched "moons" orbiting Earth, driven by SkillMoons above
-	     (see its own comment for why they're raymarched into the planet's own shader now, not mesh
-	     geometry) — this section exists just to give scroll something to drive: its own height (2x
-	     viewport) sets the 0-1 range ScrollTrigger reports as the moons' orbit progress. -->
-	<div bind:this={scrollSection} class="h-[200vh]"></div>
-</SectionPage>
+<!-- Matches the rest of the (bg) group's own sub-pages (About, Work, /skills/[slug]) — a plain fixed
+     DOM overlay over the shared WebGL background, not SectionPage's chrome (AppNav/Cursor/its own
+     "← Back" style), which belongs to the separate design-system page family (contact/faq/services/
+     etc.) this page doesn't otherwise resemble any more now that the moons are the whole page. -->
+<div class="pointer-events-none fixed inset-x-0 top-0 z-20 flex flex-col gap-2 p-8 text-white">
+	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
+	<p class="max-w-md text-sm text-white/70">
+		Every skill I use, orbiting as its own moon — scroll to spin the ring, click one to read more about it.
+	</p>
+</div>
+
+{#each labels as label (label.slug)}
+	{#if label.visible}
+		<span
+			class="pointer-events-none fixed z-10 -translate-x-1/2 -translate-y-1/2 font-mono text-xs tracking-wide text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+			style="left: {label.x}px; top: {label.y}px;"
+		>
+			{label.name}
+		</span>
+	{/if}
+{/each}
