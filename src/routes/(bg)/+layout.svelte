@@ -25,7 +25,7 @@
 	import { Compositor } from '$lib/three/scenes/segerman-bg/compositor';
 	import type { PlanetPageId } from '$lib/three/scenes/segerman-bg/planet';
 	import { Gallery } from '$lib/three/scenes/segerman-bg/gallery';
-	import { NameText } from '$lib/three/scenes/segerman-bg/name-text';
+	import { NameText, NAME_TEXT_LAYER } from '$lib/three/scenes/segerman-bg/name-text';
 	import { WORK_PROJECTS } from '$lib/three/scenes/segerman-bg/work-content';
 	import { Scroll } from '$lib/three/scenes/segerman-bg/scroll';
 	import { Images } from '$lib/three/scenes/segerman-bg/images';
@@ -199,6 +199,10 @@
 	});
 
 	const clickRaycaster = new THREE.Raycaster();
+	// Raycaster has its own layer mask (default: layer 0 only) — nameText's meshes are exclusively on
+	// NAME_TEXT_LAYER (see images.ts's front-pass exclusion), so without this the raycaster would
+	// never register a hit on them at all, regardless of where the click actually lands.
+	clickRaycaster.layers.enable(NAME_TEXT_LAYER);
 
 	function handleCanvasClick(): void {
 		// ADRIAN is only actually shown on Home (see nameText?.setVisible(isHome) above) — raycastHit()
