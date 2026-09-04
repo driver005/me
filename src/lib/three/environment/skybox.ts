@@ -4,13 +4,11 @@ import { Starfield3D } from '../effects/starfield-3d';
 
 const LIGHT_BG = new THREE.Color('#D9CAD1');
 const DARK_BG = new THREE.Color('#000000');
-const BG_TWEEN_DURATION = 1; // seconds — matches skybox/default.svelte's own 1000ms Tween
 
 /**
- * /home's background — previously skybox/default.svelte: a light/dark-tweened background color, a
- * starfield (dark mode only, per the original's own `{#if mode.current === 'dark'}<Stars />{/if}`),
- * and a nebula equirect texture set as the scene's own IBL environment (not the background — the
- * tweened solid color stays that).
+ * /home's background — a solid light/dark background color, a static starfield (dark mode only, per
+ * the original's own `{#if mode.current === 'dark'}<Stars />{/if}`), and a nebula equirect texture set
+ * as the scene's own IBL environment (not the background — the solid color stays that).
  *
  * The env map goes through an explicit `THREE.PMREMGenerator` pass here rather than a bare
  * `scene.environment = texture` assignment. Assigning the raw equirect texture directly does NOT skip
@@ -36,15 +34,12 @@ export class Skybox {
 
 	private stars: Starfield3D;
 
-	private bgFrom = LIGHT_BG.clone();
-	private bgTo = LIGHT_BG.clone();
-	private bgT = 1;
 	private isDark = false;
 	private envRenderTarget: THREE.WebGLRenderTarget | null = null;
 
 	constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, _camera: THREE.Camera) {
 		this.scene = scene;
-		scene.background = this.bgTo.clone();
+		scene.background = LIGHT_BG.clone();
 
 		this.stars = new Starfield3D();
 		this.stars.setPixelRatio(renderer.getPixelRatio());
@@ -76,23 +71,9 @@ export class Skybox {
 		if (this.isDark === isDark) return;
 		this.isDark = isDark;
 		this.stars.points.visible = isDark;
-
-		this.bgFrom.copy(this.scene.background instanceof THREE.Color ? this.scene.background : this.bgTo);
-		this.bgTo.copy(isDark ? DARK_BG : LIGHT_BG);
-		this.bgT = 0;
-		this.scene.background = this.bgFrom.clone();
-	}
-
-	loop(delta: number): void {
-		if (this.isDark) this.stars.loop(delta);
-
-		if (this.bgT < 1) {
-			this.bgT = Math.min(1, this.bgT + delta / BG_TWEEN_DURATION);
-			// quadOut, matching skybox/default.svelte's own Tween easing.
-			const eased = 1 - (1 - this.bgT) * (1 - this.bgT);
-			const color = this.scene.background instanceof THREE.Color ? this.scene.background : this.bgFrom.clone();
-			this.scene.background = color.lerpColors(this.bgFrom, this.bgTo, eased);
-		}
+		// Applied instantly rather than tweened — no per-frame loop() drives this anymore (stars are
+		// static too, no more twinkle), so there's nothing left to progress a tween.
+		this.scene.background = (isDark ? DARK_BG : LIGHT_BG).clone();
 	}
 
 	dispose(): void {

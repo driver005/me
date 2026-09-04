@@ -35,7 +35,18 @@
 		if (!browser) return;
 		isMounted = true;
 	});
+
+	// Refreshing/closing the tab mid-load throws away the in-progress GLTF fetch/decode + shader
+	// compile (see HomeEngineRoot's own onReady/compileAsync) — same "unsaved changes" pattern as any
+	// other page with real work in flight, just triggered by `loading` instead of a dirty form.
+	function onBeforeUnload(event: BeforeUnloadEvent): void {
+		if (!loading) return;
+		event.preventDefault();
+		event.returnValue = '';
+	}
 </script>
+
+<svelte:window onbeforeunload={onBeforeUnload} />
 
 <svelte:head>
 	<SvelteSeo

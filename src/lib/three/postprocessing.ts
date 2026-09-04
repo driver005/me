@@ -66,14 +66,15 @@ export class Postprocessing {
 		this.renderPass = new RenderPass(scene, this.camera);
 		this.composer.addPass(this.renderPass, 0);
 
+		// REINHARD2_ADAPTIVE (was here for dark mode) recomputes its own mip-based luminance chain every
+		// frame — the two ~800ms stalls right before a real CONTEXT_LOST_WEBGL both landed inside this
+		// render chain, on the same GPU/driver already known to choke on specific shader combinations
+		// (see leatherCrackedMaterial's own comment in room.ts). Static REINHARD2 keeps the same base
+		// tone curve without that per-frame adaptive pass.
 		const toneMapping = new ToneMappingEffect({
-			mode: isDark ? ToneMappingMode.REINHARD2_ADAPTIVE : ToneMappingMode.ACES_FILMIC,
-			resolution: isDark ? 512 : 256,
-			whitePoint: isDark ? 3.0 : 4.0,
+			mode: isDark ? ToneMappingMode.REINHARD2 : ToneMappingMode.ACES_FILMIC,
 			middleGrey: isDark ? 0.35 : 0.6,
-			minLuminance: isDark ? 0.001 : 0.01,
-			averageLuminance: isDark ? 0.25 : 1.0,
-			adaptationRate: isDark ? 2.0 : 1.0
+			whitePoint: isDark ? 3.0 : 4.0
 		});
 		const colorBoost = new HueSaturationEffect({
 			hue: isDark ? 0.5 : 0.0,
@@ -83,14 +84,17 @@ export class Postprocessing {
 			brightness: isDark ? 0.0 : -0.03,
 			contrast: isDark ? 0.2 : 0.15
 		});
+		// mipmapBlur builds its own multi-level render-target chain every rebuild — same suspect category
+		// as adaptive tone mapping above. A single-pass kawase blur at the smallest kernel/resolution is
+		// as cheap as this effect gets.
 		const bloom = new BloomEffect({
 			intensity: isDark ? 2.5 : 10.0,
 			luminanceThreshold: isDark ? 0.5 : 0.8,
 			luminanceSmoothing: isDark ? 0.7 : 0.8,
-			mipmapBlur: true,
-			kernelSize: isDark ? KernelSize.LARGE : KernelSize.VERY_LARGE,
-			height: isDark ? 720 : 1048,
-			width: isDark ? 720 : 1048
+			mipmapBlur: false,
+			kernelSize: KernelSize.VERY_SMALL,
+			height: isDark ? 240 : 320,
+			width: isDark ? 240 : 320
 		});
 		const chromaticAberration = new ChromaticAberrationEffect({
 			offset: new THREE.Vector2(isDark ? 0.0004 : 0.0002, isDark ? 0.0004 : 0.0002),
