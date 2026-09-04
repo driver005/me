@@ -404,8 +404,9 @@ export class SpiralCarousel {
 
   private spawnCard(idx: number, tex: THREE.Texture, duotone: boolean): void {
     const video = tex instanceof THREE.VideoTexture ? (tex.image as HTMLVideoElement) : null;
-    const imgW = video?.videoWidth || tex.image?.width || 1024;
-    const imgH = video?.videoHeight || tex.image?.height || 683;
+    const imgSource = tex.image as { width?: number; height?: number } | undefined;
+    const imgW = video?.videoWidth || imgSource?.width || 1024;
+    const imgH = video?.videoHeight || imgSource?.height || 683;
     const mat = new THREE.ShaderMaterial({
       uniforms: {
         uTexture: { value: tex },

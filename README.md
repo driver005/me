@@ -30,13 +30,13 @@ cream `#F3F2EE` bg, dark `#0A0A0A` text, red `#FF3B00` accent. brutalist edges. 
 src/
 ├── lib/
 │   ├── data/           # all content (works, services, skills, music, etc)
-│   ├── ui/             # components (module/, custom/, cn/)
+│   ├── design/         # components (module/, helper/, shared/)
 │   ├── three/          # 3d scenes & postprocessing
 │   ├── util/           # composables (berlin clock, scroll reveal, mouse parallax)
 │   ├── shaders/        # glsl
 │   ├── types/          # types
 │   ├── stores/         # svelte stores
-│   ├── models/         # 3d models
+│   ├── const/          # shared constants
 │   └── paraglide/      # auto-generated i18n
 ├── static/
 │   ├── images/works/   # project preview screenshots

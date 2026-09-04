@@ -10,7 +10,6 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Canvas } from '@threlte/core';
-	import gsap from 'gsap';
 	import * as THREE from 'three';
 	import { m } from '$lib/paraglide/messages';
 	import { getLocale, setLocale } from '$lib/paraglide/runtime.js';
@@ -160,16 +159,23 @@
 		return () => clearTimeout(timeout);
 	});
 
-	// Route-driven mode transition — separate from Toggle's own click-driven state (see Toggle.svelte),
-	// but both ultimately drive the same shared uniforms. Home shows the front/white view; any
-	// sub-route (a project detail page, the about page) shows the immersive back view with its DOM
-	// overlay content on top.
-	//
-	// Tweening uMode alone is NOT enough to actually show the back view — the output compositor's
-	// front/back crossfade is driven by uProgressFront (see output-fragment.glsl's edgeFront), not
-	// uMode directly. uMode only affects each layer's own internal treatment (fog/stars/planet grading,
-	// this layout's own gallery visibility).
-	let routeModeTimeline: gsap.core.Timeline | null = null;
+	// Front/back crossfade (uMode/uProgressFront/uProgressBack) is driven ONLY by Toggle.svelte's own
+	// click handler now — a real light/dark mode change — not by which route we're on. It used to also
+	// get tweened here on every route change (home vs sub-route), which fought with Toggle's own
+	// timeline and replayed the crossfade animation on plain navigation even when the mode hadn't
+	// changed. The one thing still needed here is a same-session initial sync: the uniforms default to
+	// the front/light values (scene.ts), so a hard load/direct nav landing on a page while dark mode is
+	// already persisted needs them set to match instantly, with no animation, before first paint.
+	let crossfadeInitialized = false;
+	$effect(() => {
+		if (crossfadeInitialized || !webglReady || !scene) return;
+		crossfadeInitialized = true;
+		const isDark = mode.current === 'dark';
+		scene.uniforms.uMode.value = isDark ? 0 : 1;
+		scene.uniforms.uProgressFront.value = isDark ? 1 : 0;
+		scene.uniforms.uProgressBack.value = isDark ? 1 : 0;
+	});
+
 	$effect(() => {
 		const pathname = page.url.pathname;
 		const isHome = isHomeRoute;
@@ -190,10 +196,6 @@
 			!skillPlanet
 		)
 			return;
-		routeModeTimeline?.kill();
-		routeModeTimeline = gsap.timeline();
-		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
-		routeModeTimeline.to(scene.uniforms.uProgressFront, { value: isHome ? 0 : 1, duration: 1, ease: 'power2.inOut' }, 0);
 		// Sub-routes add their own 3D content (Work's media carousel, About's portrait) into the same
 		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
 		// underneath a project/about page's own content. Home itself no longer shows these either —
@@ -542,7 +544,6 @@
 
 	onDestroy(() => {
 		pointerCleanup?.();
-		routeModeTimeline?.kill();
 		compositor?.dispose();
 		gallery?.dispose();
 		// planetSwitcher is registered with scene.addLayer(), so scene.dispose() below disposes IT — but

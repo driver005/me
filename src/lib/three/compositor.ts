@@ -65,6 +65,7 @@ export class Compositor {
   private textsLayer: Texts;
   private pageTimeline: gsap.core.Timeline | null = null;
   private fogIntensityTween: gsap.core.Tween | null = null;
+  private lastPageId: PlanetPageId | null = null;
 
   constructor(scene: Scene, layers: CompositorLayers) {
     this.scene = scene;
@@ -156,6 +157,8 @@ export class Compositor {
    *  by the route layout alongside Planet.animate(), on every navigation. Fog's own blend strength is
    *  a separate call now — see setFogIntensity()'s own comment. */
   setPage(pageId: PlanetPageId): void {
+    if (pageId === this.lastPageId) return;
+    this.lastPageId = pageId;
     this.pageTimeline?.kill();
     this.pageTimeline = gsap.timeline();
     this.pageTimeline.to(
