@@ -1,9 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { type Snippet } from 'svelte';
-	import { pageTransition } from '$lib/stores/page-transition';
-	import { fade } from 'svelte/transition';
-	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
+	import PageTransitions from '$lib/design/module/page-transitions.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { social_links } from '$lib/data';
 
@@ -24,40 +22,18 @@
 		sameAs: Object.values(social_links)
 	};
 
-	// pageTransition existed as scaffolding only — the store, the overlay below, and this reset were all
-	// already here, but nothing ever called .set(true), so the overlay never actually rendered on any
-	// navigation. beforeNavigate is that missing trigger: fades a solid cover in right as navigation
-	// starts (across every route in the site, not just the (bg) group — this layout wraps all of them),
-	// afterNavigate fades it back out once the new page is in. Runs alongside onNavigate's own View
-	// Transitions cross-fade below, not instead of it — that one handles the actual old/new DOM
-	// crossfade where the browser supports it; this one covers the moment in between for the (bg)
-	// group's very different-looking sub-pages (a WebGL canvas vs. imprint/privacy's plain content),
-	// where the fade the browser API does isn't so dependent on the two DOM states' visuals lining up.
-	beforeNavigate(() => {
-		pageTransition.set(true);
-	});
-
-	afterNavigate(() => {
-		pageTransition.set(false);
-	});
-
-	onNavigate((navigation) => {
-		if (typeof document === 'undefined' || !document.startViewTransition) return;
-		return new Promise<void>((resolve) => {
-			document.startViewTransition(async () => {
-				resolve();
-				await navigation.complete;
-			});
-		});
-	});
+	// The native View Transitions crossfade that used to live here (its own onNavigate calling
+	// document.startViewTransition) is gone — PageTransitions' opaque curtain now covers the screen
+	// for the entire DOM-swap window on every navigation, so that crossfade was 100% hidden behind it
+	// already, and having two independent onNavigate hooks both awaiting the same navigation.complete
+	// (one to gate a View Transition callback, one to gate the curtain's reveal) is exactly the setup
+	// that produced "TimeoutError: Transition was aborted because of timeout in DOM update" — an
+	// abandoned/superseded navigation could leave the View Transition's update callback dangling on a
+	// navigation.complete that never resolved, which the browser aborts on its own ~4s timeout as an
+	// unhandled rejection. One system owning the swap is more robust than two racing each other.
 </script>
 
-{#if $pageTransition}
-	<div
-		transition:fade={{ duration: 200 }}
-		class="pointer-events-none fixed inset-0 z-[200] bg-[#F3F2EE]"
-	></div>
-{/if}
+<PageTransitions />
 
 <!-- {#if !isClonedSite} -->
 <!-- 	<img -->
@@ -75,28 +51,6 @@
 {@render children()}
 
 <style>
-	:global(::view-transition-old(root)) {
-		animation: fade-out 0.2s ease-in both;
-	}
-	:global(::view-transition-new(root)) {
-		animation: fade-in 0.3s ease-out both;
-	}
-	@keyframes fade-out {
-		from {
-			opacity: 1;
-		}
-		to {
-			opacity: 0;
-		}
-	}
-	@keyframes fade-in {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
 	.site-mascot {
 		animation: site-mascot-bob 2.8s ease-in-out infinite;
 	}
