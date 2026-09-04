@@ -31,9 +31,13 @@ export interface BgEngineContext {
 	 *  (spiral-carousel.ts's own fluidTexture option) — images duotone/grayscale by default, colour
 	 *  revealed in a circle following the cursor, instead of a page-wide compositor effect. */
 	getFluidTexture(): THREE.Texture | null;
-	/** The layout's own `isBackMode` $state (the bottom-right Toggle.svelte button's front/back view
-	 *  switch) — a getter for the same reason getReady() is: Svelte 5 tracks a $state read as a
-	 *  dependency even through a function call, so a child reading this inside its own $derived/$effect
-	 *  correctly re-runs when the button is clicked. /about's own text color follows this directly. */
+	/** Whether the site is in dark/immersive mode — mode-watcher's own `mode.current === 'dark'`,
+	 *  driven by the bottom-right Toggle.svelte button (which now flips mode.current directly rather
+	 *  than a separate local isBackMode state — mode-watcher already persists it to localStorage, and
+	 *  /home reads that same value, so there's one shared setting instead of two independent ones that
+	 *  used to disagree). A getter for the same reason getReady() is: Svelte 5 tracks a `$state`/store
+	 *  read as a dependency even through a function call, so a child reading this inside its own
+	 *  $derived/$effect correctly re-runs when the mode changes. /about's own text color follows this
+	 *  directly. */
 	getIsBackMode(): boolean;
 }

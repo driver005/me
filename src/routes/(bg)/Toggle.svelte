@@ -2,22 +2,21 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import gsap from 'gsap';
+	import { mode, setMode } from 'mode-watcher';
 	import { m } from '$lib/paraglide/messages';
 	import type { Scene } from '$lib/three/scene';
 	import type { FluidSim } from '$lib/three/layers/fluid';
 	import type { Texts } from '$lib/three/layers/texts';
 
-	// isBackMode is bindable, not owned locally — the route layout also drives it (forcing back mode on
-	// every sub-route). A locally-owned copy here previously went stale on navigation: this button's
-	// own state stayed `false` regardless of route, so one click on a sub-page (already in back mode
-	// via the route effect) flipped the whole scene to front/white — with the sub-page's own DOM text
-	// hardcoded white, that made it vanish into the white plate.
-	let {
-		scene,
-		fluid,
-		texts,
-		isBackMode = $bindable(false)
-	}: { scene: Scene; fluid: FluidSim; texts: Texts; isBackMode?: boolean } = $props();
+	let { scene, fluid, texts }: { scene: Scene; fluid: FluidSim; texts: Texts } = $props();
+
+	// Drives mode-watcher's own mode directly instead of a separate local/bindable isBackMode state —
+	// that used to go stale across navigation (the route layout ALSO force-set it on every route
+	// change) and wasn't persisted, so /about always snapped back to immersive mode regardless of what
+	// was last chosen. mode.current already persists to localStorage on its own and /home already reads
+	// it, so this button is now a real, single, shared dark/light switch instead of a second
+	// independent front/back toggle that happened to look similar.
+	const isBackMode = $derived(mode.current === 'dark');
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
 	let isToggleTransitioning = false;
@@ -35,26 +34,27 @@
 	function handleClick(): void {
 		if (isToggleTransitioning) return;
 		isToggleTransitioning = true;
-		isBackMode = !isBackMode;
-		fluid.setMode(isBackMode);
+		const next = !isBackMode;
+		setMode(next ? 'dark' : 'light');
+		fluid.setMode(next);
 		syncRect();
 
 		timeline?.kill();
 		timeline = gsap.timeline();
-		timeline.to(scene.uniforms.uMode, { value: isBackMode ? 0 : 1, duration: 0.8, ease: 'power3.out' }, 0);
-		timeline.set(scene.uniforms.uDirection, { value: isBackMode ? 0 : 1 }, 0);
+		timeline.to(scene.uniforms.uMode, { value: next ? 0 : 1, duration: 0.8, ease: 'power3.out' }, 0);
+		timeline.set(scene.uniforms.uDirection, { value: next ? 0 : 1 }, 0);
 		timeline.fromTo(scene.uniforms.uWarp, { value: 0 }, { value: 1, duration: 0.05, ease: 'none' }, 0);
 		timeline.to(scene.uniforms.uWarp, { value: 0, duration: 0.5, ease: 'none' }, 0.4);
 		timeline.fromTo(
 			scene.uniforms.uProgressFront,
-			{ value: isBackMode ? 0 : 1 },
-			{ value: isBackMode ? 1 : 0, duration: 3.2, ease: 'power4.out' },
+			{ value: next ? 0 : 1 },
+			{ value: next ? 1 : 0, duration: 3.2, ease: 'power4.out' },
 			0
 		);
 		timeline.fromTo(
 			scene.uniforms.uProgressBack,
-			{ value: isBackMode ? 0 : 1 },
-			{ value: isBackMode ? 1 : 0, duration: isBackMode ? 3.3 : 3, ease: 'power4.out' },
+			{ value: next ? 0 : 1 },
+			{ value: next ? 1 : 0, duration: next ? 3.3 : 3, ease: 'power4.out' },
 			0
 		);
 		timeline.add(() => {

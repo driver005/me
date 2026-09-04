@@ -47,7 +47,7 @@
 		getReady: () => webglReady,
 		getEarthPlanet: () => earthPlanet,
 		getFluidTexture: () => fluid?.texture ?? null,
-		getIsBackMode: () => isBackMode
+		getIsBackMode: () => mode.current === 'dark'
 	});
 
 	const MIN_LOADER_DURATION = 1200;
@@ -55,30 +55,23 @@
 	 *  color (home/about/error). */
 	const FOG_COLOR_DEFAULT = '#20447e';
 
-	/** Single source of truth for front/back mode — bound two-way with Toggle.svelte (its button also
-	 *  flips this), and set here on every route change so a sub-page's forced back mode and Toggle's
-	 *  own state can never go stale relative to each other. Also drives the nav link below: white text
-	 *  over the white front plate is invisible. */
-	let isBackMode = $state(false);
-
 	const isHomeRoute = $derived(page.url.pathname === '/');
 	const isAboutRoute = $derived(page.url.pathname === '/about');
 	// /imprint and /privacy render PageShell (a separate design-system component, its own fixed light
 	// background) OVER this layout's own canvas — the nav below sits at a higher z-index so it stays
-	// visible on top of that, but PageShell itself never reads isBackMode/mode.current, so its
-	// background is always light regardless of what the (bg) engine's own state says. White nav text
-	// there would just be illegible against it.
+	// visible on top of that, but PageShell itself never reads mode.current, so its background is
+	// always light regardless of what the (bg) engine's own state says. White nav text there would
+	// just be illegible against it.
 	const isLegalRoute = $derived(page.url.pathname === '/imprint' || page.url.pathname === '/privacy');
 
-	/** The top-left nav's own text color — white whenever EITHER the back plate is showing (isBackMode,
-	 *  the existing front/back contrast reason) OR the site is in dark mode (mode.current, a completely
-	 *  separate axis from isBackMode — this engine otherwise doesn't react to mode-watcher at all, so
-	 *  without this the nav stayed black-on-dark and unreadable once dark mode + fog shipped on '/').
-	 *  Forced black on /imprint and /privacy regardless of either — see isLegalRoute's own comment. */
+	/** The top-left nav's own text color — white whenever the site is in dark mode (mode.current,
+	 *  mode-watcher's own persisted setting — the bottom-right Toggle.svelte button flips it directly
+	 *  now, no separate isBackMode state; see Toggle.svelte's own comment for why that merge happened).
+	 *  Forced black on /imprint and /privacy regardless — see isLegalRoute's own comment. */
 	const navLinkClass = $derived(
 		isLegalRoute
 			? 'text-black/70 hover:text-black'
-			: isBackMode || mode.current === 'dark'
+			: mode.current === 'dark'
 				? 'text-white/70 hover:text-white'
 				: 'text-black/70 hover:text-black'
 	);
@@ -197,7 +190,6 @@
 			!skillPlanet
 		)
 			return;
-		isBackMode = !isHome;
 		routeModeTimeline?.kill();
 		routeModeTimeline = gsap.timeline();
 		routeModeTimeline.to(scene.uniforms.uMode, { value: isHome ? 1 : 0, duration: 1, ease: 'power2.inOut' }, 0);
@@ -252,14 +244,14 @@
 
 	// Fog's per-page maximum lives in compositor.ts's own PAGE_LOOK table, right next to glow — one
 	// table for both, instead of two near-identical Records in two different files. What THIS effect
-	// owns is just the gate: fog only shows when isBackMode (the bottom-right Toggle.svelte button) or
-	// mode.current === 'dark' (mode-watcher's theme, toggled from /home) is true — same OR the nav-link
-	// color below uses. That gate is route/UI state, not per-page look data, so it stays here rather
-	// than moving into compositor.ts too.
+	// owns is just the gate: fog only shows when mode.current === 'dark' (mode-watcher's theme, the
+	// same persisted setting the bottom-right Toggle.svelte button and the nav-link color below both
+	// read now — no separate isBackMode any more, see Toggle.svelte's own comment). That gate is
+	// route/UI state, not per-page look data, so it stays here rather than moving into compositor.ts.
 	//
-	// Kept as its own effect (not folded into the route effect above) because it has different
-	// dependencies (isBackMode, mode.current) that would otherwise force the whole route effect —
-	// planet switching, planet.animate(), etc. — to re-run on every mode/back-mode toggle for no reason.
+	// Kept as its own effect (not folded into the route effect above) because it has a different
+	// dependency (mode.current) that would otherwise force the whole route effect — planet switching,
+	// planet.animate(), etc. — to re-run on every mode toggle for no reason.
 	//
 	// `webglReady` is read unconditionally, before any early return, purely so this effect has a real
 	// tracked dependency: `compositor` is a plain `let`, not $state, so its assignment (once WebGL
@@ -268,7 +260,6 @@
 	$effect(() => {
 		const ready = webglReady;
 		const currentMode = mode.current;
-		const back = isBackMode;
 		const pathname = page.url.pathname;
 		const isHome = isHomeRoute;
 
@@ -279,8 +270,8 @@
 			return;
 		}
 
-		if (!back && currentMode !== 'dark') {
-			if (import.meta.env.DEV) console.log(`[fog] effect ran — isBackMode=${back} mode=${currentMode}, forcing 0`);
+		if (currentMode !== 'dark') {
+			if (import.meta.env.DEV) console.log(`[fog] effect ran — mode=${currentMode}, forcing 0`);
 			compositor.setFogIntensity(0);
 			return;
 		}
@@ -288,7 +279,7 @@
 		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : pathname === '/skills' ? 'skills' : 'about';
 		if (import.meta.env.DEV) {
 			console.log(
-				`[fog] effect ran — pathname=${pathname} pageId=${pageId} isBackMode=${back} mode=${currentMode} fog=${PAGE_LOOK[pageId].fog} coverage=${PAGE_LOOK[pageId].fogCoverage}`
+				`[fog] effect ran — pathname=${pathname} pageId=${pageId} mode=${currentMode} fog=${PAGE_LOOK[pageId].fog} coverage=${PAGE_LOOK[pageId].fogCoverage}`
 			);
 		}
 		compositor.setFogIntensity(PAGE_LOOK[pageId].fog);
@@ -618,7 +609,7 @@
 		</Canvas>
 	</div>
 	{#if webglReady && scene && fluid && texts && (isHomeRoute || isAboutRoute)}
-		<Toggle {scene} {fluid} {texts} bind:isBackMode />
+		<Toggle {scene} {fluid} {texts} />
 	{/if}
 	{#if webglReady && isHomeRoute}
 		<div
