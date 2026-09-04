@@ -4,16 +4,16 @@
 	import { m } from '$lib/paraglide/messages';
 	import SvelteSeo from 'svelte-seo';
 	import { buildGalleryImages } from '$lib/data/gallery-images';
-	import { SpiralCarousel, type SpiralCarouselItem } from '$lib/three/scenes/spiral-carousel';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
-	import { getSpiralCenterX } from '$lib/three/scenes/spiral-layout';
+	import { SpiralCarousel, type SpiralCarouselItem } from '$lib/three/spiral/spiral-carousel';
+	import { BG_ENGINE_CONTEXT, type BgEngineContext } from '$lib/three/shared/context';
+	import { getSpiralCenterX } from '$lib/three/spiral/spiral-layout';
 
 	// Same random photo set /gallery uses (its own masonry-grid treatment of the same data) — this
 	// page's own treatment is the twisted spiral column instead. `href` set to the image itself so
 	// clicking opens the full-res photo in a new tab, matching what this page has always done.
 	const items: SpiralCarouselItem[] = buildGalleryImages().map((g) => ({ src: g.src, href: g.src }));
 
-	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
+	const bgContext = getContext<BgEngineContext>(BG_ENGINE_CONTEXT);
 
 	// A real Layer sharing the shared engine's own canvas/camera (see spiral-carousel.ts's own header
 	// comment) — this page no longer stands up its own separate WebGLRenderer/camera; Mars (the (bg)
@@ -51,7 +51,7 @@
 			description: m['seo.spiral.description'](),
 			url: `${m.url()}/spiral`,
 			type: 'website',
-			images: [{ url: `${m.url()}/images/preview_home.jpg`, width: 800, height: 600, alt: m['seo.og_image_alt']() }],
+			images: [{ url: `${m.url()}${m['assets.seo_preview']()}`, width: 800, height: 600, alt: m['seo.og_image_alt']() }],
 			site_name: m['seo.author']()
 		}}
 		twitter={{
@@ -59,12 +59,12 @@
 			site: m['seo.twitter_handle'](),
 			title: m['seo.spiral.title'](),
 			description: m['seo.spiral.description'](),
-			image: `${m.url()}/images/preview_home.jpg`
+			image: `${m.url()}${m['assets.seo_preview']()}`
 		}}
 	/>
 </svelte:head>
 
 <div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-8 text-white">
-	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
+	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">{m['common.back_link']()}</a>
 	<p class="max-w-md text-sm text-white/70">{m['spiral.meta_sub']()}</p>
 </div>

@@ -1,428 +1,250 @@
 {
-	"headline": "👋 Hi, ich bin Adrian",
-	"// desktop hero — to be removed": "",
-	"nav": {
-		"work": "Work",
-		"about": "Über mich",
-		"services": "Services",
-		"gallery": "Gallery",
-		"contact": "Kontakt",
-		"open": "Offen",
-		"cta": "Lass uns reden →",
-		"menu": "Menü",
-		"close": "Schließen",
-		"back": "Zurück"
-	},
-	"hero": {
-		"meta_portfolio": "Portfolio / 2025—26",
-		"meta_index": "Index № 001 / 12",
-		"meta_studio": "Studio: Tübingen / Remote",
-		"meta_available": "✷ Verfügbar für Arbeit",
-		"eyebrow_a": "(A) Designer",
-		"eyebrow_b": "(B) Entwickler",
-		"eyebrow_c": "(C) Direktor",
-		"status": "Verfügbar ab Q3 2026",
-		"scroll": "Scrollen<br />\u2193",
-	"marquee_1": "Ausgew\u00e4hlte Arbeiten 2018\u20132026",
-	"marquee_2": "Markensysteme",
-	"marquee_3": "Web-Erlebnisse",
-	"marquee_4": "Art Direction",
-	"marquee_5": "Type Driven",
-	"marquee_6": "Awwwards Honoree",
-		"bio": "▌ Freiberuflich & mein C++ verbessernd, aktuell auf der Suche nach Arbeit. Ich baue Dinge, weil ich die Herausforderung liebe — ob die feinen Details unter der Haube oder das große Ganze."
-	},
-	"about": {
-		"meta": "Über mich",
-		"meta_sub": "Eine kurze, unzuverlässige Biografie",
-		"headline_1": "Ich mache Dinge,",
-		"headline_2": "die sich <span class=\"italic\">laut <span class=\"text-[#FF3B00]\">anfühlen</span></span>,",
-		"headline_3": "in stillen Räumen.",
-		"bio_1": "Ich bin Adrian — ich baue Dinge, weil ich die Herausforderung liebe. Angetrieben von purer Neugier und der Leidenschaft, gute Arbeit zu leisten.",
-		"bio_2": "Freiberuflich & mein C++ verbessernd. Basis in Tübingen, Deutschland.",
-		"current_label": "Aktuell —",
-		"current_text": "Verbessere meine C++-Fähigkeiten. Offen für neue Möglichkeiten.",
-		"current_open": "Verfügbar für Arbeit.",
-		"stat_years": "Jahre",
-		"stat_projects": "Projekte",
-		"stat_awards": "Auszeichnungen",
-		"stat_countries": "Länder",
-		"portrait_label": "▌Porträt",
-		"portrait_number": "01 / 01",
-		"portrait_iso": "ISO 800",
-		"portrait_rec": "●REC",
-		"portrait_caption": "Adrian Fernández"
-	},
-	"works": {
-		"meta": "Ausgewählt",
-		"meta_sub": "Index aktueller Expeditionen, 2023 — heute",
-		"meta_hint": "Hover ↳ Bild",
-		"title_selected": "Ausgewählte",
-		"title_works": "Arbeiten.",
-		"row_view": "Ansehen →",
-		"footer_end": "Ende des Index — 06 von 42",
-		"footer_cta": "Vollständiges Archiv anfordern →"
-	},
-	"spiral": {
-		"meta": "Spirale",
-		"meta_sub": "Projektarchiv, durch die Tiefe treibend",
-		"meta_hint": "GRESV scrollen zum erkunden"
-	},
-	"services": {
-		"meta": "Leistungen",
-		"marquee": "Fähigkeiten ✷ Fähigkeiten ✷ Fähigkeiten ✷",
-		"headline_1": "Was ich",
-		"headline_2": "wirklich mache.",
-		"description": "Vier Praktiken, ein Studio. Engagements reichen von Ein-Wochen-Audits bis zu Zwölf-Wochen-Projekten. Keine Retainer, kein Unsinn, keine Agentur-Overhead.",
-		"ai_title": "KI & ML",
-		"ai_desc": "Eigene Modelle, Simulationen, Datenpipelines. Forschung in funktionierende Systeme verwandeln.",
-		"web_title": "Web-Engineering",
-		"web_desc": "Portfolios, Dashboards, Full-Stack-Apps — SvelteKit, React, Three.js.",
-		"creative_title": "Creative Tech",
-		"creative_desc": "3D, Motion, interaktive Erlebnisse. Blender, Flutter, WebGL, Figma.",
-		"systems_title": "Systeme & Infra",
-		"systems_desc": "Backend-Dienste, Tooling, Deployment. Rust, Go, Docker, Kubernetes."
-	},
-	"process": {
-		"meta": "Denkweise",
-		"meta_sub": "Wie ich arbeite, was mich antreibt",
-		"step_1_title": "Lernen",
-		"step_1_sub": "Neugier",
-		"step_1_desc": "Von Neugier getrieben — ich tauche tief ein in alles, was mein Interesse weckt. Von C++-Systemen bis zu KI-Modellen lerne ich durch Bauen.",
-		"step_2_title": "Bauen",
-		"step_2_sub": "Entwicklung",
-		"step_2_desc": "Ideen werden Wirklichkeit. SvelteKit, React, Flutter, Three.js — ich wähle das richtige Werkzeug und liefere qualitativ hochwertige Arbeit.",
-		"step_3_title": "Teilen",
-		"step_3_sub": "Veröffentlichung",
-		"step_3_desc": "Ich schreibe über Technologie, Quantencomputing, KI und Tools wie Zed. Bloggen hilft mir, klar zu denken.",
-		"step_4_title": "Wiederholen",
-		"step_4_sub": "Evolution",
-		"step_4_desc": "Jedes Projekt lehrt mich etwas. Ich verfeinere, iteriere und liefere weiter aus. Wachstum vor Perfektion."
-	},
-	"contact": {
-		"meta": "Kontakt",
-		"meta_sub": "Ein Posteingang, zwei Zeitzonen, keine Retainer",
-		"meta_rec": "●REC — 2026",
-		"marquee": "Lass uns reden ✷ ",
-		"headline_1": "Hast du ein Briefing,",
-		"headline_2": "eine halbe Idee,",
-		"headline_3": "oder ein Problem?",
-		"title": "Kontaktiere mich",
-		"description": "Schreib mir einfach eine E-Mail oder vernetze dich mit mir in den sozialen Medien. Ich bin immer offen für neue Möglichkeiten und Zusammenarbeit!",
-		"email_cta": "contact@a42n.com →",
-		"call_cta": "Lass uns reden ↗",
-		"sidebar_studio": "Standort",
-		"sidebar_address_1": "Tübingen",
-		"sidebar_address_2": "Deutschland",
-		"sidebar_press": "E-Mail",
-		"sidebar_press_email_1": "contact@a42n.",
-		"sidebar_press_email_2": "com",
-		"sidebar_elsewhere": "Sonstiges"
-	},
-	"footer": {
-		"copyright": "Adrian Fernández",
-		"rights": "Alle Rechte vorbehalten.",
-		"berlin_time": "Ortszeit",
-		"clock_suffix": "MEZ",
-		"built_with": "Gebaut mit",
-		"tech_stack": "SvelteKit · Svelte 5 · Lenis · Sturheit",
-		"top": "Nach oben",
-		"back_to_start": "↑ Zurück zum Anfang",
-		"credit": "Von Hand entworfen und gebaut. Keine Vorlagen.",
-		"end": "Ende des Scrollens — Vol. 001"
-	},
-	"activity": {
-		"meta": "Letzte Aktivität",
-		"meta_sub": "Live von GitHub",
-		"username": "@driver005",
-		"pushed": "{n} Commit(s) an {repo} gepusht",
-		"created": "{type} in {repo} erstellt",
-		"starred": "{repo} gestarrt",
-		"forked": "{repo} geforkt",
-		"issue": "{action} ein Issue in {repo}",
-		"pr": "{action} einen Pull Request in {repo}",
-		"release": "eine Release in {repo} veröffentlicht",
-		"time_ago": "vor {value}{unit}",
-		"just_now": "gerade eben"
-	},
-	"skills_tree": {
-		"frontend": "Frontend",
-		"backend": "Backend & Sprachen",
-		"tools": "Tools & DevOps"
-	},
-	"tagline": "Ich bin {age} Jahre alt und aktuell auf der Suche nach neuen Herausforderungen.",
-	"email": "contact@a42n.com",
-	"url": "https://www.a42n.com",
-	"story": {
-		"title": "Meine Story",
-		"description": "Ich liebe es, multifunktionale und erweiterbare Systeme zu entwickeln, die gleichzeitig das Maximum an Performance herausholen. Dabei nutze ich die Raw Power von Rust und C++, die elegante Concurrency von Go or die bewährte einfachkeit von Java."
-	},
-	"status": {
-		"title": "Status",
-		"description": "Freelancing & mein C++ verbessern"
-	},
-	"location": {
-		"tile": "Standort",
-		"description": "Wohnhaft in Tübingen, Deutschland"
-	},
-	"resume": {
-		"title": "Lebenslauf",
-		"update": "Zuletzt aktualisiert: {date}",
-		"button": "PDF herunterladen"
-	},
-	"letter": {
-		"title": "Warum ich?",
-		"button": "Motivations schreiben",
-		"pitch": "Hier um zu lernen|Ein Schritt nach dem anderen|Frag mich einfach nach dem Passwd bitte"
-	},
-	"image": "/images/me.jpeg",
-	"dock": {
-		"navbar": {
-			"home": "Home",
-			"journey": "Reise",
-			"projects": "Wissens-Hub",
-			"skills": "Skills"
-		},
-		"contact": {
-			"github": "Github",
-			"linkedin": "LinkedIn",
-			"x": "X",
-			"blog": "Blog",
-			"instagram": "Instagram",
-			"email": "Email"
-		}
-	},
-	"project_labels": {
-		"projects": "Projekte",
-		"link": "Link"
-	},
-	"project_titles": {
-		"teclab": "Die offizielle Website des teclab",
-		"chh": "Eins meiner Lieblingstutorials auf ganz Youtube. Ich kann es wirklich empfehlen. Mike Shah erklärt nicht nur wie man c++ code scheibt, sondern auch wie die Sprache im Hintergrund funktioniert, so wie viele Koncepte der informatik.",
-		"vim": "In über 20 kapitel in denen der autor ein einblick in vim motions und lazyvim gibt. Als jemand der davor noch nachschauen musste wie man vim überhaupt verlässt, war das die beste Ressource um in die vim art zu arbeiten einzusteigen."
-	},
-	"music_mobile": {
-		"top_lable": "Live-Feed",
-		"title": "Lieblingsmusik / Künstler",
-		"description": "Nicht alle aber ein paar",
-		"music": "Ausgewählt",
-		"update": "Aktualisiert",
-		"vault": "Vault öffnen",
-		"update_time": "Heute"
-	},
-	"music": {
-		"title": "All-Time Favorites",
-		"artist": "Künstler",
-		"song": "Song",
-		"playlist": "Playlist",
-		"description": "Künstler, Songs, Alben und Playlists"
-	},
-	"skills": {
-		"title": "Skill-Architektur",
-		"subtitle": "Eine kuratierte Auswahl meiner Kernkompetenzen und Zusatzskills",
-		"core": "Kernkompetenzen",
-		"other": "Zusätzliches",
-		"button": "Skills ansehen"
-	},
-	"skill_detail": {
-		"sveltekit": {
-			"description": "My go-to framework for building fast, full-stack web apps — this site is built with it.",
-			"pro": "Ships almost no runtime — components compile down to tight vanilla JS, so pages stay small and fast by default.",
-			"contra": "Smaller ecosystem than React means fewer ready-made libraries and community answers for edge cases."
-		},
-		"typescript": {
-			"description": "My default for anything beyond a quick script — types catch mistakes long before they hit production.",
-			"pro": "Catches whole categories of bugs at compile time and makes refactoring large codebases far less scary.",
-			"contra": "Build step and type-fighting add real friction, especially with loosely-typed third-party libraries."
-		},
-		"javascript": {
-			"description": "The language everything else on the web is built on — I still reach for it directly when TypeScript is overkill.",
-			"pro": "Runs everywhere without a build step and has the largest ecosystem of any language on earth.",
-			"contra": "No types by default means bugs that TypeScript would catch instantly slip through until runtime."
-		},
-		"tailwind": {
-			"description": "How I style almost everything now — utility classes right in the markup, no context-switching to a stylesheet.",
-			"pro": "Fast to build and change UI with, and the design stays consistent since you're picking from a fixed scale.",
-			"contra": "Markup gets noisy with long class strings, and it takes a while to learn where the useful defaults are."
-		},
-		"rust": {
-			"description": "My pick when performance and correctness actually matter — the compiler is strict, but it's strict for good reason.",
-			"pro": "Memory safety without a garbage collector, plus a compiler that catches concurrency bugs before they ship.",
-			"contra": "Steep learning curve — the borrow checker fights you constantly until the ownership model clicks."
-		},
-		"cpp": {
-			"description": "Where I go for raw performance and low-level control, especially in resource-constrained environments.",
-			"pro": "Extremely fast, gives you direct control over memory and hardware, and still runs almost everywhere.",
-			"contra": "Manual memory management is easy to get wrong, and compile times/tooling lag behind newer languages."
-		},
-		"java": {
-			"description": "Solid, boring-in-a-good-way — reliable for backend services that need to run unattended for years.",
-			"pro": "Mature ecosystem, strong tooling, and the JVM's stability make it a safe long-term bet for big systems.",
-			"contra": "Verbose compared to newer languages, and startup/memory overhead can be heavy for small services."
-		},
-		"go": {
-			"description": "My choice for backend services and CLI tools where simplicity and fast builds matter more than expressiveness.",
-			"pro": "Compiles fast, deploys as a single binary, and its concurrency model (goroutines) is genuinely pleasant.",
-			"contra": "Deliberately minimal — no generics-heavy patterns or exceptions means more boilerplate in places."
-		},
-		"react": {
-			"description": "I know it well and reach for it when a project already lives in that ecosystem or needs its library depth.",
-			"pro": "Huge ecosystem and hiring pool — almost any problem already has a well-tested library for it.",
-			"contra": "More boilerplate and runtime overhead than SvelteKit for the same result, and JSX takes getting used to."
-		},
-		"python": {
-			"description": "My tool for scripting, data work, and anything where getting something running fast matters more than raw speed.",
-			"pro": "Extremely readable and fast to write in, with an enormous library ecosystem for almost any task.",
-			"contra": "Slow compared to compiled languages, and dynamic typing lets bugs slip through without discipline."
-		},
-		"sql": {
-			"description": "The language I reach for whenever data has real structure and relationships worth enforcing.",
-			"pro": "Declarative and precise — the database figures out how to answer the question, not you.",
-			"contra": "Complex queries get hard to read fast, and schema migrations on live data need real care."
-		},
-		"nosql": {
-			"description": "Useful when the data doesn't fit neatly into rows and columns, or the schema needs to stay flexible.",
-			"pro": "Flexible schema and horizontal scaling make it a good fit for unstructured or fast-changing data.",
-			"contra": "Weaker consistency guarantees by default, and enforcing structure has to happen in application code instead."
-		},
-		"aws": {
-			"description": "My default cloud when a project needs real infrastructure — compute, storage, queues, all in one place.",
-			"pro": "Covers essentially every infrastructure need, with the maturity and reliability that comes from being first.",
-			"contra": "Pricing and IAM permissions are genuinely confusing, and it's easy to over-provision without noticing."
-		},
-		"docker": {
-			"description": "How I make sure 'works on my machine' actually means something — every project ships in a container.",
-			"pro": "Consistent environments across dev, CI, and production, and it makes onboarding a new machine trivial.",
-			"contra": "Adds a layer of indirection to debug, and images can bloat fast without deliberate care."
-		},
-		"kubernetes": {
-			"description": "For when Docker alone isn't enough — orchestrating containers at a scale that needs real automation.",
-			"pro": "Self-healing, scriptable infrastructure that scales services up and down without manual intervention.",
-			"contra": "Genuinely complex to operate — the learning curve and operational overhead are steep for small projects."
-		},
-		"github-actions": {
-			"description": "My default CI/CD — tests, builds, and deploys run automatically on every push, right where the code lives.",
-			"pro": "Lives right next to the code, so pipelines are versioned with the repo and easy to review in a PR.",
-			"contra": "YAML config gets unwieldy fast for complex pipelines, and debugging a failing action can be slow."
-		},
-		"vercel": {
-			"description": "Where I deploy most frontend projects — push to main and it's live, with previews on every PR.",
-			"pro": "Zero-config deploys with instant preview URLs per branch — genuinely the fastest path from commit to live.",
-			"contra": "Costs scale quickly past the free tier, and some platform-specific features create lock-in."
-		},
-		"postgresql": {
-			"description": "My default relational database — solid, standards-compliant, and rarely the thing that goes wrong.",
-			"pro": "Rock-solid, standards-compliant SQL with rich extensions (JSONB, full-text search) most projects never outgrow.",
-			"contra": "Vertical scaling has real limits eventually, and tuning it well takes genuine operational knowledge."
-		},
-		"redis": {
-			"description": "My go-to for caching and anything that needs to be fast and ephemeral — sessions, rate limits, queues.",
-			"pro": "Blazing fast in-memory operations make it ideal for caching, sessions, and simple pub/sub.",
-			"contra": "Data doesn't durably persist by default, and memory cost scales directly with dataset size."
-		},
-		"sentry": {
-			"description": "How I actually find out something broke in production before a user has to tell me.",
-			"pro": "Catches and contextualizes real production errors — stack traces, breadcrumbs, and the request that caused it.",
-			"contra": "Noisy without tuning — needs real effort to filter signal from low-value alerts."
-		}
-	},
-	"help": {
-		"title": "Brauchst du Hilfe?",
-		"catchline": "Kurzer Guide zum Überleben.",
-		"header_nav": "Navigation",
-		"header_key": "Shortcuts",
-		"description": "Klicke auf die Icons in der Seitenleiste zum Navigieren. Doppelklicke auf eine Karte, um ihren Inhalt direkt zu bearbeiten.",
-		"nav": {
-			"home": "Klicke auf den MONITOR, die MILCH oder den SAFT, um einen Einblick in mein Leben zu erhalten.",
-			"wheel": "MAUSRAD klicken, um den Rauch zu verziehen.",
-			"music": "Sicherheits modus muss ausschalten sein - Klicke auf die KASSETTE, die MUSIK-ANLAGE oder den LAUTSPRECHER, um mehr über meinen Musikgeschmack zu erfahren.",
-			"skills": "Klicke auf meinen LAPTOP oder den TRANK, um mehr über meine Skills und Erfahrungen zu lernen.",
-			"mouse": "Nutze die LINKE Maustaste, um die Kamera zu bewegen, und die RECHTE, um mit Objekten zu interagieren oder Projekt-Links zu öffnen.",
-			"close": "Klicke außerhalb des Dialogs, um ihn zu schließen."
-		},
-		"key": {
-			"help": "Hilfe",
-			"home": "Zuhause",
-			"music": "Musik",
-			"skills": "Skills",
-			"close": "Schließen"
-		}
-	},
-	"lang": {
-		"title": "Sprache wählen",
-		"description": "Wähle deine bevorzugte Sprache für das Interface.",
-		"active": "Ausgewählt",
-		"button": "Sprache"
-	},
-	"webgl": {
-		"title": "3D nicht unterstützt",
-		"description": "Dein Browser oder Gerät hat die Hardwarebeschleunigung deaktiviert.",
-		"link": "Erfahre, wie du sie aktivieren kannst.",
-		"button": "Trotzdem fortfahren →"
-	},
-	"error": {
-		"title": "Nicht gefunden",
-		"description": "Hoppla! Beim Laden der Seite ist etwas schiefgegangen. Bitte versuche es später noch einmal.",
-		"link": "Zurück nach Hause"
-	},
-	"dust": {
-		"insult": "Was suchst du hier denn?",
-		"help": "Bitte hör auf damit.",
-		"button": "Na gut, ich hör auf."
-	},
-	"slides": {
-		"title": "Meine Motivation.",
-		"description": "Bitte stell mich ein, damit ich mir endlich Gucci-Schlappen kaufen kann!",
-		"button": "Ich zähle auf dich!"
-	},
-	"gallery": {
-		"title": "Asset-Index",
-		"description": "Direkte Links zu den Projekt-Quelldateien.",
-		"meta": "Galerie",
-		"meta_sub": "Ausgew\u00e4hlte Arbeiten 2023\u20132026",
-		"meta_hint": "Scrollen \u21B3 erkunden",
-		"title_visual": "Visuelles",
-		"title_archive": "Archiv<span class=\"text-[#FF3B00] not-italic\">.</span>",
-		"links": {
-			"teclab": "teclab Quelldateien",
-			"assets": "Einige Assets stammen aus diesem Tutorial, das ich sehr empfehle",
-			"slides": "Gucci-Schlappen",
-			"space": "Space Lautsprecher / Kassette / Saft / Milch / Trank",
-			"sofa": "Parametrischer Sofa-Generator",
-			"printer": "3D-Drucker Modell",
-			"ams": "AMS 3D-Modell",
-			"animated": "Animierte UI-Komponenten",
-			"house": "Strandhaus",
-			"meme": "Meme-Foto"
-		},
-		"category": {
-			"file": "Datei",
-			"photo": "Foto",
-			"model": "3D-Modell"
-		}
-	},
-	"friendlymode": {
-		"title_friendly": "Zurück in Sicherheit?",
-		"title_rougue": "Schutz ausschalten?",
-		"name": "Sicherheits Modus",
-		"disabled": "Tippen zum Wiederherstellen",
-		"enabled": "Tippen zum Deaktivieren",
-		"field": "Password eingeben ...",
-		"locked": "Gesperrt",
-		"wrong": "Falsches Passwort, versuche es erneut.",
-		"label": "Deaktiviere den Sicherheits Modus, um Zugriff zu erhalten",
-		"message": "🔒 Seite can nicth angezeigt werden bis <span class='underline decoration-yellow-400 decoration-2'>Sicherheits modus</span> ausgeschaltet ist."
-	},
-	"tip": {
-		"first": "Linksklick zum Drehen",
-		"second": "Rechtsklick zum Interagieren"
-	},
+  "nav": {
+    "work": "Arbeit",
+    "about": "Über mich",
+    "services": "Leistungen",
+    "gallery": "Galerie",
+    "contact": "Kontakt",
+    "open": "Offen",
+    "cta": "Lass uns reden →",
+    "menu": "Menü",
+    "close": "Schließen",
+    "back": "Zurück"
+  },
+  "about": {
+    "meta": "Über mich",
+    "bio_1": "Ich bin Adrian — ich baue Dinge, weil ich die Herausforderung liebe. Angetrieben von purer Neugier und der Leidenschaft, gute Arbeit zu leisten.",
+    "bio_2": "Freiberuflich & mein C++ verbessernd. Basis in Tübingen, Deutschland.",
+    "stat_years": "Jahre",
+    "stat_projects": "Projekte",
+    "stat_awards": "Auszeichnungen",
+    "stat_countries": "Länder"
+  },
+  "works": {
+    "meta": "Ausgewählt",
+    "meta_sub": "Index aktueller Expeditionen, 2023 — heute",
+    "title_selected": "Ausgewählte",
+    "title_works": "Arbeiten.",
+    "row_view": "Ansehen →",
+    "footer_end": "Ende des Index — 06 von 42",
+    "footer_cta": "Vollständiges Archiv anfordern →"
+  },
+  "spiral": {
+    "meta_sub": "Projektarchiv, durch die Tiefe treibend"
+  },
+  "services": {
+    "meta": "Leistungen",
+    "headline_1": "Was ich",
+    "headline_2": "wirklich mache.",
+    "description": "Vier Praktiken, ein Studio. Engagements reichen von Ein-Wochen-Audits bis zu Zwölf-Wochen-Projekten. Keine Retainer, kein Unsinn, keine Agentur-Overhead.",
+    "ai_title": "KI & ML",
+    "ai_desc": "Eigene Modelle, Simulationen, Datenpipelines. Forschung in funktionierende Systeme verwandeln.",
+    "web_title": "Web-Engineering",
+    "web_desc": "Portfolios, Dashboards, Full-Stack-Apps — SvelteKit, React, Three.js.",
+    "creative_title": "Kreativ-Tech",
+    "creative_desc": "3D, Motion, interaktive Erlebnisse. Blender, Flutter, WebGL, Figma.",
+    "systems_title": "Systeme & Infra",
+    "systems_desc": "Backend-Dienste, Tooling, Deployment. Rust, Go, Docker, Kubernetes."
+  },
+  "footer": {
+    "copyright": "Adrian Fernández",
+    "rights": "Alle Rechte vorbehalten.",
+    "berlin_time": "Ortszeit",
+    "clock_suffix": "MEZ",
+    "built_with": "Gebaut mit",
+    "tech_stack": "SvelteKit · Svelte 5 · Lenis · Sturheit",
+    "top": "Nach oben",
+    "back_to_start": "↑ Zurück zum Anfang",
+    "credit": "Von Hand entworfen und gebaut. Keine Vorlagen.",
+    "end": "Ende des Scrollens — Vol. 001"
+  },
+  "skills_tree": {
+    "frontend": "Frontend",
+    "backend": "Backend & Sprachen",
+    "tools": "Tools & DevOps"
+  },
+  "email": "contact@a42n.com",
+  "url": "https://www.a42n.com",
+  "dock": {
+    "navbar": {
+      "home": "Home",
+      "journey": "Reise",
+      "projects": "Wissens-Hub",
+      "skills": "Skills"
+    },
+    "contact": {
+      "github": "Github",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "blog": "Blog",
+      "instagram": "Instagram",
+      "email": "Email"
+    }
+  },
+  "project_titles": {
+    "teclab": "Die offizielle Website des teclab",
+    "chh": "Eins meiner Lieblingstutorials auf ganz Youtube. Ich kann es wirklich empfehlen. Mike Shah erklärt nicht nur wie man c++ code scheibt, sondern auch wie die Sprache im Hintergrund funktioniert, so wie viele Koncepte der informatik.",
+    "vim": "In über 20 kapitel in denen der autor ein einblick in vim motions und lazyvim gibt. Als jemand der davor noch nachschauen musste wie man vim überhaupt verlässt, war das die beste Ressource um in die vim art zu arbeiten einzusteigen."
+  },
+  "music": {
+    "artist": "Künstler",
+    "song": "Song",
+    "playlist": "Playlist"
+  },
+  "skills": {
+    "title": "Skill-Architektur",
+    "subtitle": "Eine kuratierte Auswahl meiner Kernkompetenzen und Zusatzskills",
+    "core": "Kernkompetenzen",
+    "other": "Zusätzliches",
+    "pro_label": "Pro",
+    "contra_label": "Contra",
+    "moon_hint": "Jeder Skill, den ich nutze, kreist als eigener Mond — scrollen dreht den Ring, ein Klick zeigt mehr Details."
+  },
+  "skill_detail": {
+    "sveltekit": {
+      "description": "Mein Standard-Framework für schnelle Full-Stack-Web-Apps — diese Seite ist damit gebaut.",
+      "pro": "Liefert fast keinen Runtime-Overhead — Komponenten kompilieren zu schlankem Vanilla-JS, Seiten bleiben klein und schnell.",
+      "contra": "Kleineres Ökosystem als React bedeutet weniger fertige Bibliotheken und Community-Antworten für Randfälle."
+    },
+    "typescript": {
+      "description": "Mein Standard für alles über ein schnelles Skript hinaus — Typen fangen Fehler ab, lange bevor sie in Produktion landen.",
+      "pro": "Fängt ganze Fehlerklassen schon beim Kompilieren ab und macht Refactoring großer Codebasen deutlich weniger riskant.",
+      "contra": "Build-Schritt und Typkämpfe bringen echte Reibung, besonders bei lose typisierten Drittanbieter-Bibliotheken."
+    },
+    "javascript": {
+      "description": "Die Sprache, auf der alles andere im Web aufbaut — ich greife noch direkt darauf zurück, wenn TypeScript übertrieben wäre.",
+      "pro": "Läuft überall ohne Build-Schritt und hat das größte Ökosystem jeder Sprache überhaupt.",
+      "contra": "Keine Typen von Haus aus bedeutet, dass Fehler, die TypeScript sofort fangen würde, erst zur Laufzeit auffallen."
+    },
+    "tailwind": {
+      "description": "So style ich mittlerweile fast alles — Utility-Klassen direkt im Markup, kein Wechsel zu einer Stylesheet-Datei.",
+      "pro": "Schnell im Bauen und Ändern von UI, und das Design bleibt konsistent, da man aus einer festen Skala wählt.",
+      "contra": "Markup wird durch lange Klassenlisten unübersichtlich, und man braucht eine Weile, um die nützlichen Defaults zu lernen."
+    },
+    "rust": {
+      "description": "Meine Wahl, wenn Performance und Korrektheit wirklich zählen — der Compiler ist streng, aber aus gutem Grund.",
+      "pro": "Speichersicherheit ohne Garbage Collector, dazu ein Compiler, der Concurrency-Bugs vor dem Deploy abfängt.",
+      "contra": "Steile Lernkurve — der Borrow Checker widersetzt sich ständig, bis das Ownership-Modell klickt."
+    },
+    "cpp": {
+      "description": "Meine Wahl für rohe Performance und Low-Level-Kontrolle, besonders in ressourcenbeschränkten Umgebungen.",
+      "pro": "Extrem schnell, gibt direkte Kontrolle über Speicher und Hardware, und läuft trotzdem fast überall.",
+      "contra": "Manuelles Speichermanagement ist leicht falsch zu machen, und Compile-Zeiten/Tooling hinken neueren Sprachen hinterher."
+    },
+    "java": {
+      "description": "Solide, auf gute Art langweilig — verlässlich für Backend-Dienste, die jahrelang unbeaufsichtigt laufen müssen.",
+      "pro": "Reifes Ökosystem, starkes Tooling, und die Stabilität der JVM machen es zu einer sicheren Langzeitwette für große Systeme.",
+      "contra": "Umständlicher als neuere Sprachen, und Start-/Speicher-Overhead kann für kleine Dienste spürbar sein."
+    },
+    "go": {
+      "description": "Meine Wahl für Backend-Dienste und CLI-Tools, wo Einfachheit und schnelle Builds wichtiger sind als Ausdrucksstärke.",
+      "pro": "Kompiliert schnell, deployt als einzelnes Binary, und das Concurrency-Modell (Goroutines) macht wirklich Spaß.",
+      "contra": "Bewusst minimal — keine generics-lastigen Patterns oder Exceptions bedeutet mehr Boilerplate an manchen Stellen."
+    },
+    "react": {
+      "description": "Ich kenne es gut und greife darauf zurück, wenn ein Projekt schon in diesem Ökosystem lebt oder dessen Bibliothekstiefe braucht.",
+      "pro": "Riesiges Ökosystem und großer Talentpool — für fast jedes Problem gibt es schon eine gut getestete Bibliothek.",
+      "contra": "Mehr Boilerplate und Runtime-Overhead als SvelteKit für dasselbe Ergebnis, und JSX braucht Eingewöhnung."
+    },
+    "python": {
+      "description": "Mein Werkzeug für Scripting, Datenarbeit und alles, wo schnell etwas Lauffähiges wichtiger ist als rohe Geschwindigkeit.",
+      "pro": "Extrem lesbar und schnell geschrieben, mit einem riesigen Bibliotheks-Ökosystem für fast jede Aufgabe.",
+      "contra": "Langsamer als kompilierte Sprachen, und dynamische Typisierung lässt Fehler ohne Disziplin durchrutschen."
+    },
+    "sql": {
+      "description": "Die Sprache, zu der ich greife, wann immer Daten echte Struktur und Beziehungen haben, die sich lohnt durchzusetzen.",
+      "pro": "Deklarativ und präzise — die Datenbank findet heraus, wie sie die Frage beantwortet, nicht ich.",
+      "contra": "Komplexe Queries werden schnell schwer lesbar, und Schema-Migrationen auf Live-Daten brauchen echte Sorgfalt."
+    },
+    "nosql": {
+      "description": "Nützlich, wenn Daten nicht sauber in Zeilen und Spalten passen oder das Schema flexibel bleiben muss.",
+      "pro": "Flexibles Schema und horizontale Skalierung passen gut zu unstrukturierten oder sich schnell ändernden Daten.",
+      "contra": "Schwächere Konsistenzgarantien standardmäßig, Struktur muss stattdessen in der Anwendung durchgesetzt werden."
+    },
+    "aws": {
+      "description": "Meine Standard-Cloud, wenn ein Projekt echte Infrastruktur braucht — Compute, Storage, Queues, alles an einem Ort.",
+      "pro": "Deckt praktisch jeden Infrastrukturbedarf ab, mit der Reife und Verlässlichkeit des ersten großen Anbieters.",
+      "contra": "Preise und IAM-Berechtigungen sind wirklich verwirrend, und man überprovisioniert leicht, ohne es zu merken."
+    },
+    "docker": {
+      "description": "Wie ich sicherstelle, dass 'läuft auf meiner Maschine' tatsächlich etwas bedeutet — jedes Projekt läuft in einem Container.",
+      "pro": "Konsistente Umgebungen über Dev, CI und Produktion hinweg, und macht das Einrichten einer neuen Maschine trivial.",
+      "contra": "Fügt eine zusätzliche Ebene beim Debuggen hinzu, und Images können ohne bewusste Pflege schnell aufblähen."
+    },
+    "kubernetes": {
+      "description": "Für den Fall, dass Docker allein nicht reicht — Container in einem Maßstab orchestrieren, der echte Automatisierung braucht.",
+      "pro": "Selbstheilende, skriptbare Infrastruktur, die Dienste ohne manuellen Eingriff hoch- und runterskaliert.",
+      "contra": "Wirklich komplex im Betrieb — Lernkurve und operativer Aufwand sind für kleine Projekte hoch."
+    },
+    "github-actions": {
+      "description": "Meine Standard-CI/CD — Tests, Builds und Deploys laufen automatisch bei jedem Push, direkt dort wo der Code liegt.",
+      "pro": "Lebt direkt neben dem Code, Pipelines sind mit dem Repo versioniert und leicht in einem PR zu prüfen.",
+      "contra": "YAML-Konfiguration wird bei komplexen Pipelines schnell unübersichtlich, und das Debuggen einer fehlgeschlagenen Action kann langsam sein."
+    },
+    "vercel": {
+      "description": "Wo ich die meisten Frontend-Projekte deploye — Push nach main und es ist live, mit Preview bei jedem PR.",
+      "pro": "Zero-Config-Deploys mit sofortigen Preview-URLs pro Branch — wirklich der schnellste Weg vom Commit zum Live-Betrieb.",
+      "contra": "Kosten skalieren schnell über die kostenlose Stufe hinaus, und manche plattformspezifischen Features schaffen Lock-in."
+    },
+    "postgresql": {
+      "description": "Meine Standard-relationale Datenbank — solide, standardkonform, und selten das, was schiefgeht.",
+      "pro": "Absolut solides, standardkonformes SQL mit reichen Erweiterungen (JSONB, Volltextsuche), die die meisten Projekte nie sprengen.",
+      "contra": "Vertikale Skalierung stößt irgendwann an echte Grenzen, und gutes Tuning braucht echtes operatives Wissen."
+    },
+    "redis": {
+      "description": "Meine erste Wahl für Caching und alles, was schnell und flüchtig sein muss — Sessions, Rate-Limits, Queues.",
+      "pro": "Blitzschnelle In-Memory-Operationen machen es ideal für Caching, Sessions und einfaches Pub/Sub.",
+      "contra": "Daten persistieren standardmäßig nicht dauerhaft, und Speicherkosten skalieren direkt mit der Datenmenge."
+    },
+    "sentry": {
+      "description": "Wie ich tatsächlich erfahre, dass in Produktion etwas kaputt ist, bevor ein Nutzer es mir sagen muss.",
+      "pro": "Fängt echte Produktionsfehler und liefert Kontext dazu — Stack-Traces, Breadcrumbs und den Request, der sie ausgelöst hat.",
+      "contra": "Ohne Feintuning laut — braucht echten Aufwand, um Signal von wenig hilfreichen Alerts zu trennen."
+    }
+  },
+  "help": {
+    "key": {
+      "help": "Hilfe",
+      "home": "Zuhause",
+      "music": "Musik",
+      "skills": "Skills",
+      "close": "Schließen"
+    }
+  },
+  "webgl": {
+    "title": "3D nicht unterstützt",
+    "description": "Dein Browser oder Gerät hat die Hardwarebeschleunigung deaktiviert.",
+    "link": "Erfahre, wie du sie aktivieren kannst.",
+    "button": "Trotzdem fortfahren →"
+  },
+  "error": {
+    "title": "Nicht gefunden",
+    "description": "Hoppla! Beim Laden der Seite ist etwas schiefgegangen. Bitte versuche es später noch einmal.",
+    "link": "Zurück nach Hause"
+  },
+  "gallery": {
+    "links": {
+      "teclab": "teclab Quelldateien",
+      "assets": "Einige Assets stammen aus diesem Tutorial, das ich sehr empfehle",
+      "slides": "Gucci-Schlappen",
+      "space": "Space Lautsprecher / Kassette / Saft / Milch / Trank",
+      "sofa": "Parametrischer Sofa-Generator",
+      "printer": "3D-Drucker Modell",
+      "ams": "AMS 3D-Modell",
+      "animated": "Animierte UI-Komponenten",
+      "house": "Strandhaus",
+      "meme": "Meme-Foto"
+    },
+    "category": {
+      "file": "Datei",
+      "photo": "Foto",
+      "model": "3D-Modell"
+    }
+  },
   "app_nav": {
     "home": "Start",
-    "me": "Ich",
     "room": "Raum",
     "spiral": "Spirale",
-    "motion_path": "Bewegungspfad",
-    "music": "Musik",
     "imprint": "Impressum",
     "privacy": "Datenschutz"
   },
@@ -460,14 +282,6 @@
       "title": "Adrians persönliches Portfolio",
       "description": "Entdecke Adrians einzigartiges Portfolio - Eine interaktive 3D-Erfahrung seiner Projekte, Skills und Musik."
     },
-    "music": {
-      "title": "Adrians Musik | Persönliches Portfolio",
-      "description": "Entdecke die Musik, die Adrian inspiriert – seine Lieblingstracks und Künstler in einer interaktiven Erfahrung."
-    },
-    "me": {
-      "title": "Ich | Adrian Fernández",
-      "description": "Wie ich arbeite, was mich antreibt — Lernen, Bauen, Teilen, Wiederholen."
-    },
     "spiral": {
       "title": "Spirale | Adrian Fernández",
       "description": "Visuelles Archiv — alle Galeriebilder in einer 3D-Spirale."
@@ -485,46 +299,94 @@
     "og_image_alt": "Vorschau von Adrians Portfolio",
     "twitter_handle": "@real4drian"
   },
-  "penguin_curtain": {
-    "marquee": "Das Team × AnimatedGOATs",
-    "subtitle": "Warum ernst sein wenn man Zeichentrick schauen kann",
-    "footer": "Pause — Bitte genießen"
-  },
-  "penguin_slide": {
-    "marquee": "Osterei × Skipper wäre stolz",
-    "classified": "Geheim",
-    "operation": "Operation: Goldtresor",
-    "division": "DSM-VI — Madagaskar Abteilung",
-    "alt": "Pinguine die Gold in einem Tresor finden"
-  },
-  "faq_section": {
-    "marquee": "FAQ × Häufige Fragen, klar beantwortet",
-    "q_1": "Machen Sie auch kurze Einsätze?",
-    "a_1": "Ja. Alles von einer einwöchigen Prüfung bis zu einem zwölfwöchigen Projekt — keine Mindestvertragslaufzeiten.",
-    "q_2": "Wie sieht der Tech-Stack normalerweise aus?",
-    "a_2": "SvelteKit, React oder Next.js im Frontend; Three.js und WebGL für interaktive Elemente; Rust, Go oder Python im Backend, je nach Aufgabe.",
-    "q_3": "Arbeiten Sie mit Agenturen zusammen?",
-    "a_3": "Nein — direkt mit den Leuten die das Projekt bauen. Kein Agenturaufwand, keine Templates.",
-    "q_4": "Wo sind Sie ansässig?",
-    "a_4": "Tübingen, Deutschland. Remote-freundlich, Zeitzone MEZ.",
-    "q_5": "Wie fangen wir an?",
-    "a_5": "Senden Sie eine E-Mail mit einer kurzen Beschreibung, einer halben Idee oder einem Problem — das reicht meistens um loszulegen."
-  },
-  "journey": {
-    "marquee": "Reise × Wie dieses Studio entstand"
-  },
-  "status_strip": {
-    "local_time": "Ortszeit — Tubingen",
-    "repos": "Öffentliche Repos",
-    "followers": "Follower",
-    "since": "Auf GitHub seit"
-  },
   "name": {
-    "first": "Adrian",
-    "last": "Fern<span class='text-[#FF3B00]' style='-webkit-text-stroke: 0'>á</span>ndez",
-    "last_plain": "Fernández"
+    "first": "Adrian"
   },
-  "terminal": {
-    "deploy": "§ deploy"
+  "common": {
+    "back_link": "← Zurück",
+    "info_link": "Über mich",
+    "loading_model": "Lade Modell...",
+    "toggle_background_mode": "Hintergrundmodus umschalten",
+    "title_suffix": "— Adrian Fernández",
+    "not_found_title": "Projekt nicht gefunden",
+    "skill_not_found_title": "Skill nicht gefunden",
+    "visit_site": "Seite besuchen ↗",
+    "not_found_back": "← Zurück — Projekt nicht gefunden",
+    "skill_not_found_back": "← Zurück — Skill nicht gefunden",
+    "segerman_dev_label": "segerman.dev",
+    "planet_shader_label": "Planet-Shader (jsulpis)",
+    "dark_mode_hint": "Rechtsklick · Zwei-Finger-Tap → Dunkelmodus umschalten",
+    "explore_hint": "Erde → Über mich · ich → Skills · Bild → Arbeit",
+    "job_title": "Kreativ-Entwickler"
+  },
+  "assets": {
+    "portrait": "/images/me.jpeg",
+    "seo_preview": "/images/preview_home.jpg",
+    "bg_noise": "/textures/bg-engine/noise.png",
+    "bg_cracked_planet": "/textures/bg-engine/planet.webp",
+    "bg_cracked": "/textures/bg-engine/cracked.webp",
+    "bg_cracked_normal": "/textures/bg-engine/cracked-normal.webp",
+    "planet_stars": "/textures/planets/4k_stars.jpg",
+    "planet_earth_color": "/textures/planets/2k_earth_color.jpeg",
+    "planet_earth_clouds": "/textures/planets/2k_earth_clouds.jpeg",
+    "planet_earth_specular": "/textures/planets/2k_earth_specular.jpeg",
+    "planet_earth_bump": "/textures/planets/2k_earth_bump.jpg",
+    "planet_earth_night": "/textures/planets/2k_earth_night.jpeg",
+    "planet_mars": "/textures/planets/2k_mars.jpg",
+    "perlin_noise": "/textures/shaders/perlin.png",
+    "room_screen_video": "/textures/video/screen.mp4",
+    "room_music_player_video": "/textures/video/music_player.mp4",
+    "nebula": "/textures/enviorment/nebula.jpg",
+    "home_model": "/models/home-transformed.glb",
+    "mascot_dizzy": "/images/mascot/mascot-dizzy.png",
+    "penguins_gold_vault": "/images/penguins-gold-vault.gif",
+    "gallery_centerpiece": "https://picsum.photos/seed/gallery-centerpiece/480/480",
+    "work_preview_teclab": "/images/works/teclab-preview.png",
+    "work_preview_hhmodle": "/images/works/hhmodle-preview.png",
+    "work_preview_congelado": "/images/works/congelado-preview.png",
+    "work_preview_blog": "/images/works/blog-preview.png",
+    "work_preview_me": "/images/works/me-preview.png",
+    "work_preview_fuzzyboard": "/images/works/fuzzyboard-preview.png"
+  },
+  "links": {
+    "webgl_info": "https://get.webgl.org/",
+    "planet_shader_repo": "https://github.com/jsulpis/realtime-planet-shader",
+    "segerman_dev": "https://segerman.dev",
+    "site_url": "https://a42n.com",
+    "work_teclab": "https://sfz-tuebingen.org/",
+    "work_hhmodle": "https://github.com/driver005/hhmodle",
+    "work_congelado": "https://github.com/driver005/congelado",
+    "work_blog": "https://blog.a42n.com/",
+    "work_me": "https://github.com/driver005/me",
+    "work_fuzzyboard": "https://github.com/driver005/fuzzyboard"
+  },
+  "work_content": {
+    "teclab_description": "Frontend-Umsetzung für SFZ Tübingen — eine React-Webanwendung, entwickelt für die Organisation.",
+    "hhmodle_description": "Ein tägliches Rätselspiel im Wordle-Stil, gebaut in Python als persönliches Science/Data-Projekt.",
+    "congelado_description": "Ein persönliches Systemprogrammierungs-Projekt in C++.",
+    "blog_description": "Eine persönliche Publishing-Plattform, selbst gebaut und selbst gehostet in Python.",
+    "me_description": "Diese Seite — ein persönliches Portfolio in Svelte, ständig weiterentwickelt.",
+    "fuzzyboard_description": "Ein persönliches Flutter-App-Projekt.",
+    "fallback_description": "{category}-Projekt für {client}."
+  },
+  "journey_items": {
+    "code_name": "Erste Codezeilen",
+    "code_text": "Aus Neugier mit Code herumprobiert — kleine Skripte, kaputte Websites, viel Trial-and-Error.",
+    "freelance_name": "Erstes Freelance-Projekt",
+    "freelance_text": "Ein echtes Kundenprojekt übernommen und ausgeliefert. In drei Wochen mehr gelernt als in den zwei Jahren davor.",
+    "webgl_name": "Tief in 3D & WebGL eingestiegen",
+    "webgl_text": "Begonnen, interaktive, shader-getriebene Erlebnisse statt einfacher flacher Seiten zu bauen.",
+    "studio_name": "Unabhängiges Studio",
+    "studio_text": "Kein Agentur-Overhead, keine Vorlagen — nur direkte Arbeit mit Leuten, die etwas gut Gebautes wollen."
+  },
+  "work_items": {
+    "client_org": "SFZ Tübingen",
+    "client_personal": "Privat",
+    "category_teclab": "Web · React",
+    "category_hhmodle": "Wissenschaft · Python",
+    "category_congelado": "Systeme · C++",
+    "category_blog": "Publizieren · Python",
+    "category_me": "Web · Svelte",
+    "category_fuzzyboard": "App · Flutter"
   }
 }

@@ -55,27 +55,27 @@ export const journey: {
 	time: string;
 }[] = [
 	{
-		name: 'First lines of code',
+		name: m['journey_items.code_name'](),
 		image: '',
-		text: 'Started tinkering with code out of curiosity — small scripts, broken websites, a lot of trial and error.',
+		text: m['journey_items.code_text'](),
 		time: '2016'
 	},
 	{
-		name: 'First freelance project',
+		name: m['journey_items.freelance_name'](),
 		image: '',
-		text: 'Took on a real client project and shipped it. Learned more in three weeks than in the two years before.',
+		text: m['journey_items.freelance_text'](),
 		time: '2019'
 	},
 	{
-		name: 'Went deep on 3D & WebGL',
+		name: m['journey_items.webgl_name'](),
 		image: '',
-		text: 'Started building interactive, shader-driven experiences instead of just flat pages.',
+		text: m['journey_items.webgl_text'](),
 		time: '2022'
 	},
 	{
-		name: 'Independent studio',
+		name: m['journey_items.studio_name'](),
 		image: '',
-		text: 'No agency overhead, no templates — just direct work with people who want something built well.',
+		text: m['journey_items.studio_text'](),
 		time: '2024'
 	}
 ];
@@ -114,56 +114,56 @@ export const works: WorkItem[] = [
 	{
 		id: 1,
 		title: 'teclab',
-		client: 'SFZ Tübingen',
+		client: m['work_items.client_org'](),
 		year: '2025',
-		category: 'Web · React',
-		img: '/images/works/teclab-preview.png',
-		href: 'https://sfz-tuebingen.org/'
+		category: m['work_items.category_teclab'](),
+		img: m['assets.work_preview_teclab'](),
+		href: m['links.work_teclab']()
 	},
 	{
 		id: 2,
 		title: 'hhmodle',
-		client: 'Personal',
+		client: m['work_items.client_personal'](),
 		year: '2026',
-		category: 'Science · Python',
-		img: '/images/works/hhmodle-preview.png',
-		href: 'https://github.com/driver005/hhmodle'
+		category: m['work_items.category_hhmodle'](),
+		img: m['assets.work_preview_hhmodle'](),
+		href: m['links.work_hhmodle']()
 	},
 	{
 		id: 3,
 		title: 'congelado',
-		client: 'Personal',
+		client: m['work_items.client_personal'](),
 		year: '2026',
-		category: 'Systems · C++',
-		img: '/images/works/congelado-preview.png',
-		href: 'https://github.com/driver005/congelado'
+		category: m['work_items.category_congelado'](),
+		img: m['assets.work_preview_congelado'](),
+		href: m['links.work_congelado']()
 	},
 	{
 		id: 4,
 		title: 'blog',
-		client: 'Personal',
+		client: m['work_items.client_personal'](),
 		year: '2025',
-		category: 'Publishing · Python',
-		img: '/images/works/blog-preview.png',
-		href: 'https://blog.a42n.com/'
+		category: m['work_items.category_blog'](),
+		img: m['assets.work_preview_blog'](),
+		href: m['links.work_blog']()
 	},
 	{
 		id: 5,
 		title: 'me',
-		client: 'Personal',
+		client: m['work_items.client_personal'](),
 		year: '2026',
-		category: 'Web · Svelte',
-		img: '/images/works/me-preview.png',
-		href: 'https://github.com/driver005/me'
+		category: m['work_items.category_me'](),
+		img: m['assets.work_preview_me'](),
+		href: m['links.work_me']()
 	},
 	{
 		id: 6,
 		title: 'fuzzyboard',
-		client: 'Personal',
+		client: m['work_items.client_personal'](),
 		year: '2026',
-		category: 'App · Flutter',
-		img: '/images/works/fuzzyboard-preview.png',
-		href: 'https://github.com/driver005/fuzzyboard'
+		category: m['work_items.category_fuzzyboard'](),
+		img: m['assets.work_preview_fuzzyboard'](),
+		href: m['links.work_fuzzyboard']()
 	}
 ];
 
@@ -200,15 +200,6 @@ export const navLinks = [
 	{ href: '#services', label: m['nav.services']() },
 	{ href: '#gallery', label: m['nav.gallery']() },
 	{ href: '#contact', label: m['nav.contact']() }
-];
-
-export const appNavRoutes = [
-	{ href: '/', label: m['app_nav.home']() },
-	{ href: '/me', label: m['app_nav.me']() },
-	{ href: '/home', label: m['app_nav.room']() },
-	{ href: '/spiral', label: m['app_nav.spiral']() },
-	{ href: '/imprint', label: m['app_nav.imprint']() },
-	{ href: '/privacy', label: m['app_nav.privacy']() }
 ];
 
 export const socialLabels = {

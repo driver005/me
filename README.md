@@ -71,6 +71,8 @@ bash scripts/update-works-previews.sh   # regenerate project screenshots
 node scripts/model-pipeline.ts          # build 3d model pipeline
 ```
 
+requires `toktx` (from [KTX-Software](https://github.com/KhronosGroup/KTX-Software)) on `PATH` for the model pipeline's texture-compression step. arch/garuda: `paru -S ktx-software-bin`. everywhere else: grab the prebuilt binary for your OS from the [latest release](https://github.com/KhronosGroup/KTX-Software/releases/latest).
+
 ## socials
 
 - github: [driver005](https://github.com/driver005)

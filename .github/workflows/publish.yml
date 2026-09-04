@@ -21,6 +21,14 @@ jobs:
           node-version: "lts/*"
           cache: "yarn"
 
+      - name: 📥 Install KTX-Software (toktx, for the model pipeline's texture compression)
+        run: |
+          KTX_DEB_URL=$(curl -s https://api.github.com/repos/KhronosGroup/KTX-Software/releases/latest \
+            | grep '"browser_download_url".*Linux-x86_64\.deb"' | cut -d '"' -f 4)
+          curl -L "$KTX_DEB_URL" -o ktx-software.deb
+          sudo dpkg -i ktx-software.deb || sudo apt-get install -f -y
+          toktx --version
+
       - name: 📦 Install Dependencies
         run: yarn install --frozen-lockfile
 

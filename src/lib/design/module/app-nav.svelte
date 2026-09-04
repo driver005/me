@@ -12,7 +12,6 @@
 
 	const routeLinks = [
 		{ href: '/', label: m['app_nav.home']() },
-		{ href: '/me', label: m['app_nav.me']() },
 		{ href: '/home', label: m['app_nav.room']() },
 		{ href: '/spiral', label: m['app_nav.spiral']() },
 		{ href: '/imprint', label: m['app_nav.imprint']() },
@@ -113,7 +112,7 @@
 		style="animation: slideDown 0.5s var(--ease-out-expo);"
 	>
 		<div class="flex h-14 items-center justify-between px-4 sm:px-8">
-			<a href="/me" class="flex items-center gap-2 font-mono text-sm font-bold tracking-tighter">
+			<a href="/" class="flex items-center gap-2 font-mono text-sm font-bold tracking-tighter">
 				<span class="inline-block h-2 w-2 rounded-full bg-[#FF3B00]"></span>
 				{m['footer.copyright']()}
 			</a>

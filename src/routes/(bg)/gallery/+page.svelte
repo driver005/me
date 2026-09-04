@@ -3,22 +3,24 @@
 	import { getContext } from 'svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { buildGalleryImages, COLS, GALLERY_ROWS } from '$lib/data/gallery-images';
-	import { Gallery } from '$lib/three/scenes/gallery';
-	import { Scroll } from '$lib/three/scenes/scroll';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
+	import { Gallery } from '$lib/three/gallery/gallery';
+	import { Scroll } from '$lib/three/shared/scroll';
+	import { BG_ENGINE_CONTEXT, type BgEngineContext } from '$lib/three/shared/context';
 	import { social_links } from '$lib/data';
 
 	// Same social set /about links (see info-content.ts's own INFO_CONTENT.links) minus its two credit
 	// links (segerman.dev, the planet shader repo) — those belong to that page's bio context, not here.
+	// Labels reuse the same dock.contact.* keys the site's own contact dock already shows, matching
+	// info-content.ts's own identical choice — not a second hardcoded copy of the same five strings.
 	const SOCIAL_LINKS = [
-		{ label: 'GitHub', href: social_links.github },
-		{ label: 'X', href: social_links.twitter },
-		{ label: 'Instagram', href: social_links.instagram },
-		{ label: 'LinkedIn', href: social_links.linkedin },
-		{ label: 'Blog', href: social_links.blog }
+		{ label: m['dock.contact.github'](), href: social_links.github },
+		{ label: m['dock.contact.x'](), href: social_links.twitter },
+		{ label: m['dock.contact.instagram'](), href: social_links.instagram },
+		{ label: m['dock.contact.linkedin'](), href: social_links.linkedin },
+		{ label: m['dock.contact.blog'](), href: social_links.blog }
 	];
 
-	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
+	const bgContext = getContext<BgEngineContext>(BG_ENGINE_CONTEXT);
 
 	// The previous 2D CSS-grid gallery's own placeholder images (picsum.photos, COLS columns x
 	// GALLERY_ROWS rows — see gallery-images.ts, currently 4x13 — only 1-2 images placed per source
@@ -174,7 +176,7 @@
 </script>
 
 <svelte:head>
-	<title>{m['nav.gallery']()} — Adrian Fernández</title>
+	<title>{m['nav.gallery']()} {m['common.title_suffix']()}</title>
 </svelte:head>
 
 <!-- Static centerpiece overlay — a plain DOM <img>, not part of the WebGL scene, fixed dead-center
@@ -182,13 +184,13 @@
      alike). Placeholder source for now, matching the Home cube's own "stand-in until real content"
      pattern (see center-cube.ts) — swap the src for a real image whenever one's ready. -->
 <img
-	src="https://picsum.photos/seed/gallery-centerpiece/480/480"
+	src={m['assets.gallery_centerpiece']()}
 	alt=""
 	class="pointer-events-none fixed top-1/2 left-1/2 z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-lg object-cover shadow-2xl md:h-56 md:w-56"
 />
 
 <div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-3 p-8 text-white">
-	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
+	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">{m['common.back_link']()}</a>
 	<div class="pointer-events-auto flex flex-wrap gap-x-4 gap-y-1 text-xs">
 		{#each SOCIAL_LINKS as link (link.href)}
 			<a href={link.href} target="_blank" rel="noopener noreferrer" class="text-white/70 underline hover:text-white">

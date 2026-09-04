@@ -4,12 +4,12 @@
 	import SvelteSeo from 'svelte-seo';
 	import { m } from '$lib/paraglide/messages';
 	import { skills } from '$lib/data';
-	import { SkillMoons, type SkillMoonScreenPosition } from '$lib/three/scenes/skill-moons';
-	import { Scroll } from '$lib/three/scenes/scroll';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
-	import { hexToRgb, getHillBiasForSkill } from '$lib/three/scenes/raymarch-planet';
+	import { SkillMoons, type SkillMoonScreenPosition } from '$lib/three/planet/skill-moons';
+	import { Scroll } from '$lib/three/shared/scroll';
+	import { BG_ENGINE_CONTEXT, type BgEngineContext } from '$lib/three/shared/context';
+	import { hexToRgb, getHillBiasForSkill } from '$lib/three/planet/raymarch-planet';
 
-	const bgContext = getContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT);
+	const bgContext = getContext<BgEngineContext>(BG_ENGINE_CONTEXT);
 
 	let labels: SkillMoonScreenPosition[] = $state([]);
 
@@ -60,6 +60,9 @@
 
 		let rafId = requestAnimationFrame(function tick() {
 			scroll.loop();
+			// Idle ambient drift, independent of scroll.loop() above — see SkillMoons.loop()'s own
+			// comment for why it's a separate call instead of being folded into the scroll-driven update.
+			moons.loop();
 			labels = moons.getScreenPositions(window.innerWidth, window.innerHeight);
 			rafId = requestAnimationFrame(tick);
 		});
@@ -122,7 +125,7 @@
 	     underneath. -->
 	<div class="fixed inset-0 z-30 overflow-y-auto bg-[#00031f]/95 text-white">
 		<div class="mx-auto flex max-w-2xl flex-col gap-6 p-8">
-			<a href="/" class="w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
+			<a href="/" class="w-fit text-sm text-white/60 underline hover:text-white">{m['common.back_link']()}</a>
 			<h1 class="text-3xl font-black tracking-tight">{m['skills.title']()}</h1>
 			<ul class="flex flex-col gap-4">
 				{#each skills as skill (skill.slug)}
@@ -135,11 +138,11 @@
 							<p class="mt-1 text-sm text-white/70">{messages[`skill_detail.${skill.slug}.description`]()}</p>
 							<div class="mt-3 grid gap-2 sm:grid-cols-2">
 								<div class="rounded border border-emerald-400/30 bg-emerald-400/10 p-2">
-									<p class="text-[10px] font-bold tracking-widest text-emerald-300 uppercase">Pro</p>
+									<p class="text-[10px] font-bold tracking-widest text-emerald-300 uppercase">{m['skills.pro_label']()}</p>
 									<p class="mt-0.5 text-xs text-white/85">{messages[`skill_detail.${skill.slug}.pro`]()}</p>
 								</div>
 								<div class="rounded border border-red-400/30 bg-red-400/10 p-2">
-									<p class="text-[10px] font-bold tracking-widest text-red-300 uppercase">Contra</p>
+									<p class="text-[10px] font-bold tracking-widest text-red-300 uppercase">{m['skills.contra_label']()}</p>
 									<p class="mt-0.5 text-xs text-white/85">{messages[`skill_detail.${skill.slug}.contra`]()}</p>
 								</div>
 							</div>
@@ -155,9 +158,9 @@
 	     "← Back" style), which belongs to the separate design-system page family (contact/faq/services/
 	     etc.) this page doesn't otherwise resemble any more now that the moons are the whole page. -->
 	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-8 text-white">
-		<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">← Back</a>
+		<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">{m['common.back_link']()}</a>
 		<p class="max-w-md text-sm text-white/70">
-			Every skill I use, orbiting as its own moon — scroll to spin the ring, click one to read more about it.
+			{m['skills.moon_hint']()}
 		</p>
 	</div>
 

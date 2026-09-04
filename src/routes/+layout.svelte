@@ -1,24 +1,41 @@
 <script lang="ts">
 	import '../app.css';
 	import { type Snippet } from 'svelte';
-	import { setMode } from 'mode-watcher';
 	import { pageTransition } from '$lib/stores/page-transition';
 	import { fade } from 'svelte/transition';
-	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
+	import { m } from '$lib/paraglide/messages';
 	import { social_links } from '$lib/data';
 
-	setMode('light');
+	// No setMode('light') here any more — mode-watcher already persists dark/light to localStorage on
+	// its own (confirmed by reading its own source: ThemeState/ModeState both write through a #persisted
+	// $state backed by localStorage). This call used to force light on every full page load regardless
+	// of what was saved, which is exactly what made it LOOK like dark mode never persisted — it was
+	// being persisted correctly the whole time, then immediately overwritten back to light right after.
 
 	let { children }: { children: Snippet } = $props();
 
 	const jsonLd = {
 		'@context': 'https://schema.org',
 		'@type': 'Person',
-		name: 'Adrian Fernández',
-		jobTitle: 'Creative Developer',
-		url: 'https://a42n.com',
+		name: m['footer.copyright'](),
+		jobTitle: m['common.job_title'](),
+		url: m['links.site_url'](),
 		sameAs: Object.values(social_links)
 	};
+
+	// pageTransition existed as scaffolding only — the store, the overlay below, and this reset were all
+	// already here, but nothing ever called .set(true), so the overlay never actually rendered on any
+	// navigation. beforeNavigate is that missing trigger: fades a solid cover in right as navigation
+	// starts (across every route in the site, not just the (bg) group — this layout wraps all of them),
+	// afterNavigate fades it back out once the new page is in. Runs alongside onNavigate's own View
+	// Transitions cross-fade below, not instead of it — that one handles the actual old/new DOM
+	// crossfade where the browser supports it; this one covers the moment in between for the (bg)
+	// group's very different-looking sub-pages (a WebGL canvas vs. imprint/privacy's plain content),
+	// where the fade the browser API does isn't so dependent on the two DOM states' visuals lining up.
+	beforeNavigate(() => {
+		pageTransition.set(true);
+	});
 
 	afterNavigate(() => {
 		pageTransition.set(false);

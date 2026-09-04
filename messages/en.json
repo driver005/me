@@ -1,6 +1,4 @@
 {
-  "headline": "👋 Hi,  I'm Adrian",
-  "// desktop hero — to be removed": "",
   "nav": {
     "work": "Work",
     "about": "About",
@@ -13,49 +11,18 @@
     "close": "Close",
     "back": "Back"
   },
-  "hero": {
-    "meta_portfolio": "Portfolio / 2025—26",
-    "meta_index": "Index № 001 / 12",
-    "meta_studio": "Studio: Tübingen / Remote",
-    "meta_available": "✷ Available for Work",
-    "eyebrow_a": "(A) Designer",
-    "eyebrow_b": "(B) Developer",
-    "eyebrow_c": "(C) Director",
-    "status": "Available for Q3 2026",
-    "scroll": "Scroll<br />\u2193",
-    "marquee_1": "Selected Works 2018\u20132026",
-    "marquee_2": "Brand Systems",
-    "marquee_3": "Web Experiences",
-    "marquee_4": "Art Direction",
-    "marquee_5": "Type Driven",
-    "marquee_6": "Awwwards Honoree",
-    "bio": "▌ Freelancing & sharpening my C++, currently searching for work. I build things because I love the challenge — whether it's the fine details under the hood or the big picture."
-  },
   "about": {
     "meta": "About",
-    "meta_sub": "A short, unreliable biography",
-    "headline_1": "I make things",
-    "headline_2": "that <span class=\"italic\">feel <span class=\"text-[#FF3B00]\">loud</span></span>",
-    "headline_3": "in quiet rooms.",
     "bio_1": "I'm Adrian — I build things because I love the challenge. I'm driven by simple curiosity and a passion for doing good work.",
     "bio_2": "Freelancing & improving my C++. Based in Tübingen, Germany.",
-    "current_label": "Currently —",
-    "current_text": "Sharpening my C++ skills. Open for new opportunities.",
-    "current_open": "Available for work.",
     "stat_years": "Years",
     "stat_projects": "Projects",
     "stat_awards": "Awards",
-    "stat_countries": "Countries",
-    "portrait_label": "▌Portrait",
-    "portrait_number": "01 / 01",
-    "portrait_iso": "ISO 800",
-    "portrait_rec": "●REC",
-    "portrait_caption": "Adrian Fernández"
+    "stat_countries": "Countries"
   },
   "works": {
     "meta": "Selected",
     "meta_sub": "Index of recent expeditions, 2023 — present",
-    "meta_hint": "Hover ↳ image",
     "title_selected": "Selected",
     "title_works": "Works.",
     "row_view": "View →",
@@ -63,13 +30,10 @@
     "footer_cta": "Request Full Archive →"
   },
   "spiral": {
-    "meta": "Spiral",
-    "meta_sub": "Project archive, drifting through depth",
-    "meta_hint": "◴ scroll to explore"
+    "meta_sub": "Project archive, drifting through depth"
   },
   "services": {
     "meta": "Services",
-    "marquee": "Capabilities ✷ Capabilities ✷ Capabilities ✷",
     "headline_1": "What I",
     "headline_2": "actually do.",
     "description": "Four practices, one studio. Engagements range from one-week audits to twelve-week buildouts. No retainers, no fluff, no agency overhead.",
@@ -81,42 +45,6 @@
     "creative_desc": "3D, motion, interactive experiences. Blender, Flutter, WebGL, Figma.",
     "systems_title": "Systems & Infra",
     "systems_desc": "Backend services, tooling, deployment. Rust, Go, Docker, Kubernetes."
-  },
-  "process": {
-    "meta": "Mindset",
-    "meta_sub": "How I work, what drives me",
-    "step_1_title": "Learn",
-    "step_1_sub": "Curiosity",
-    "step_1_desc": "Driven by curiosity — I dive deep into whatever catches my interest. From C++ systems to AI models, I learn by building.",
-    "step_2_title": "Build",
-    "step_2_sub": "Engineering",
-    "step_2_desc": "Ideas become things. SvelteKit, React, Flutter, Three.js — I pick the right tool and ship quality work.",
-    "step_3_title": "Share",
-    "step_3_sub": "Publishing",
-    "step_3_desc": "I write about tech, quantum computing, AI, and tools like Zed. Blogging helps me think clearly.",
-    "step_4_title": "Repeat",
-    "step_4_sub": "Evolution",
-    "step_4_desc": "Every project teaches me something. I refine, iterate, and keep shipping. Growth over perfection."
-  },
-  "contact": {
-    "meta": "Contact",
-    "meta_sub": "One inbox, two timezones, zero retainers",
-    "meta_rec": "●REC — 2026",
-    "marquee": "Let's Talk ✷ ",
-    "headline_1": "Got a brief,",
-    "headline_2": "a half-idea,",
-    "headline_3": "or a problem?",
-    "title": "Contact Me",
-    "description": "Feel free to reach out to me via email or connect with me on social media. I'm always open to new opportunities and collaborations!",
-    "email_cta": "contact@a42n.com →",
-    "call_cta": "Let's Talk ↗",
-    "sidebar_studio": "Location",
-    "sidebar_address_1": "Tübingen",
-    "sidebar_address_2": "Germany",
-    "sidebar_press": "Email",
-    "sidebar_press_email_1": "contact@a42n.",
-    "sidebar_press_email_2": "com",
-    "sidebar_elsewhere": "Elsewhere"
   },
   "footer": {
     "copyright": "Adrian Fernández",
@@ -130,51 +58,13 @@
     "credit": "Designed & built by hand in Berlin. No templates. No agency overhead.",
     "end": "End of scroll — Vol. 001"
   },
-  "activity": {
-    "meta": "Recent Activity",
-    "meta_sub": "Live from GitHub",
-    "username": "@driver005",
-    "pushed": "pushed {n} commit(s) to {repo}",
-    "created": "created {type} in {repo}",
-    "starred": "starred {repo}",
-    "forked": "forked {repo}",
-    "issue": "{action} an issue in {repo}",
-    "pr": "{action} a pull request in {repo}",
-    "release": "published a release in {repo}",
-    "time_ago": "{value}{unit} ago",
-    "just_now": "just now"
-  },
   "skills_tree": {
     "frontend": "Frontend",
     "backend": "Backend & Languages",
     "tools": "Tools & DevOps"
   },
-  "tagline": "I am {age} years old and currently searching for work.",
   "email": "contact@a42n.com",
   "url": "https://www.a42n.com",
-  "story": {
-    "title": "My Story",
-    "description": "I build things because I love the challenge. Whether it’s the fine details under the hood or the big picture, I’m driven by a simple curiosity and a passion for doing good work. At the end of the day, I’m just someone who loves what they do and wants to make an impact."
-  },
-  "status": {
-    "title": "Status",
-    "description": "Freelancing & improving my C++"
-  },
-  "location": {
-    "tile": "Location",
-    "description": "Based in Tübingen, Germany"
-  },
-  "resume": {
-    "title": "Resume",
-    "update": "Last updated: {date}",
-    "button": "Download PDF"
-  },
-  "letter": {
-    "title": "Why me?",
-    "button": "Pitch Letter",
-    "pitch": "here to learn|one step at a time|please ask me for the passwd"
-  },
-  "image": "/images/me.jpeg",
   "dock": {
     "navbar": {
       "home": "Home",
@@ -191,37 +81,24 @@
       "email": "Email"
     }
   },
-  "project_labels": {
-    "projects": "Projects",
-    "link": "Link"
-  },
   "project_titles": {
     "teclab": "the offical website of the teclab",
     "chh": "One of my favourite tutorials on youtube. I highly recommend it. Mike Shah not only teaches you how to code in c++, but also how a language works under the hood, as well as many commonly used patterns in computer science.",
     "vim": "In over 20 capters the author explaines how to use vim motions and lazyvim. Comming from a how can I quit vim background, this was the best resource to get into the vim way of doing things."
   },
-  "music_mobile": {
-    "top_lable": "live feed",
-    "title": "Favorite Music / Artists",
-    "description": "not all but a few handpicked favorites",
-    "music": "selected",
-    "update": "updated",
-    "vault": "enter vault",
-    "update_time": "Today"
-  },
   "music": {
-    "title": "All time favorite music",
     "artist": "Artist",
     "song": "Song",
-    "playlist": "Playlist",
-    "description": "artists, songs, albums, and playlists"
+    "playlist": "Playlist"
   },
   "skills": {
     "title": "Skill Architecture",
     "subtitle": "A curated selection of my core and additional skills",
     "core": "Core",
     "other": "Additional",
-    "button": "View Skills"
+    "pro_label": "Pro",
+    "contra_label": "Contra",
+    "moon_hint": "Every skill I use, orbiting as its own moon — scroll to spin the ring, click one to read more about it."
   },
   "skill_detail": {
     "sveltekit": {
@@ -326,19 +203,6 @@
     }
   },
   "help": {
-    "title": "Need Help?",
-    "catchline": "Quick guide to survival.",
-    "header_nav": "Navigation",
-    "header_key": "Shortcuts",
-    "description": "Click the Sidebar Icons to navigate. Double-click any card to edit its contents directly.",
-    "nav": {
-      "home": "Click the PC'S MONITOR, MILK or JUICE to get a glimpse into my life",
-      "wheel": "MOUSE WHEEL down to clear smoke",
-      "music": "Safe mode needs to be disabled - Click the CASSESTTE, AUX or SPEAKER to find out more about my music taste.",
-      "skills": "Click my LAPTOP or POTION to lern about my skills and experience.",
-      "mouse": "Press the LEFT mouse button to move the camera and the RIGHT button to interact with objects and open project links.",
-      "close": "Click outside the dialog to close it and return to the main interface."
-    },
     "key": {
       "help": "Help",
       "home": "Home",
@@ -346,12 +210,6 @@
       "skills": "Skills",
       "close": "Close"
     }
-  },
-  "lang": {
-    "title": "Select Language",
-    "description": "Choose your preferred language for the interface.",
-    "active": "Selected",
-    "button": "Language"
   },
   "webgl": {
     "title": "3d not supported",
@@ -364,24 +222,7 @@
     "description": "Oops! Something went wrong while loading the page. Please try again later.",
     "link": "Go Back Home"
   },
-  "dust": {
-    "insult": "What are you looking at?",
-    "help": "Please stop.",
-    "button": "Fine, I'll stop."
-  },
-  "slides": {
-    "title": "Please read this carefully.",
-    "description": "Please hire me so I can buy myself Gucci slides!",
-    "button": "I'm counting on you!"
-  },
   "gallery": {
-    "title": "Asset Index",
-    "description": "Direct links to project source files.",
-    "meta": "Gallery",
-    "meta_sub": "Selected works 2023\u20142026",
-    "meta_hint": "Scroll \u21B3 explore",
-    "title_visual": "Visual",
-    "title_archive": "Archive<span class=\"text-[#FF3B00] not-italic\">.</span>",
     "links": {
       "teclab": "teclab source files",
       "assets": "Some assets are from this tutorial, which I highly recommend",
@@ -400,30 +241,10 @@
       "model": "3D Model"
     }
   },
-  "friendlymode": {
-    "title_friendly": "Back to safety?",
-    "title_rougue": "Go rogue?",
-    "name": "SAFE mode",
-    "help": "Please ask me for the password. To disable",
-    "disabled": "Click to restore",
-    "enabled": "Click to disable",
-    "field": "Enter password ...",
-    "locked": "locked",
-    "wrong": "Wrong password, try again.",
-    "label": "Disable friendly mode to access",
-    "message": "🔒 Page can only be accesed if <span class='underline decoration-yellow-400 decoration-2'>Friendly Mode</span> is disabled."
-  },
-  "tip": {
-    "first": "Left Mouse to Rotate",
-    "second": "Right Mouse to Click"
-  },
   "app_nav": {
     "home": "Home",
-    "me": "Me",
     "room": "Room",
     "spiral": "Spiral",
-    "motion_path": "Motion Path",
-    "music": "Music",
     "imprint": "Imprint",
     "privacy": "Privacy"
   },
@@ -461,14 +282,6 @@
       "title": "Adrian's Personal Portfolio",
       "description": "Explore Adrian's unique personal portfolio, showcasing his journey, projects, skills, and favorite music in an interactive 3D experience."
     },
-    "music": {
-      "title": "Adrian's Music | Personal Portfolio",
-      "description": "Discover the music that inspires Adrian, featuring his favorite tracks and artists in an interactive experience."
-    },
-    "me": {
-      "title": "Me | Adrian Fernández",
-      "description": "How I work, what drives me — Learn, Build, Share, Repeat."
-    },
     "spiral": {
       "title": "Spiral | Adrian Fernández",
       "description": "Visual archive — all gallery images in a 3D spiral."
@@ -486,46 +299,94 @@
     "og_image_alt": "Adrian's Portfolio Preview",
     "twitter_handle": "@real4drian"
   },
-  "penguin_curtain": {
-    "marquee": "The Roster × AnimatedGOATs",
-    "subtitle": "Why So Serious When You Can Watch Cartoons",
-    "footer": "Intermission — Please Enjoy"
-  },
-  "penguin_slide": {
-    "marquee": "Easter Egg × Skipper Would Be Proud",
-    "classified": "Classified",
-    "operation": "Operation: Gold Vault",
-    "division": "DSM-VI — Madagascar Division",
-    "alt": "Penguins finding gold in a vault"
-  },
-  "faq_section": {
-    "marquee": "FAQ × Common Questions, Answered Plainly",
-    "q_1": "Do you take short engagements?",
-    "a_1": "Yes. Anything from a one-week audit to a twelve-week buildout — no minimum-length retainers.",
-    "q_2": "What does the stack usually look like?",
-    "a_2": "SvelteKit, React, or Next.js on the front end; Three.js and WebGL for anything interactive; Rust, Go, or Python on the backend, depending on the job.",
-    "q_3": "Do you work through agencies?",
-    "a_3": "No — direct with the people building the thing. No agency overhead, no templates.",
-    "q_4": "Where are you based?",
-    "a_4": "Tübingen, Germany. Remote-friendly, timezone CET.",
-    "q_5": "How do we start?",
-    "a_5": "Send an email with a brief, a half-idea, or a problem — that's usually enough to get going."
-  },
-  "journey": {
-    "marquee": "Journey × How This Studio Came To Be"
-  },
-  "status_strip": {
-    "local_time": "Local time — Tubingen",
-    "repos": "Public repos",
-    "followers": "Followers",
-    "since": "On GitHub since"
-  },
   "name": {
-    "first": "Adrian",
-    "last": "Fern<span class='text-[#FF3B00]' style='-webkit-text-stroke: 0'>á</span>ndez",
-    "last_plain": "Fernández"
+    "first": "Adrian"
   },
-  "terminal": {
-    "deploy": "§ deploy"
+  "common": {
+    "back_link": "← Back",
+    "info_link": "About",
+    "loading_model": "Loading model...",
+    "toggle_background_mode": "Toggle background mode",
+    "title_suffix": "— Adrian Fernández",
+    "not_found_title": "Project not found",
+    "skill_not_found_title": "Skill not found",
+    "visit_site": "Visit site ↗",
+    "not_found_back": "← Back — project not found",
+    "skill_not_found_back": "← Back — skill not found",
+    "segerman_dev_label": "segerman.dev",
+    "planet_shader_label": "Planet shader (jsulpis)",
+    "dark_mode_hint": "right click · two-finger tap → toggle dark mode",
+    "explore_hint": "earth → about ·  me → skills · image → work",
+    "job_title": "Creative Developer"
+  },
+  "assets": {
+    "portrait": "/images/me.jpeg",
+    "seo_preview": "/images/preview_home.jpg",
+    "bg_noise": "/textures/bg-engine/noise.png",
+    "bg_cracked_planet": "/textures/bg-engine/planet.webp",
+    "bg_cracked": "/textures/bg-engine/cracked.webp",
+    "bg_cracked_normal": "/textures/bg-engine/cracked-normal.webp",
+    "planet_stars": "/textures/planets/4k_stars.jpg",
+    "planet_earth_color": "/textures/planets/2k_earth_color.jpeg",
+    "planet_earth_clouds": "/textures/planets/2k_earth_clouds.jpeg",
+    "planet_earth_specular": "/textures/planets/2k_earth_specular.jpeg",
+    "planet_earth_bump": "/textures/planets/2k_earth_bump.jpg",
+    "planet_earth_night": "/textures/planets/2k_earth_night.jpeg",
+    "planet_mars": "/textures/planets/2k_mars.jpg",
+    "perlin_noise": "/textures/shaders/perlin.png",
+    "room_screen_video": "/textures/video/screen.mp4",
+    "room_music_player_video": "/textures/video/music_player.mp4",
+    "nebula": "/textures/enviorment/nebula.jpg",
+    "home_model": "/models/home-transformed.glb",
+    "mascot_dizzy": "/images/mascot/mascot-dizzy.png",
+    "penguins_gold_vault": "/images/penguins-gold-vault.gif",
+    "gallery_centerpiece": "https://picsum.photos/seed/gallery-centerpiece/480/480",
+    "work_preview_teclab": "/images/works/teclab-preview.png",
+    "work_preview_hhmodle": "/images/works/hhmodle-preview.png",
+    "work_preview_congelado": "/images/works/congelado-preview.png",
+    "work_preview_blog": "/images/works/blog-preview.png",
+    "work_preview_me": "/images/works/me-preview.png",
+    "work_preview_fuzzyboard": "/images/works/fuzzyboard-preview.png"
+  },
+  "links": {
+    "webgl_info": "https://get.webgl.org/",
+    "planet_shader_repo": "https://github.com/jsulpis/realtime-planet-shader",
+    "segerman_dev": "https://segerman.dev",
+    "site_url": "https://a42n.com",
+    "work_teclab": "https://sfz-tuebingen.org/",
+    "work_hhmodle": "https://github.com/driver005/hhmodle",
+    "work_congelado": "https://github.com/driver005/congelado",
+    "work_blog": "https://blog.a42n.com/",
+    "work_me": "https://github.com/driver005/me",
+    "work_fuzzyboard": "https://github.com/driver005/fuzzyboard"
+  },
+  "work_content": {
+    "teclab_description": "Front-end build for SFZ Tübingen — a React web app delivered for the organization.",
+    "hhmodle_description": "A Wordle-style daily puzzle game, built in Python as a personal science/data project.",
+    "congelado_description": "A systems-level personal project written in C++.",
+    "blog_description": "A personal publishing platform, self-built and self-hosted in Python.",
+    "me_description": "This site — a personal portfolio built in Svelte, continuously reworked.",
+    "fuzzyboard_description": "A personal Flutter app project.",
+    "fallback_description": "{category} project for {client}."
+  },
+  "journey_items": {
+    "code_name": "First lines of code",
+    "code_text": "Started tinkering with code out of curiosity — small scripts, broken websites, a lot of trial and error.",
+    "freelance_name": "First freelance project",
+    "freelance_text": "Took on a real client project and shipped it. Learned more in three weeks than in the two years before.",
+    "webgl_name": "Went deep on 3D & WebGL",
+    "webgl_text": "Started building interactive, shader-driven experiences instead of just flat pages.",
+    "studio_name": "Independent studio",
+    "studio_text": "No agency overhead, no templates — just direct work with people who want something built well."
+  },
+  "work_items": {
+    "client_org": "SFZ Tübingen",
+    "client_personal": "Personal",
+    "category_teclab": "Web · React",
+    "category_hhmodle": "Science · Python",
+    "category_congelado": "Systems · C++",
+    "category_blog": "Publishing · Python",
+    "category_me": "Web · Svelte",
+    "category_fuzzyboard": "App · Flutter"
   }
 }

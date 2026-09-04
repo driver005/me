@@ -1,10 +1,11 @@
-<!-- src/lib/components/sites/segerman/Toggle.svelte -->
+<!-- src/routes/(bg)/Toggle.svelte -->
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import gsap from 'gsap';
-	import type { Scene } from '$lib/three/scenes/scene';
-	import type { FluidSim } from '$lib/three/scenes/fluid';
-	import type { Texts } from '$lib/three/scenes/texts';
+	import { m } from '$lib/paraglide/messages';
+	import type { Scene } from '$lib/three/scene';
+	import type { FluidSim } from '$lib/three/layers/fluid';
+	import type { Texts } from '$lib/three/layers/texts';
 
 	// isBackMode is bindable, not owned locally — the route layout also drives it (forcing back mode on
 	// every sub-route). A locally-owned copy here previously went stale on navigation: this button's
@@ -102,5 +103,5 @@
 	onmouseenter={handleMouseEnter}
 	onmouseleave={handleMouseLeave}
 	class="fixed right-6 bottom-6 z-10 h-11 w-11 rounded-full"
-	aria-label="Toggle background mode"
+	aria-label={m['common.toggle_background_mode']()}
 ></button>

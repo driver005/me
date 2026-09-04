@@ -30,15 +30,12 @@ uniform sampler2D tImagesBackBloom;
 uniform sampler2D tVideo;
 uniform sampler2D tFluid;
 
-uniform float uFogFloor;
-uniform float uFogColorStr;
 uniform float uBloomTint;
 uniform float uBloomTintThreshold;
 uniform float uBloomBleed;
 uniform float uGlowStrength;
 uniform float uGlowFogDull;
 uniform float uOnPlaneBloom;
-uniform float uFogAmbient;
 uniform float uFogDistort;
 uniform float uFogDistortMin;
 uniform float uFogDistortMax;
@@ -148,16 +145,20 @@ void main() {
     float bloomLum = dot(imagesBloom, vec3(0.299, 0.587, 0.114));
     float imagesAlpha = texture2D(tImagesBack, imageUv).a;
 
+    // uHasFog is the ONE knob that controls how much fog shows, full stop — everything below derives
+    // from fogT, which already carries that single scale (see the mix() right here). uFogAmbient and
+    // uFogColorStr used to add two more "look" multipliers on top of this (color boost, ambient floor)
+    // — removed per request: fog/fogCoverage (PAGE_LOOK, driving uHasFog and uDensityMin) were judged
+    // enough control on their own, and the extra multipliers were just amplifying the same fogT value
+    // this already carries.
     vec4 fogT = mix(vec4(0.), getRGB(tFog, uv, .1, uFogRGB), uHasFog);
     float fog = fogT.a;
-    fog = max(fog, uFogFloor);
 
-    vec3 fogColor = mix(fogT.rgb * uFogColorStr, imagesBloom * uBloomTint, smoothstep(0.01, uBloomTintThreshold, bloomLum));
+    vec3 fogColor = mix(fogT.rgb, imagesBloom * uBloomTint, smoothstep(0.01, uBloomTintThreshold, bloomLum));
     vec3 litFog = fogColor * fog;
 
     vec3 bloomBleed = imagesBloom.rgb * uBloomBleed;
     litFog += bloomBleed;
-    litFog = max(litFog, fogT.rgb * uFogAmbient);
 
     float projectionMask = smoothstep(uProjMaskMin, uProjMaskMax, bloomLum);
 

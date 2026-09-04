@@ -1,35 +1,39 @@
 <script lang="ts">
-	import CanvasPortal from '$lib/three/canvas/portal.svelte';
-	import Target from '$lib/three/canvas/target.svelte';
+	import * as THREE from 'three';
 	import { Canvas } from '@threlte/core';
-	import Sceens from '$lib/three/sceens/default.svelte';
-	import { World } from '@threlte/rapier';
+	import HomeEngineRoot from '$lib/three/HomeEngineRoot.svelte';
 	import { browser } from '$app/environment';
-	import { onMount, setContext } from 'svelte';
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { m } from '$lib/paraglide/messages';
 	import SvelteSeo from 'svelte-seo';
-	import { toggleMode, setMode } from 'mode-watcher';
+	import { toggleMode, mode } from 'mode-watcher';
 
 	let isMounted = $state(false);
+	/** True from mount until HomeEngineRoot's own onReady fires — the room's GLTF has loaded AND every
+	 *  one of its meshes has been revealed (see room.ts's own revealQueue/onFullyRevealed: staggered one
+	 *  mesh at a time, specifically so their shaders compile gradually instead of in one burst — see that
+	 *  file's own comment for why). Drives the loading overlay below. */
+	let loading = $state(true);
+	/** "Safe mode" — hides the room model's own joint/rig meshes and its idle smoke curl while on
+	 *  (the default). No UI to flip this in the app currently (the old friendly-mode password gate —
+	 *  see messages/*.json's own now-deleted friendlymode.* keys — was never wired to this page), so
+	 *  it just stays true; kept as real state (not a constant) since HomeEngineRoot already accepts it
+	 *  reactively via a prop, ready for a real toggle later. */
+	let friendly = $state(true);
 
-	let helper = $state({ value: true });
-	let friendly = $state({ value: false });
-	let manualOverride = $state({ value: false });
-
-	setContext('helper', helper);
-	setContext('friendly', friendly);
-	setContext('manual_override', manualOverride);
+	/** Threlte's own default renderer creation asks for `antialias: true` — real, non-trivial GPU cost
+	 *  (MSAA), and largely redundant here anyway once postprocessing.ts's own EffectPass chain (bloom/
+	 *  tone mapping/vignette) runs over the output — a full-scene multi-effect post pass already softens
+	 *  edges somewhat, so paying for hardware MSAA on top buys little. Every other renderer creation
+	 *  option stays at Threlte's own default (see @threlte/core's own renderer.svelte.js). */
+	function createRenderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
+		return new THREE.WebGLRenderer({ canvas, powerPreference: 'high-performance', antialias: false, alpha: true });
+	}
 
 	onMount(() => {
 		if (!browser) return;
 		isMounted = true;
-		// Dark/light mode (right-click / two-finger-tap to toggle, below) only really means anything on
-		// this page — its skybox/lighting/postprocessing are the only things that read `mode.current`
-		// (see skybox/default.svelte etc.) anywhere in the app. Reset to light on every entry so a
-		// dark-mode toggle from an earlier visit doesn't carry over via mode-watcher's own persisted
-		// state (the root layout's own setMode('light') only runs once, on the very first page load —
-		// not on a later client-side navigation back to this route).
-		setMode('light');
 	});
 </script>
 
@@ -46,7 +50,7 @@
 			type: 'website',
 			images: [
 				{
-					url: `${m.url()}/images/preview_home.jpg`,
+					url: `${m.url()}${m['assets.seo_preview']()}`,
 					width: 800,
 					height: 600,
 					alt: m['seo.og_image_alt']()
@@ -59,7 +63,7 @@
 			site: m['seo.twitter_handle'](),
 			title: m['seo.home.title'](),
 			description: m['seo.home.description'](),
-			image: `${m.url()}/images/preview_home.jpg`
+			image: `${m.url()}${m['assets.seo_preview']()}`
 		}}
 	/>
 </svelte:head>
@@ -71,20 +75,24 @@
 		oncontextmenu={(e) => { e.preventDefault(); toggleMode(); }}
 		ontouchstart={(e) => { if (e.touches.length >= 2) { e.preventDefault(); toggleMode(); } }}
 	>
-		<Canvas>
-			<Target />
+		<Canvas {createRenderer}>
+			<HomeEngineRoot {friendly} onReady={() => (loading = false)} />
 		</Canvas>
-		<CanvasPortal>
-			<World>
-				<Sceens />
-			</World>
-		</CanvasPortal>
 	</div>
 
+	{#if loading}
+		<div
+			class="fixed inset-0 z-50 flex items-center justify-center bg-[#D9CAD1] font-mono text-[10px] uppercase tracking-[0.3em] text-[#555]"
+			transition:fade={{ duration: 400 }}
+		>
+			{m['common.loading_model']()}
+		</div>
+	{/if}
+
 	<div
-		class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 font-mono text-[9px] uppercase tracking-[0.3em] text-[#555] text-center pointer-events-none animate-[fadeIn_0.6s_ease-out,autoHide_4s_2s_ease-out_forwards]"
+		class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 font-mono text-[9px] uppercase tracking-[0.3em] text-center pointer-events-none animate-[fadeIn_0.6s_ease-out,autoHide_4s_2s_ease-out_forwards] {mode.current === 'dark' ? 'text-white' : 'text-[#555]'}"
 	>
-		right click · two-finger tap → toggle dark mode
+		{m['common.dark_mode_hint']()}
 	</div>
 {/if}
 

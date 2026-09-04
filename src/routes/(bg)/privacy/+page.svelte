@@ -44,7 +44,7 @@ import { prefersReducedMotion } from '$lib/util/reduced-motion';
       description: m['seo.privacy.description'](),
       url: `${m.url()}/privacy`,
       type: 'website',
-      images: [{ url: `${m.url()}/images/preview_home.jpg`, width: 800, height: 600, alt: m['seo.og_image_alt']() }],
+      images: [{ url: `${m.url()}${m['assets.seo_preview']()}`, width: 800, height: 600, alt: m['seo.og_image_alt']() }],
       site_name: m['seo.author']()
     }}
     twitter={{
@@ -52,7 +52,7 @@ import { prefersReducedMotion } from '$lib/util/reduced-motion';
       site: m['seo.twitter_handle'](),
       title: m['seo.privacy.title'](),
       description: m['seo.privacy.description'](),
-      image: `${m.url()}/images/preview_home.jpg`
+      image: `${m.url()}${m['assets.seo_preview']()}`
     }}
   />
 </svelte:head>

@@ -13,36 +13,41 @@
 	import gsap from 'gsap';
 	import * as THREE from 'three';
 	import { m } from '$lib/paraglide/messages';
-	import EngineRoot from '$lib/three/scenes/EngineRoot.svelte';
-	import type { Scene } from '$lib/three/scenes/scene';
-	import { Stars } from '$lib/three/scenes/stars';
-	import { Fog } from '$lib/three/scenes/fog';
-	import { FluidSim } from '$lib/three/scenes/fluid';
-	import { Planet } from '$lib/three/scenes/planet';
-	import { RaymarchPlanet, PLANET_LOOKS, hexToRgb, getHillBiasForSkill } from '$lib/three/scenes/raymarch-planet';
+	import { getLocale, setLocale } from '$lib/paraglide/runtime.js';
+	import { languages } from '$lib/data';
+	import EngineRoot from '$lib/three/EngineRoot.svelte';
+	import type { Scene } from '$lib/three/scene';
+	import { Stars } from '$lib/three/layers/stars';
+	import { Fog } from '$lib/three/layers/fog';
+	import { FluidSim } from '$lib/three/layers/fluid';
+	import { Planet } from '$lib/three/planet/planet';
+	import { RaymarchPlanet, PLANET_LOOKS, hexToRgb, getHillBiasForSkill } from '$lib/three/planet/raymarch-planet';
 	import { skills } from '$lib/data';
-	import { PlanetSwitcher } from '$lib/three/scenes/planet-switcher';
-	import { Front } from '$lib/three/scenes/front';
-	import { Compositor } from '$lib/three/scenes/compositor';
-	import type { PlanetPageId } from '$lib/three/scenes/planet';
-	import { Gallery } from '$lib/three/scenes/gallery';
-	import { WORK_PROJECTS } from '$lib/three/scenes/work-content';
-	import { SPIRAL_MOBILE_BREAKPOINT } from '$lib/three/scenes/spiral-layout';
-	import { Scroll } from '$lib/three/scenes/scroll';
-	import { Images } from '$lib/three/scenes/images';
-	import { Video } from '$lib/three/scenes/video';
-	import { Texts } from '$lib/three/scenes/texts';
+	import { PlanetSwitcher } from '$lib/three/planet/planet-switcher';
+	import { Front } from '$lib/three/layers/front';
+	import { Compositor, PAGE_LOOK } from '$lib/three/compositor';
+	import { mode } from 'mode-watcher';
+	import type { PlanetPageId } from '$lib/three/planet/planet';
+	import { Gallery } from '$lib/three/gallery/gallery';
+	import { WORK_PROJECTS } from '$lib/three/shared/work-content';
+	import { SPIRAL_MOBILE_BREAKPOINT } from '$lib/three/spiral/spiral-layout';
+	import { Scroll } from '$lib/three/shared/scroll';
+	import { Images } from '$lib/three/layers/images';
+	import { Video } from '$lib/three/layers/video';
+	import { Texts } from '$lib/three/layers/texts';
 	import Toggle from './Toggle.svelte';
-	import { SEGERMAN_BG_CONTEXT, type SegermanBgContext } from '$lib/three/scenes/context';
+	import CallScreen from '$lib/design/module/call-screen.svelte';
+	import { BG_ENGINE_CONTEXT, type BgEngineContext } from '$lib/three/shared/context';
 
 	let { children }: { children: Snippet } = $props();
 
-	setContext<SegermanBgContext>(SEGERMAN_BG_CONTEXT, {
+	setContext<BgEngineContext>(BG_ENGINE_CONTEXT, {
 		getScene: () => scene,
 		getGallery: () => gallery,
 		getReady: () => webglReady,
 		getEarthPlanet: () => earthPlanet,
-		getFluidTexture: () => fluid?.texture ?? null
+		getFluidTexture: () => fluid?.texture ?? null,
+		getIsBackMode: () => isBackMode
 	});
 
 	const MIN_LOADER_DURATION = 1200;
@@ -58,6 +63,25 @@
 
 	const isHomeRoute = $derived(page.url.pathname === '/');
 	const isAboutRoute = $derived(page.url.pathname === '/about');
+	// /imprint and /privacy render PageShell (a separate design-system component, its own fixed light
+	// background) OVER this layout's own canvas — the nav below sits at a higher z-index so it stays
+	// visible on top of that, but PageShell itself never reads isBackMode/mode.current, so its
+	// background is always light regardless of what the (bg) engine's own state says. White nav text
+	// there would just be illegible against it.
+	const isLegalRoute = $derived(page.url.pathname === '/imprint' || page.url.pathname === '/privacy');
+
+	/** The top-left nav's own text color — white whenever EITHER the back plate is showing (isBackMode,
+	 *  the existing front/back contrast reason) OR the site is in dark mode (mode.current, a completely
+	 *  separate axis from isBackMode — this engine otherwise doesn't react to mode-watcher at all, so
+	 *  without this the nav stayed black-on-dark and unreadable once dark mode + fog shipped on '/').
+	 *  Forced black on /imprint and /privacy regardless of either — see isLegalRoute's own comment. */
+	const navLinkClass = $derived(
+		isLegalRoute
+			? 'text-black/70 hover:text-black'
+			: isBackMode || mode.current === 'dark'
+				? 'text-white/70 hover:text-white'
+				: 'text-black/70 hover:text-black'
+	);
 
 	let webglSupported = $state(true);
 	let webglFailed = $state(false);
@@ -186,11 +210,11 @@
 		gallery.setHomeVisible(false);
 
 		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
-		// Every non-home, non-work route reachable inside this (bg) group gets the 'info' treatment —
-		// 'error' parks the planet off-screen at z:-200 and zeroes glow/fog, which is correct for a
-		// route that's never actually shown but wrong for any real page, so nothing under this group
-		// should ever hit it.
-		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : 'info';
+		// Every non-home, non-work, non-skills route reachable inside this (bg) group gets the 'about'
+		// treatment — 'error' parks the planet off-screen at z:-200 and zeroes glow/fog, which is correct
+		// for a route that's never actually shown but wrong for any real page, so nothing under this
+		// group should ever hit it.
+		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : pathname === '/skills' ? 'skills' : 'about';
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
 
 		// Which planet shows: the mesh-based one (still tweened per-project via .animate(), unchanged)
@@ -217,7 +241,58 @@
 
 		compositor.setPage(pageId);
 		fog.setColor(project ? project.darkColor : FOG_COLOR_DEFAULT);
-		fog.setEnabled(isHome);
+		// Was hardcoded to isHome — meaning the fog LAYER's own underlying texture (a totally separate
+		// uHasFog from compositor's own, on fog.ts's own material — see its own setEnabled() comment)
+		// only ever rendered real content on the home route. Everywhere else, PAGE_LOOK[pageId].fog and
+		// compositor.setFogIntensity() below could set the BLEND weight as high as they wanted — there
+		// was nothing in the actual fog texture to blend in, so /about (and /work, /skills) showed
+		// nothing regardless. Now enabled whenever this page's own PAGE_LOOK entry wants any fog at all.
+		fog.setEnabled(PAGE_LOOK[pageId].fog > 0);
+	});
+
+	// Fog's per-page maximum lives in compositor.ts's own PAGE_LOOK table, right next to glow — one
+	// table for both, instead of two near-identical Records in two different files. What THIS effect
+	// owns is just the gate: fog only shows when isBackMode (the bottom-right Toggle.svelte button) or
+	// mode.current === 'dark' (mode-watcher's theme, toggled from /home) is true — same OR the nav-link
+	// color below uses. That gate is route/UI state, not per-page look data, so it stays here rather
+	// than moving into compositor.ts too.
+	//
+	// Kept as its own effect (not folded into the route effect above) because it has different
+	// dependencies (isBackMode, mode.current) that would otherwise force the whole route effect —
+	// planet switching, planet.animate(), etc. — to re-run on every mode/back-mode toggle for no reason.
+	//
+	// `webglReady` is read unconditionally, before any early return, purely so this effect has a real
+	// tracked dependency: `compositor` is a plain `let`, not $state, so its assignment (once WebGL
+	// finishes loading) is invisible to Svelte's reactivity on its own — an effect that reads it and
+	// bails out before touching anything reactive registers zero dependencies and never runs again.
+	$effect(() => {
+		const ready = webglReady;
+		const currentMode = mode.current;
+		const back = isBackMode;
+		const pathname = page.url.pathname;
+		const isHome = isHomeRoute;
+
+		if (!ready || !compositor || !fog) {
+			if (import.meta.env.DEV) {
+				console.log(`[fog] effect ran — ready=${ready} compositor=${!!compositor} fog=${!!fog}, skipping`);
+			}
+			return;
+		}
+
+		if (!back && currentMode !== 'dark') {
+			if (import.meta.env.DEV) console.log(`[fog] effect ran — isBackMode=${back} mode=${currentMode}, forcing 0`);
+			compositor.setFogIntensity(0);
+			return;
+		}
+		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
+		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : pathname === '/skills' ? 'skills' : 'about';
+		if (import.meta.env.DEV) {
+			console.log(
+				`[fog] effect ran — pathname=${pathname} pageId=${pageId} isBackMode=${back} mode=${currentMode} fog=${PAGE_LOOK[pageId].fog} coverage=${PAGE_LOOK[pageId].fogCoverage}`
+			);
+		}
+		compositor.setFogIntensity(PAGE_LOOK[pageId].fog);
+		fog.setCoverage(PAGE_LOOK[pageId].fogCoverage);
 	});
 
 	// Click Earth (the raymarched backdrop, not any DOM/mesh content on top of it) -> /about — generic
@@ -281,10 +356,10 @@
 		scene = readyScene;
 
 		const textureLoader = new THREE.TextureLoader();
-		noiseTexture = textureLoader.load('/textures/segerman-bg/noise.png');
-		planetMapTexture = textureLoader.load('/textures/segerman-bg/planet.webp');
-		crackedTexture = textureLoader.load('/textures/segerman-bg/cracked.webp');
-		crackedNormalTexture = textureLoader.load('/textures/segerman-bg/cracked-normal.webp');
+		noiseTexture = textureLoader.load(m['assets.bg_noise']());
+		planetMapTexture = textureLoader.load(m['assets.bg_cracked_planet']());
+		crackedTexture = textureLoader.load(m['assets.bg_cracked']());
+		crackedNormalTexture = textureLoader.load(m['assets.bg_cracked_normal']());
 
 		stars = new Stars(scene);
 		fog = new Fog(scene, noiseTexture);
@@ -297,23 +372,23 @@
 
 		// jsulpis/realtime-planet-shader planets (GPL-3.0) — one shared stars texture, one set of real
 		// NASA/USGS textures per planet. Home's Earth needs 5; the others just need their own color map.
-		const starsTexture = textureLoader.load('/textures/planets/4k_stars.jpg');
+		const starsTexture = textureLoader.load(m['assets.planet_stars']());
 		// Dead center (the default): the actual bug that made the raymarched planet invisible was the
 		// vertex shader failing to compile (see raymarch-planet.ts's RawShaderMaterial comment), not
 		// its position — verified centered against a real render once that was fixed, and it composites
 		// well there alongside the gallery cards. No off-center offset needed after all.
 		const EARTH_SCREEN_POSITION = { x: 0, y: 0 };
-		const INFO_SCREEN_POSITION = { x: 0, y: 0 };
+		const CENTER_SCREEN_POSITION = { x: 0, y: 0 };
 		earthPlanet = new RaymarchPlanet(
 			scene,
 			{
 				type: 'earth',
 				textures: {
-					color: textureLoader.load('/textures/planets/2k_earth_color.jpeg'),
-					clouds: textureLoader.load('/textures/planets/2k_earth_clouds.jpeg'),
-					specular: textureLoader.load('/textures/planets/2k_earth_specular.jpeg'),
-					bump: textureLoader.load('/textures/planets/2k_earth_bump.jpg'),
-					night: textureLoader.load('/textures/planets/2k_earth_night.jpeg'),
+					color: textureLoader.load(m['assets.planet_earth_color']()),
+					clouds: textureLoader.load(m['assets.planet_earth_clouds']()),
+					specular: textureLoader.load(m['assets.planet_earth_specular']()),
+					bump: textureLoader.load(m['assets.planet_earth_bump']()),
+					night: textureLoader.load(m['assets.planet_earth_night']()),
 					stars: starsTexture
 				}
 			},
@@ -337,25 +412,25 @@
 			{
 				type: 'earth',
 				textures: {
-					color: textureLoader.load('/textures/planets/2k_earth_color.jpeg'),
-					clouds: textureLoader.load('/textures/planets/2k_earth_clouds.jpeg'),
-					specular: textureLoader.load('/textures/planets/2k_earth_specular.jpeg'),
-					bump: textureLoader.load('/textures/planets/2k_earth_bump.jpg'),
-					night: textureLoader.load('/textures/planets/2k_earth_night.jpeg'),
+					color: textureLoader.load(m['assets.planet_earth_color']()),
+					clouds: textureLoader.load(m['assets.planet_earth_clouds']()),
+					specular: textureLoader.load(m['assets.planet_earth_specular']()),
+					bump: textureLoader.load(m['assets.planet_earth_bump']()),
+					night: textureLoader.load(m['assets.planet_earth_night']()),
 					stars: starsTexture
 				}
 			},
-			INFO_SCREEN_POSITION,
+			CENTER_SCREEN_POSITION,
 			{ radius: 5, rotationOffset: -0.109, spinSpeed: 0, latitudeTilt: -0.897 }
 		);
 		marsPlanet = new RaymarchPlanet(
 			scene,
 			{
 				type: 'planet',
-				textures: { color: textureLoader.load('/textures/planets/2k_mars.jpg'), stars: starsTexture },
+				textures: { color: textureLoader.load(m['assets.planet_mars']()), stars: starsTexture },
 				look: PLANET_LOOKS.mars
 			},
-			INFO_SCREEN_POSITION
+			CENTER_SCREEN_POSITION
 		);
 		// Procedural (procedural.fragment.glsl), not a texture look — fully generated terrain (see
 		// procedural-terrain.glsl), so it takes a colour tint (setTintColor() below, per skill) the way
@@ -368,7 +443,7 @@
 				textures: { stars: starsTexture },
 				look: { atmosphereColor: [1, 1, 1], atmosphereDensity: 0.05 }
 			},
-			INFO_SCREEN_POSITION
+			CENTER_SCREEN_POSITION
 		);
 		planetSwitcher = new PlanetSwitcher(scene.isTouch);
 		planetSwitcher.setActive(earthPlanet);
@@ -382,20 +457,25 @@
 
 		trackLoadProgress({
 			textures: [
-				'/textures/segerman-bg/noise.png',
-				'/textures/segerman-bg/planet.webp',
-				'/textures/segerman-bg/cracked.webp',
-				'/textures/segerman-bg/cracked-normal.webp',
-				'/textures/planets/4k_stars.jpg',
-				'/textures/planets/2k_earth_color.jpeg',
-				'/textures/planets/2k_earth_clouds.jpeg',
-				'/textures/planets/2k_earth_specular.jpeg',
-				'/textures/planets/2k_earth_bump.jpg',
-				'/textures/planets/2k_earth_night.jpeg',
-				'/textures/planets/2k_mars.jpg',
+				m['assets.bg_noise'](),
+				m['assets.bg_cracked_planet'](),
+				m['assets.bg_cracked'](),
+				m['assets.bg_cracked_normal'](),
+				m['assets.planet_stars'](),
+				m['assets.planet_earth_color'](),
+				m['assets.planet_earth_clouds'](),
+				m['assets.planet_earth_specular'](),
+				m['assets.planet_earth_bump'](),
+				m['assets.planet_earth_night'](),
+				m['assets.planet_mars'](),
 				...projects.map((p) => p.textureUrl)
 			],
-			videos: projects.map((p) => p.videoUrl)
+			// Not projects.map((p) => p.videoUrl) — work-content.ts's own WorkProject.videoUrl comment says
+			// it plainly: no real per-project clip exists yet, every one of these points at a path that
+			// was never populated. Preloading them here just meant one guaranteed-404 network request per
+			// project on every page load; the media carousel's video card already falls back to its
+			// placeholder texture on its own when a clip is missing, so preloading buys nothing.
+			videos: []
 		});
 
 		// This instance's own cards are never shown any more (Home's +page.svelte renders a Spiral
@@ -417,7 +497,10 @@
 		front = new Front(scene, images, video, texts);
 
 		scene.addLayer(stars);
-		// scene.addLayer(fog); // temporarily disabled per request — seeing how it looks without it
+		// Re-enabled per request — dark mode on '/' now shows it, dialed down 70% (see the dedicated
+		// fog-intensity $effect above). Without this the layer's own render() never runs, so its render
+		// target just sits blank regardless of what compositor.setFogIntensity() is told.
+		scene.addLayer(fog);
 		scene.addLayer(fluid);
 		// planetSwitcher, not `planet` directly — it delegates to whichever planet (mesh or raymarched)
 		// the route effect has set active, so only the currently-visible one actually renders each frame.
@@ -511,35 +594,65 @@
 </script>
 
 <svelte:head>
-	<title>Adrian Fernández</title>
+	<title>{m['footer.copyright']()}</title>
 </svelte:head>
 
 {#if webglFailed}
 	<div class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black p-10 text-center text-white">
 		<h1 class="text-2xl font-black uppercase">{m['webgl.title']()}</h1>
 		<p class="mt-6 max-w-sm leading-tight">{m['webgl.description']()}</p>
-		<a href="https://get.webgl.org/" target="_blank" rel="noopener noreferrer" class="mt-8 underline">
+		<a href={m['links.webgl_info']()} target="_blank" rel="noopener noreferrer" class="mt-8 underline">
 			{m['webgl.link']()}
 		</a>
 	</div>
 {:else if webglSupported}
-	<div class="fixed inset-0 h-full w-full">
+	<!-- invisible, not {#if}-removed, on /imprint and /privacy — unmounting <Canvas> here would tear
+	     down and rebuild this engine's entire WebGL context (every texture, layer, planet) on every
+	     visit to/from these two pages, which is slow on its own and risks retriggering the exact
+	     shader-compile-burst fragility this codebase has spent a lot of effort making recoverable from
+	     (see HomeEngineRoot.svelte's own context-loss handling for the /home engine's version of the
+	     same problem). Hiding it costs nothing extra at runtime and keeps the context alive underneath. -->
+	<div class="fixed inset-0 h-full w-full {isLegalRoute ? 'invisible' : ''}">
 		<Canvas>
 			<EngineRoot onReady={handleEngineReady} />
 		</Canvas>
 	</div>
-	{#if webglReady && scene && fluid && texts && isHomeRoute}
+	{#if webglReady && scene && fluid && texts && (isHomeRoute || isAboutRoute)}
 		<Toggle {scene} {fluid} {texts} bind:isBackMode />
 	{/if}
+	{#if webglReady && isHomeRoute}
+		<div
+			class="fixed top-8 left-1/2 z-20 -translate-x-1/2 pointer-events-none animate-[fadeIn_0.6s_ease-out,autoHide_4s_2s_ease-out_forwards] text-center font-mono text-[9px] tracking-[0.3em] uppercase {navLinkClass}"
+		>
+			{m['common.explore_hint']()}
+		</div>
+		<CallScreen />
+	{/if}
 	{#if !isAboutRoute}
-		<nav class="fixed top-6 left-6 z-20 text-sm">
-			<a
-				href="/about"
-				class="underline {isBackMode ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black'}"
-			>
-				Info
+		<nav class="fixed top-6 left-6 z-20 flex gap-4 text-sm">
+			<a href="/about" class="underline {navLinkClass}">
+				{m['common.info_link']()}
+			</a>
+			<a href="/imprint" class="underline {navLinkClass}">
+				{m['app_nav.imprint']()}
+			</a>
+			<a href="/privacy" class="underline {navLinkClass}">
+				{m['app_nav.privacy']()}
 			</a>
 		</nav>
+	{/if}
+	{#if webglReady}
+		<div class="fixed top-6 right-6 z-20 flex items-center gap-1.5 text-xs">
+			{#each languages as lang, i}
+				{#if i > 0}<span class="{navLinkClass} opacity-40">|</span>{/if}
+				<button
+					onclick={() => setLocale(lang.id as 'en' | 'de')}
+					class="uppercase {navLinkClass} {getLocale() === lang.id ? 'font-bold' : 'opacity-60'}"
+				>
+					{lang.id}
+				</button>
+			{/each}
+		</div>
 	{/if}
 	{@render children()}
 	{#if loaderVisible && !page.url.pathname.startsWith('/skills')}
@@ -552,3 +665,16 @@
 		</div>
 	{/if}
 {/if}
+
+<style>
+	/* Matches routes/home/+page.svelte's own identical keyframes — same fade-in-then-auto-hide
+	   treatment for the explore hint above. */
+	@keyframes fadeIn {
+		from { opacity: 0; transform: translateY(-8px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+	@keyframes autoHide {
+		0% { opacity: 1; }
+		100% { opacity: 0; pointer-events: none; }
+	}
+</style>
