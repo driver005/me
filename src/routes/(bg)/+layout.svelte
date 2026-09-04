@@ -1,9 +1,4 @@
-<!-- Shared WebGL background for the site's real Home ('/'), Work detail ('/works/[slug]') and About
-     ('/about') pages — ported from the /test prototype's own +layout.svelte. Canvas/renderer/camera
-     lifecycle now goes through Threlte (<Canvas> + EngineRoot.svelte) instead of a hand-rolled
-     `new THREE.WebGLRenderer()`; every layer class below (Stars/Fog/Planet/Gallery/Compositor/...) is
-     untouched by that migration — they only ever needed a `Scene` handle, and EngineRoot builds one
-     with the exact same shape from Threlte's own context. -->
+<!-- Shared WebGL background for the site's real Home ('/'), Work detail ('/works/[slug]') and About ('/about') pages. -->
 <script lang="ts">
 	import { onDestroy, onMount, setContext, type Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -11,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { Canvas } from '@threlte/core';
 	import * as THREE from 'three';
+	import gsap from 'gsap';
 	import { m } from '$lib/paraglide/messages';
 	import { getLocale, setLocale } from '$lib/paraglide/runtime.js';
 	import { languages } from '$lib/data';
@@ -50,23 +46,13 @@
 	});
 
 	const MIN_LOADER_DURATION = 1200;
-	/** Fog's own built-in default tint (fog.ts) — tweened back to this on any route without a project
-	 *  color (home/about/error). */
 	const FOG_COLOR_DEFAULT = '#20447e';
 
 	const isHomeRoute = $derived(page.url.pathname === '/');
 	const isAboutRoute = $derived(page.url.pathname === '/about');
-	// /imprint and /privacy render PageShell (a separate design-system component, its own fixed light
-	// background) OVER this layout's own canvas — the nav below sits at a higher z-index so it stays
-	// visible on top of that, but PageShell itself never reads mode.current, so its background is
-	// always light regardless of what the (bg) engine's own state says. White nav text there would
-	// just be illegible against it.
+	const isSkillsRoute = $derived(page.url.pathname.startsWith('/skills'));
 	const isLegalRoute = $derived(page.url.pathname === '/imprint' || page.url.pathname === '/privacy');
 
-	/** The top-left nav's own text color — white whenever the site is in dark mode (mode.current,
-	 *  mode-watcher's own persisted setting — the bottom-right Toggle.svelte button flips it directly
-	 *  now, no separate isBackMode state; see Toggle.svelte's own comment for why that merge happened).
-	 *  Forced black on /imprint and /privacy regardless — see isLegalRoute's own comment. */
 	const navLinkClass = $derived(
 		isLegalRoute
 			? 'text-black/70 hover:text-black'
@@ -85,24 +71,10 @@
 	let fog: Fog | null = null;
 	let fluid: FluidSim | null = null;
 	let planet: Planet | null = null;
-	/** jsulpis/realtime-planet-shader planets (GPL-3.0 — see the shader files' own header comments and
-	 *  CREDITS.md) — one instance per look this site uses, swapped in via planetSwitcher per route.
-	 *  Home gets Earth; /works/ keeps the mesh-based `planet` above; every other route gets one of
-	 *  these instead. */
 	let planetSwitcher: PlanetSwitcher | null = null;
 	let earthPlanet: RaymarchPlanet | null = null;
-	/** /about's own close-up Earth — a SEPARATE instance from `earthPlanet` (Home/skills' shared one),
-	 *  not just a retint: bigger radius (uPlanetRadius), spin frozen (uPlanetSpinSpeed: 0), rotated to
-	 *  a fixed longitude (uRotationOffset) instead of the live uTime-driven spin every other Earth
-	 *  view has — see its own construction below for the exact values. Being a distinct object (not
-	 *  `earthPlanet` itself) is also what keeps +layout.svelte's own generic "click Earth -> /about"
-	 *  handler from firing here — that handler only ever checks `planetSwitcher.activeSource ===
-	 *  earthPlanet`, which is never true while this one is active. */
 	let aboutEarthPlanet: RaymarchPlanet | null = null;
 	let marsPlanet: RaymarchPlanet | null = null;
-	/** Shared across every /skills/[slug] visit — retinted per skill via setTintColor() in the
-	 *  route effect below, rather than constructing a fresh RaymarchPlanet (its own render targets,
-	 *  blur passes, texture loads) for each of the 20 skills. */
 	let skillPlanet: RaymarchPlanet | null = null;
 	let front: Front | null = null;
 	let compositor: Compositor | null = null;
@@ -118,8 +90,6 @@
 	let loaderStart = 0;
 	let pointerCleanup: (() => void) | null = null;
 
-	/** Real progress tracking (image/video preload), independent of Card/VideoCard's own loaders —
-	 *  a redundant fetch is fine (browser HTTP cache), simpler than threading a shared loader through them. */
 	function trackLoadProgress(assetUrls: { textures: string[]; videos: string[] }): void {
 		const total = assetUrls.textures.length + assetUrls.videos.length;
 		if (total === 0) {
@@ -159,13 +129,7 @@
 		return () => clearTimeout(timeout);
 	});
 
-	// Front/back crossfade (uMode/uProgressFront/uProgressBack) is driven ONLY by Toggle.svelte's own
-	// click handler now — a real light/dark mode change — not by which route we're on. It used to also
-	// get tweened here on every route change (home vs sub-route), which fought with Toggle's own
-	// timeline and replayed the crossfade animation on plain navigation even when the mode hadn't
-	// changed. The one thing still needed here is a same-session initial sync: the uniforms default to
-	// the front/light values (scene.ts), so a hard load/direct nav landing on a page while dark mode is
-	// already persisted needs them set to match instantly, with no animation, before first paint.
+	// Front/back crossfade — initial sync for dark mode on hard load.
 	let crossfadeInitialized = false;
 	$effect(() => {
 		if (crossfadeInitialized || !webglReady || !scene) return;
@@ -177,11 +141,27 @@
 	});
 
 	$effect(() => {
+		if (!webglReady || !scene) return;
+		if (isSkillsRoute) {
+			gsap.killTweensOf(scene.uniforms.uMode, 'value');
+			gsap.killTweensOf(scene.uniforms.uProgressFront, 'value');
+			gsap.killTweensOf(scene.uniforms.uProgressBack, 'value');
+			gsap.killTweensOf(scene.uniforms.uDirection, 'value');
+			gsap.killTweensOf(scene.uniforms.uWarp, 'value');
+			scene.uniforms.uMode.value = 0;
+			scene.uniforms.uProgressFront.value = 1;
+			scene.uniforms.uProgressBack.value = 1;
+		} else {
+			const isDark = mode.current === 'dark';
+			scene.uniforms.uMode.value = isDark ? 0 : 1;
+			scene.uniforms.uProgressFront.value = isDark ? 1 : 0;
+			scene.uniforms.uProgressBack.value = isDark ? 1 : 0;
+		}
+	});
+
+	$effect(() => {
 		const pathname = page.url.pathname;
 		const isHome = isHomeRoute;
-		// webglReady is a real $state — reading it here (unlike the plain scene/gallery/planet/compositor/
-		// fog vars below, which create no reactive dependency) makes this effect re-run once EngineRoot's
-		// onReady finishes populating them, even if this effect's first run raced ahead of that.
 		if (
 			!webglReady ||
 			!scene ||
@@ -196,26 +176,14 @@
 			!skillPlanet
 		)
 			return;
-		// Sub-routes add their own 3D content (Work's media carousel, About's portrait) into the same
-		// persistent scene — hide the home strip's cards/titles/videos so they don't show stacked
-		// underneath a project/about page's own content. Home itself no longer shows these either —
-		// its own +page.svelte renders the project carousel as a Spiral overlay instead (this
-		// instance now exists only to lend its videoScene to Work's media carousel).
+		// Hide home cards/titles — Home now uses Spiral overlay.
 		gallery.setHomeVisible(false);
 
 		const workSlug = pathname.startsWith('/works/') ? pathname.slice('/works/'.length) : null;
-		// Every non-home, non-work, non-skills route reachable inside this (bg) group gets the 'about'
-		// treatment — 'error' parks the planet off-screen at z:-200 and zeroes glow/fog, which is correct
-		// for a route that's never actually shown but wrong for any real page, so nothing under this
-		// group should ever hit it.
 		const pageId: PlanetPageId = isHome ? 'home' : workSlug ? 'work' : pathname === '/skills' ? 'skills' : 'about';
 		const project = workSlug ? WORK_PROJECTS[workSlug] : undefined;
 
-		// Which planet shows: the mesh-based one (still tweened per-project via .animate(), unchanged)
-		// on /works/, one of the raymarched jsulpis planets everywhere else — home and /skills (its
-		// skill "moons" orbit this one, see skill-moons.ts) both get Earth, /about gets the moon,
-		// /skills/[slug] gets the shared skillPlanet retinted to that skill's own color, mars for
-		// everything else not otherwise recognized.
+		// Planet selection per route.
 		const skillSlug = pathname.startsWith('/skills/') ? pathname.slice('/skills/'.length) : null;
 		const skill = skillSlug ? skills.find((s) => s.slug === skillSlug) : undefined;
 		if (pageId === 'work') {
@@ -235,30 +203,10 @@
 
 		compositor.setPage(pageId);
 		fog.setColor(project ? project.darkColor : FOG_COLOR_DEFAULT);
-		// Was hardcoded to isHome — meaning the fog LAYER's own underlying texture (a totally separate
-		// uHasFog from compositor's own, on fog.ts's own material — see its own setEnabled() comment)
-		// only ever rendered real content on the home route. Everywhere else, PAGE_LOOK[pageId].fog and
-		// compositor.setFogIntensity() below could set the BLEND weight as high as they wanted — there
-		// was nothing in the actual fog texture to blend in, so /about (and /work, /skills) showed
-		// nothing regardless. Now enabled whenever this page's own PAGE_LOOK entry wants any fog at all.
 		fog.setEnabled(PAGE_LOOK[pageId].fog > 0);
 	});
 
-	// Fog's per-page maximum lives in compositor.ts's own PAGE_LOOK table, right next to glow — one
-	// table for both, instead of two near-identical Records in two different files. What THIS effect
-	// owns is just the gate: fog only shows when mode.current === 'dark' (mode-watcher's theme, the
-	// same persisted setting the bottom-right Toggle.svelte button and the nav-link color below both
-	// read now — no separate isBackMode any more, see Toggle.svelte's own comment). That gate is
-	// route/UI state, not per-page look data, so it stays here rather than moving into compositor.ts.
-	//
-	// Kept as its own effect (not folded into the route effect above) because it has a different
-	// dependency (mode.current) that would otherwise force the whole route effect — planet switching,
-	// planet.animate(), etc. — to re-run on every mode toggle for no reason.
-	//
-	// `webglReady` is read unconditionally, before any early return, purely so this effect has a real
-	// tracked dependency: `compositor` is a plain `let`, not $state, so its assignment (once WebGL
-	// finishes loading) is invisible to Svelte's reactivity on its own — an effect that reads it and
-	// bails out before touching anything reactive registers zero dependencies and never runs again.
+	// Fog intensity — gate: only show in dark mode.
 	$effect(() => {
 		const ready = webglReady;
 		const currentMode = mode.current;
@@ -288,24 +236,7 @@
 		fog.setCoverage(PAGE_LOOK[pageId].fogCoverage);
 	});
 
-	// Click Earth (the raymarched backdrop, not any DOM/mesh content on top of it) -> /about — generic
-	// across every route that shows it (Home, /skills — see the route effect's own
-	// planetSwitcher.setActive(earthPlanet) calls), driven by planetSwitcher.activeSource's identity
-	// rather than a route-name check, so a future route that switches to earthPlanet gets this for
-	// free. RaymarchPlanet.raycastHit() is the shader's own ray-sphere test (see its own comment) —
-	// this is genuinely just "is the shader showing Earth under the cursor", not a bespoke per-page
-	// hit-test.
-	//
-	// /skills excluded here on purpose: that page's own click handler (skills/+page.svelte) already
-	// combines its moon-click test with this exact same raycastHit() call, checked AFTER a moon-miss
-	// (a moon in front of Earth from the camera's own viewpoint should win the click, not Earth behind
-	// it) — running this same check again here, unconditionally, would race that page's own listener
-	// on the same 'click' event and could fire both a moon navigation and an Earth one together.
-	//
-	// Home excluded below SPIRAL_MOBILE_BREAKPOINT for a related reason: Home's own spiral carousel
-	// recenters its centerpiece cube to dead center there too (see spiral-layout.ts), landing right on
-	// top of Earth's own on-screen position — clicking that shared spot should hit the cube (its own,
-	// separate click listener in spiral-carousel.ts handles that), not fall through to /about as well.
+	// Click Earth -> /about (excluding /skills and mobile home spiral).
 	function handleCanvasClick(): void {
 		if (
 			scene &&
@@ -334,10 +265,6 @@
 			webglFailed = true;
 		}
 
-		// app.css sets `body { cursor: none }` site-wide, meant to pair with the design-system pages'
-		// own custom <Cursor> component (src/lib/design/module/cursor.svelte) — this (bg) group never
-		// renders that, so without this the pointer is genuinely invisible here, especially over the
-		// dark background.
 		document.body.style.cursor = 'auto';
 		return () => {
 			document.body.style.cursor = '';
@@ -363,13 +290,8 @@
 			crackedNormal: crackedNormalTexture
 		});
 
-		// jsulpis/realtime-planet-shader planets (GPL-3.0) — one shared stars texture, one set of real
-		// NASA/USGS textures per planet. Home's Earth needs 5; the others just need their own color map.
+		// Raymarched planets.
 		const starsTexture = textureLoader.load(m['assets.planet_stars']());
-		// Dead center (the default): the actual bug that made the raymarched planet invisible was the
-		// vertex shader failing to compile (see raymarch-planet.ts's RawShaderMaterial comment), not
-		// its position — verified centered against a real render once that was fixed, and it composites
-		// well there alongside the gallery cards. No off-center offset needed after all.
 		const EARTH_SCREEN_POSITION = { x: 0, y: 0 };
 		const CENTER_SCREEN_POSITION = { x: 0, y: 0 };
 		earthPlanet = new RaymarchPlanet(
@@ -387,19 +309,7 @@
 			},
 			EARTH_SCREEN_POSITION
 		);
-		// /about's own close-up Earth (see the `aboutEarthPlanet` var's own comment for why this is a
-		// separate instance from `earthPlanet`, not a retint of it). uPlanetRadius bumped well past the
-		// default 2 for the "close up" look; spin frozen (uPlanetSpinSpeed: 0) instead of the live
-		// uTime-driven spin every other Earth view has.
-		//
-		// rotationOffset/latitudeTilt aim at Germany (~51°N, ~10°E) — computed, not visually verified:
-		// solving target dir = (cos(lat)sin(lon), sin(lat), cos(lat)cos(lon)) [sphereProjection()'s own
-		// convention: longitude=atan(dir.x,dir.z), latitude=asin(dir.y)] against what PLANET_ROTATION =
-		// rotateX(latitudeTilt) * rotateY(rotationOffset) actually produces starting from the unrotated
-		// near side (0,0,1) gives rotationOffset ≈ -0.109 rad, latitudeTilt ≈ -0.897 rad (both first-
-		// order estimates: an initial longitude-only pass showed Africa, close to but not exactly
-		// Germany's own longitude, and had no latitude term at all — hence "rotate up" being needed).
-		// Nudge either value directly if Germany isn't actually centered once you look.
+		// /about's close-up Earth — separate instance, frozen spin, aimed at Germany.
 		aboutEarthPlanet = new RaymarchPlanet(
 			scene,
 			{
@@ -425,10 +335,7 @@
 			},
 			CENTER_SCREEN_POSITION
 		);
-		// Procedural (procedural.fragment.glsl), not a texture look — fully generated terrain (see
-		// procedural-terrain.glsl), so it takes a colour tint (setTintColor() below, per skill) the way
-		// a texture-based look never could: the whole surface actually reads as that skill's own colour,
-		// not a colourised photograph of the moon.
+		// Procedural terrain planet — accepts tint color per skill.
 		skillPlanet = new RaymarchPlanet(
 			scene,
 			{
@@ -463,17 +370,10 @@
 				m['assets.planet_mars'](),
 				...projects.map((p) => p.textureUrl)
 			],
-			// Not projects.map((p) => p.videoUrl) — work-content.ts's own WorkProject.videoUrl comment says
-			// it plainly: no real per-project clip exists yet, every one of these points at a path that
-			// was never populated. Preloading them here just meant one guaranteed-404 network request per
-			// project on every page load; the media carousel's video card already falls back to its
-			// placeholder texture on its own when a clip is missing, so preloading buys nothing.
 			videos: []
 		});
 
-		// This instance's own cards are never shown any more (Home's +page.svelte renders a Spiral
-		// overlay instead — see setHomeVisible(false) above) — it stays alive only to lend its
-		// videoScene to Work's media carousel (GalleryOptions.videoScene).
+		// Gallery — cards hidden (Home uses Spiral overlay), kept alive for Work's videoScene.
 		gallery = new Gallery(scene, projects, { center: { x: 58, y: 0, z: 0 } });
 
 		scroll = new Scroll(scene, gallery);
@@ -490,13 +390,8 @@
 		front = new Front(scene, images, video, texts);
 
 		scene.addLayer(stars);
-		// Re-enabled per request — dark mode on '/' now shows it, dialed down 70% (see the dedicated
-		// fog-intensity $effect above). Without this the layer's own render() never runs, so its render
-		// target just sits blank regardless of what compositor.setFogIntensity() is told.
 		scene.addLayer(fog);
 		scene.addLayer(fluid);
-		// planetSwitcher, not `planet` directly — it delegates to whichever planet (mesh or raymarched)
-		// the route effect has set active, so only the currently-visible one actually renders each frame.
 		scene.addLayer(planetSwitcher);
 		scene.addLayer(front);
 
@@ -546,10 +441,7 @@
 		pointerCleanup?.();
 		compositor?.dispose();
 		gallery?.dispose();
-		// planetSwitcher is registered with scene.addLayer(), so scene.dispose() below disposes IT — but
-		// it only owns its own placeholder texture (see its own comment), not whichever planet is/was
-		// active, since the mesh `planet` persists across route changes rather than being scoped to one.
-		// All four real planet instances need disposing explicitly here.
+		// Dispose all planet instances.
 		planet?.dispose();
 		earthPlanet?.dispose();
 		aboutEarthPlanet?.dispose();
@@ -598,18 +490,13 @@
 		</a>
 	</div>
 {:else if webglSupported}
-	<!-- invisible, not {#if}-removed, on /imprint and /privacy — unmounting <Canvas> here would tear
-	     down and rebuild this engine's entire WebGL context (every texture, layer, planet) on every
-	     visit to/from these two pages, which is slow on its own and risks retriggering the exact
-	     shader-compile-burst fragility this codebase has spent a lot of effort making recoverable from
-	     (see HomeEngineRoot.svelte's own context-loss handling for the /home engine's version of the
-	     same problem). Hiding it costs nothing extra at runtime and keeps the context alive underneath. -->
+	<!-- Canvas kept alive (not unmounted) on /imprint and /privacy to avoid rebuilding WebGL context. -->
 	<div class="fixed inset-0 h-full w-full {isLegalRoute ? 'invisible' : ''}">
 		<Canvas>
 			<EngineRoot onReady={handleEngineReady} />
 		</Canvas>
 	</div>
-	{#if webglReady && scene && fluid && texts && (isHomeRoute || isAboutRoute)}
+	{#if webglReady && scene && fluid && texts && !isLegalRoute && !isSkillsRoute}
 		<Toggle {scene} {fluid} {texts} />
 	{/if}
 	{#if webglReady && isHomeRoute}
@@ -659,8 +546,6 @@
 {/if}
 
 <style>
-	/* Matches routes/home/+page.svelte's own identical keyframes — same fade-in-then-auto-hide
-	   treatment for the explore hint above. */
 	@keyframes fadeIn {
 		from { opacity: 0; transform: translateY(-8px); }
 		to { opacity: 1; transform: translateY(0); }

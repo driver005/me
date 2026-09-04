@@ -1,13 +1,4 @@
-<!--
-	A decorative "incoming call" widget, styled after a plain Android lock-screen call UI (status bar +
-	circular avatar + caller name + subtitle) — pure DOM/CSS, no WebGL involved, so none of this
-	engine's own shader-compile fragility applies here. Sits mostly off-screen in the bottom-left
-	corner, only its status bar peeking above the viewport edge; hovering slides it further up and
-	scales it slightly, revealing the caller ID ("Home"); clicking it opens /home in a new tab — the
-	joke being that "Home" is calling. A real <a target="_blank"> rather than a button + goto()/
-	window.open(): standard middle-click/right-click-"open in new tab"/ctrl-click affordances all keep
-	working for free, and there's no risk of the new tab getting popup-blocked.
--->
+<!-- Decorative "incoming call" widget — pure DOM/CSS, slides up on hover, opens /home on click. -->
 <script lang="ts">
 	import { Signal, Wifi, BatteryFull, PhoneIncoming } from 'lucide-svelte';
 </script>
@@ -55,13 +46,13 @@
 		font-family: inherit;
 		text-decoration: none;
 		cursor: pointer;
-		/* Resting: only the status bar (~52px) pokes above the viewport's own bottom edge. */
+		/* Resting: only the status bar pokes above the viewport bottom. */
 		transform: translateY(calc(100% - 52px));
 		transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 	.call-screen:hover,
 	.call-screen:focus-visible {
-		/* "size up and move further into the frame" — reveals the avatar/caller-id/subtitle too. */
+		/* Reveal avatar/caller-id/subtitle. */
 		transform: translateY(calc(100% - 190px)) scale(1.04);
 	}
 	.status-bar {

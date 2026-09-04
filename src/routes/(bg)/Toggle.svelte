@@ -10,12 +10,6 @@
 
 	let { scene, fluid, texts }: { scene: Scene; fluid: FluidSim; texts: Texts } = $props();
 
-	// Drives mode-watcher's own mode directly instead of a separate local/bindable isBackMode state —
-	// that used to go stale across navigation (the route layout ALSO force-set it on every route
-	// change) and wasn't persisted, so /about always snapped back to immersive mode regardless of what
-	// was last chosen. mode.current already persists to localStorage on its own and /home already reads
-	// it, so this button is now a real, single, shared dark/light switch instead of a second
-	// independent front/back toggle that happened to look similar.
 	const isBackMode = $derived(mode.current === 'dark');
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
@@ -62,10 +56,7 @@
 		}, 1.2);
 	}
 
-	// The mouseenter/mouseleave dispatch is inverted by mode — see the spec's Section 5.
-	// Skipped on touch (matches the original's `isTouch || (...)` guard around these listeners) — touch
-	// devices don't have a real hover phase, and simulated mouseenter/mouseleave from taps would otherwise
-	// fire the peek-preview animation right before (or instead of) the click transition.
+	// Touch devices skip hover (no real hover phase).
 	function handleMouseEnter(): void {
 		if (scene.isTouch) return;
 		if (isBackMode) {

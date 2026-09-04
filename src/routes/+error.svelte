@@ -3,7 +3,7 @@
 	import { m } from '$lib/paraglide/messages';
 </script>
 
-<div class="grain min-h-screen flex flex-col items-center justify-center gap-8 bg-[#F3F2EE] text-[#0A0A0A] px-4 text-center">
+<div class="grain min-h-screen flex flex-col items-center justify-center gap-8 bg-[#F3F2EE] text-[#0A0A0A] px-4 text-center" style="cursor: auto">
 	<img src={m['assets.mascot_dizzy']()} alt="" class="w-36 sm:w-44" />
 
 	<div>

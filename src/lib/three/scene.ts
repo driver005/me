@@ -4,14 +4,7 @@ import type { Layer } from './shared/layer';
 import type { PointerState, SceneUniforms } from './shared/types';
 import { createFullscreenTriangle } from './shared/fullscreen-triangle';
 
-/**
- * The engine's renderer/camera/uniform/render-target handle — every Layer class (Stars, Fog, Planet,
- * Gallery, Compositor, ...) takes this as `scene: Scene` and is otherwise untouched by the Threlte
- * migration below. Was a class owning its own `THREE.WebGLRenderer`; now an interface backed by
- * `createScene()`, which builds this same shape from Threlte's own `<Canvas>` context instead —
- * Threlte owns the renderer/canvas/camera lifecycle, this only adds the engine's own uniforms/pointer/
- * render-target bookkeeping and per-frame layer loop on top.
- */
+
 export interface Scene {
 	renderer: THREE.WebGLRenderer;
 	camera: THREE.PerspectiveCamera;
@@ -33,24 +26,12 @@ export interface Scene {
 	createRenderTarget(scale: number, options?: THREE.RenderTargetOptions): THREE.WebGLRenderTarget;
 	/** The final draw call each frame — set once by the compositor. Before that, defaults to a black clear. */
 	setOutput(drawFn: () => void): void;
-	/** Runs `fn` immediately after the current output draw, every frame, once appended — for content
-	 *  that needs to land on screen without joining the compositor's own render-target/blend pipeline
-	 *  (see spiral-carousel.ts). Necessary, not optional: EngineRoot.svelte's useTask calls
-	 *  `renderer.clear()` unconditionally every frame right before the output draw, so anything
-	 *  rendered any other way (e.g. a separate, independently-scheduled requestAnimationFrame loop)
-	 *  gets silently wiped before the browser ever presents that frame, no matter how carefully its
-	 *  own timing is reasoned about — this runs inside the SAME frame, guaranteed after that clear.
-	 *  Returns a function that removes it again (call on dispose). */
+
 	appendOutput(fn: () => void): () => void;
 	dispose(): void;
 }
 
-/**
- * Builds a `Scene` handle from an already-mounted Threlte `<Canvas>` context (call from inside a
- * component that is itself a descendant of `<Canvas>`, so `useThrelte()` has something to return).
- * The caller owns driving `resize()`/the per-frame loop via Threlte's own `size` store and `useTask` —
- * see EngineRoot.svelte, which is the only thing that constructs this.
- */
+
 export function createScene(threlte: ThrelteContext<THREE.WebGLRenderer>, canvas: HTMLCanvasElement): Scene {
 	const isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
 	const isLowDpr = window.devicePixelRatio <= 1.5;
@@ -102,13 +83,7 @@ export function createScene(threlte: ThrelteContext<THREE.WebGLRenderer>, canvas
 	function onPointerMove(event: PointerEvent): void {
 		updatePointerPosition(event);
 	}
-	// Touch has no hover phase — a tap fires straight to pointerdown (then click) with no preceding
-	// pointermove, so without this pointer.nx/ny (every click-driven raycast in this engine's own
-	// layers — SpiralCarousel's cube/cards, SkillMoons, RaymarchPlanet.raycastHit() — reads these, not
-	// the DOM event's own coordinates) stayed at whatever they were last set to (0,0 initially, or
-	// wherever the previous interaction left off), meaning every tap hit-tested against a stale/wrong
-	// screen position instead of where the finger actually landed. Mouse never hit this: a pointermove
-	// always precedes a click there, updating pointer.nx/ny well before onclick ever reads them.
+	// Touch has no hover phase — update pointer.nx/ny on pointerdown so taps hit-test correctly.
 	function onPointerDown(event: PointerEvent): void {
 		pointer.isDown = true;
 		updatePointerPosition(event);
@@ -124,8 +99,6 @@ export function createScene(threlte: ThrelteContext<THREE.WebGLRenderer>, canvas
 	function resize(w: number, h: number): void {
 		width = w;
 		height = h;
-		// Threlte's own `makeDefault` camera already gets its aspect/projection-matrix updated on
-		// resize — this only recomputes the engine's own derived widthAtZ/heightAtZ on top of that.
 		const fovRad = (camera.fov * Math.PI) / 180;
 		heightAtZ = 2 * Math.tan(fovRad / 2) * camera.position.z;
 		widthAtZ = heightAtZ * camera.aspect;
@@ -192,8 +165,6 @@ export function createScene(threlte: ThrelteContext<THREE.WebGLRenderer>, canvas
 		}
 	};
 
-	// Exposed for EngineRoot.svelte, which drives both from a Threlte useTask/size-watch instead of
-	// this module owning its own requestAnimationFrame/resize-listener (Threlte owns that loop now).
 	(handle as Scene & { __resize: typeof resize; __layers: Layer[]; __getOutput: () => (() => void) | null }).__resize = resize;
 	(handle as Scene & { __resize: typeof resize; __layers: Layer[]; __getOutput: () => (() => void) | null }).__layers = layers;
 	(handle as Scene & { __resize: typeof resize; __layers: Layer[]; __getOutput: () => (() => void) | null }).__getOutput = () => {
@@ -207,8 +178,7 @@ export function createScene(threlte: ThrelteContext<THREE.WebGLRenderer>, canvas
 	return handle;
 }
 
-/** Internal handle for EngineRoot.svelte's resize-watch/useTask — not part of the public `Scene` shape
- *  every Layer class sees. */
+
 export interface SceneInternal {
 	__resize: (width: number, height: number) => void;
 	__layers: Layer[];

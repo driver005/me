@@ -29,18 +29,7 @@ export interface CompositorLayers {
   texts: Texts;
 }
 
-// Per-page "look" — one table for all three, not scattered across separate Records/constants in
-// different files. `glow` is the strength of the bloom halo the back-fragment shader adds around
-// media/planet edges (verbatim from world.js's own back-compositor class, its `this.glowStr`; home
-// was already ported as this class's uGlowStrength default of 0.9, the other pages never were). `fog`
-// is the MAXIMUM fog blend strength (brightness/opacity of a patch once it's showing — see
-// Compositor.setFogIntensity()'s own comment). `fogCoverage` is a SEPARATE knob — how much of the
-// screen counts as a patch at all, independent of how bright those patches are — a plain 0..1
-// fraction (see Fog.setCoverage()'s own comment in layers/fog.ts): 0 is almost no coverage, 1 is the
-// whole page. The route layout still
-// decides WHETHER fog is on at all right now (isBackMode || dark mode, gating logic that belongs with
-// the UI state driving it, not with this per-page data), but every per-page NUMBER lives here, next
-// to glow, instead of separate near-identical constants scattered across files.
+// Per-page look: glow (bloom halo strength), fog (max blend strength), fogCoverage (0..1 fraction).
 export const PAGE_LOOK: Record<PlanetPageId, { glow: number; fog: number; fogCoverage: number }> = {
   home: { glow: 0.6, fog: 0.8, fogCoverage: 0.8 },
   work: { glow: 0.4, fog: 0.85, fogCoverage: 0.9 },
@@ -95,10 +84,7 @@ export class Compositor {
         uRes: scene.uniforms.uRes,
         uDpr: scene.uniforms.uDpr,
         uIsMobile: { value: scene.isMobile ? 1 : 0 },
-        // 0, not 1 — same reasoning as fog.ts's own uHasFog default: starting at max meant the first
-        // real setFogIntensity() call (route effect, on mount) visibly tweened it DOWN to the page's
-        // actual target, reading as a strong flash that fades weaker instead of a clean fade-in.
-        uHasFog: { value: 0 },
+        uHasFog: { value: 0 }, // 0 not 1 — prevents a flash on first setFogIntensity() tween
         uTextColor: { value: new THREE.Color("#ffffff").convertLinearToSRGB() },
         uLabelColor: { value: new THREE.Color("#93949f").convertLinearToSRGB() },
         uGrainAmount: { value: 0.025 },
@@ -153,9 +139,6 @@ export class Compositor {
     this.outputMesh.frustumCulled = false;
   }
 
-  /** Tweens the back layer's glow strength to the given page's value (PAGE_LOOK[pageId].glow) — called
-   *  by the route layout alongside Planet.animate(), on every navigation. Fog's own blend strength is
-   *  a separate call now — see setFogIntensity()'s own comment. */
   setPage(pageId: PlanetPageId): void {
     if (pageId === this.lastPageId) return;
     this.lastPageId = pageId;
@@ -168,15 +151,8 @@ export class Compositor {
     );
   }
 
-  /** The ONE fog strength control — tweens uHasFog, and nothing else. back-fragment.glsl derives
-   *  every other fog-related quantity (blend weight, ambient boost, color) from that single scale now
-   *  (see its own comment right where fogT is computed), so this is a genuine single dial: 0 is fully
-   *  off, 1 is full strength, linearly in between.
-   *
-   *  Split out from setPage() because fog visibility on `/` also depends on dark/light mode and
-   *  isBackMode, not just the page — the route layout reads PAGE_LOOK[pageId].fog as the per-page
-   *  MAXIMUM, decides whether that gate is currently open, and passes the result straight through;
-   *  this class doesn't need to know about mode/isBackMode itself. */
+  /** Tweens uHasFog from 0 (off) to 1 (full strength). back-fragment.glsl derives all fog
+   *  quantities from this single dial. */
   setFogIntensity(value: number): void {
     this.fogIntensityTween?.kill();
     this.fogIntensityTween = gsap.to(this.backMaterial.uniforms.uHasFog, {
@@ -189,12 +165,7 @@ export class Compositor {
   render(): void {
     const renderer = this.scene.renderer;
     this.backMaterial.uniforms.tFluid.value = this.fluidSim.texture;
-    // tPlanet, like tPlanetBlur below, must be re-read every frame, not just captured once at
-    // construction — `layers.planet` is a PlanetSwitcher now, not a single stable Planet instance,
-    // so which texture ".texture" resolves to changes as the route swaps the active planet
-    // (Earth/Moon/Mars/mesh). A stale reference here freezes on whichever planet was active when
-    // Compositor was constructed instead of following the switch, mismatching the (already
-    // per-frame) tPlanetBlur and reading as a half-transparent, wrong-planet composite.
+    // tPlanet must be re-read every frame — layers.planet is a PlanetSwitcher, not a stable instance.
     this.backMaterial.uniforms.tPlanet.value = this.planetLayer.texture;
     this.backMaterial.uniforms.tPlanetBlur.value = this.planetLayer.blurTexture;
     this.backMaterial.uniforms.tImagesBack.value = this.imagesLayer.backTexture;
@@ -202,9 +173,6 @@ export class Compositor {
     this.backMaterial.uniforms.tVideo.value = this.videoLayer.texture;
     this.backMaterial.uniforms.tTexts.value = this.textsLayer.texture;
     this.outputMaterial.uniforms.tFluid.value = this.fluidSim.texture;
-    // tFront's texture identity is actually stable frame-to-frame (unlike tFluid's ping-pong swap) — this
-    // live-read isn't strictly required today, but it mirrors the original site's own per-frame assignment
-    // and costs one property write, so it's kept for fidelity and to stay correct if Front's RT strategy changes.
     this.outputMaterial.uniforms.tFront.value = this.frontLayer.texture;
     renderer.setRenderTarget(this.backRT);
     renderer.render(this.backMesh, this.scene.camera);

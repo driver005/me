@@ -1,12 +1,3 @@
-<!--
-	Generic Threlte plumbing for the shared WebGL background engine — owns nothing specific to any particular layer
-	(Stars/Fog/Planet/Gallery/...); those stay exactly as they were, each still just a plain TS class
-	taking a `Scene` handle. This component's only job is to build that handle from Threlte's own
-	`<Canvas>` context (renderer/camera/canvas lifecycle now owned by Threlte, not a hand-rolled
-	`new THREE.WebGLRenderer()`) and drive the per-frame loop + resize, then hand the constructed
-	`Scene` back to its parent via `onReady` so the parent can build the actual layer tree (exactly the
-	way +layout.svelte's onMount already did before this migration — that part didn't need to change).
--->
 <script lang="ts">
 	import * as THREE from 'three';
 	import { useThrelte, useTask } from '@threlte/core';
@@ -17,9 +8,6 @@
 	let { onReady }: { onReady: (scene: Scene) => void } = $props();
 
 	const threlte = useThrelte();
-	// Full manual control: this engine already has its own multi-pass render-target pipeline
-	// (Stars/Fog/Fluid/Planet/Images/Video/Texts each render offscreen, Compositor combines them) —
-	// Threlte's own auto-render of a declared scene graph isn't used at all here.
 	threlte.autoRender.set(false);
 	threlte.renderMode.set('always');
 
@@ -46,24 +34,14 @@
 		const renderer = threlte.renderer as THREE.WebGLRenderer;
 		logGPUIdentity(renderer, 'startup');
 
-		// This component only builds the bare Scene handle — the actual layer tree (Stars/Fog/Planet/
-		// Gallery/...) gets constructed by whichever route's own onReady callback runs after this, so
-		// there's no single "fully built" moment to hook here the way /home's HomeEngineRoot has (see
-		// its own onFullyRevealed-driven logFullReport call). A one-shot report a couple seconds after
-		// mount is a simple stand-in — by then a typical route's own layer construction has settled.
 		const reportTimeout = import.meta.env.DEV
 			? setTimeout(() => logFullReport(renderer, threlte.scene, '(bg) engine, ~2s after mount'), 2000)
 			: null;
 
-		// Dev-only diagnostic snapshot on context loss — see HomeEngineRoot.svelte's identical listener
-		// for the full reasoning. This engine's own layer tree lives in the route's +layout.svelte, not
-		// here, so unlike HomeEngineRoot this doesn't attempt a rebuild-on-restore — just visibility into
-		// what was resident right before a loss, same as everywhere else in this codebase now.
 		const onContextLost = (): void => {
 			logFullReport(renderer, threlte.scene, 'at context loss');
 		};
-		// Only fires on an actual creation *failure* — see logContextCreationError's own comment for
-		// what this actually captures and why nothing was capturing it before.
+		// Fires on creation failure only.
 		const onContextCreationError = (event: Event): void => {
 			logContextCreationError(event, '(bg) engine');
 		};
@@ -76,10 +54,7 @@
 			if (reportTimeout !== null) clearTimeout(reportTimeout);
 			renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
 			renderer.domElement.removeEventListener('webglcontextcreationerror', onContextCreationError);
-			// See HomeEngineRoot.svelte's identical line: Threlte's own renderer.dispose() (which runs
-			// right after this in <Canvas>'s own cleanup) doesn't actually free the WebGL context —
-			// forceContextLoss() does, and without it, repeated navigation in/out of the (bg) route group
-			// can pile up contexts until the browser hits its per-page context limit.
+			// forceContextLoss() frees the WebGL context deterministically — prevents context pile-up.
 			try {
 				renderer.forceContextLoss();
 			} catch {

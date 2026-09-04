@@ -1,8 +1,4 @@
-// Shared constants + math between Gallery (the home strip, vertical) and MediaCarousel (any other
-// row, horizontal or vertical) — one definition, not two independently-tuned copies. Previous drift
-// between them (card size, depth-curve strength/scale) is exactly the class of bug this exists to
-// prevent. CarouselLayout below is the actual merge point: both classes delegate every per-item
-// wrap/gap/depth calculation to the same instance-configured object, not their own parallel math.
+// Shared constants + math for Gallery (home strip) and MediaCarousel (other rows).
 
 export type CarouselAxis = 'horizontal' | 'vertical';
 
@@ -10,34 +6,21 @@ export type CarouselAxis = 'horizontal' | 'vertical';
 export const CARD_WIDTH = 52;
 export const CARD_HEIGHT = 32;
 
-// Derived at the same ~0.95 units/rem ratio CARD_WIDTH itself uses (52 units for the original's
-// 54.8rem card element) — the original gaps are 2.4rem/8rem. Phase 2b's final review flagged the
-// previous values (26.7/89) as using an ~11.1 units/rem ratio instead, an ~11.7x mismatch that spread
-// the strip out far more than the source (only ~2 cards visible on screen at 16:9 instead of several).
+// Derived at ~0.95 units/rem ratio matching CARD_WIDTH.
 export const GAP_FRONT = 2.28;
 export const GAP_BACK = 7.59;
 
 /** How far an item sinks in Z, at saturation, as it scrolls away from a carousel's centre. */
 export const DEPTH_CURVE = 40;
 
-/** Raw scroll-position deltas need damping before they reach card/vertex.glsl's warp term (which
- *  multiplies by distanceFromCentre² — easily thousands once squared) — see Gallery.updateItems()'s
- *  own comment on this from when the undamped version was a real bug. Same constant, same reasoning,
- *  for any carousel that wants speed-reactive warp on its cards. */
+/** Damping constant for scroll deltas before they reach the warp term (distanceFromCentre²). */
 export const SPEED_LIMIT = 5e-5;
 
 function lerp(a: number, b: number, t: number): number {
 	return a + (b - a) * t;
 }
 
-/**
- * Parabolic depth arc: 0 at `position === 0` (centre), `-depthCurve` once `|position|` reaches
- * `depthRange` (saturates beyond that, rather than diving deeper) — an item rises toward the camera
- * as it scrolls toward centre, sinks back as it scrolls away. `depthRange` defaults to two
- * item-widths (`step * 2`) — the scale at which this effect concentrates in both carousels, matching
- * how localized the original's own shader-driven curve is (it reacts to a card's own screen-space
- * distance from centre, not the whole strip's span).
- */
+/** Parabolic depth arc: 0 at centre, -depthCurve at saturation. */
 export function computeDepthOffset(position: number, step: number, depthCurve: number = DEPTH_CURVE): number {
 	const depthRange = step * 2;
 	const normalized = depthRange > 0 ? Math.max(-1, Math.min(1, position / depthRange)) : 0;
@@ -110,8 +93,7 @@ export class CarouselLayout {
 	}
 }
 
-/** Same damping + delta this port has used since the uSpeed fix — one implementation, callable from
- *  any carousel's own per-frame update alongside a `previousScrollPosition` field it owns. */
+/** Scroll speed with damping, callable from any carousel's per-frame update. */
 export function computeScrollSpeed(scrollPosition: number, previousScrollPosition: number): number {
 	return (scrollPosition - previousScrollPosition) * SPEED_LIMIT;
 }

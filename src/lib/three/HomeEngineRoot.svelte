@@ -1,8 +1,3 @@
-<!-- Threlte plumbing for /home's 3D scene — builds a camera + OrbitControls, hands renderer/scene/
-	camera off to HomeScene (home-scene.ts), drives its `.loop(delta)` every frame via `useTask`
-	(HomeScene.loop() itself throttles the actual render to 30fps — see its own comment). An on-demand
-	requestAnimationFrame scheduler (only ticking while the camera moves/damps) was tried here and
-	reverted — it broke in practice, back to the always-on loop. -->
 <script lang="ts">
 	import * as THREE from 'three';
 	import { useThrelte, useTask } from '@threlte/core';
@@ -52,9 +47,8 @@
 		logGPUIdentity(renderer, 'startup');
 
 		function buildScene(): void {
-			// Context may still be lost right after a 'webglcontextrestored' event — that listener
-			// below calls buildScene() again once it's actually usable.
-			const gl = renderer.getContext();
+		// Context may still be lost right after a 'webglcontextrestored' event.
+		const gl = renderer.getContext();
 			if (!gl || gl.isContextLost()) {
 				if (import.meta.env.DEV) console.log('[gpu] buildScene() skipped — context still lost');
 				return;
@@ -71,8 +65,7 @@
 		}
 		buildScene();
 
-		// Context loss kills every GPU resource this engine owns — tear the scene down and rebuild
-		// fresh on restore rather than trying to patch up stale references.
+		// Tear scene down on context loss and rebuild fresh on restore.
 		const onContextLost = (event: Event): void => {
 			event.preventDefault();
 			logFullReport(renderer, threlte.scene, 'at context loss');
@@ -99,8 +92,7 @@
 			homeScene?.dispose();
 			homeScene = null;
 			controls = null;
-			// Frees the WebGL context deterministically instead of waiting on GC — repeated navigation
-			// to/from /home otherwise piles up contexts until the browser hits its per-page limit.
+			// forceContextLoss() frees the WebGL context — prevents context pile-up.
 			try {
 				renderer.forceContextLoss();
 			} catch {

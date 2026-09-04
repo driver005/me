@@ -8,14 +8,6 @@
 
 	const bgContext = getContext<BgEngineContext>(BG_ENGINE_CONTEXT);
 
-	// Text color follows isBackMode (the bottom-right Toggle.svelte button — the only control actually
-	// on this page) — white over the dark immersive back scene, black over the white front plate.
-	// mode.current (the separate light/dark theme, only togglable from /home) was tried instead; wrong
-	// call, since it isn't what anyone testing this page from here is actually changing.
-	//
-	// Desktop follows isBackMode directly; mobile stays black regardless of it — it lays text directly
-	// over the portrait image (see the template's own comment below), which reads as bright at every
-	// width, not over the back-scene/front-plate split desktop shows.
 	const isBack = $derived(bgContext.getIsBackMode());
 	const textClass = $derived(isBack ? 'text-black/90 md:text-white/90' : 'text-black/90');
 	const mutedClass = $derived(isBack ? 'text-black/60 md:text-white/60' : 'text-black/60');
@@ -46,10 +38,7 @@
 	<title>{m['about.meta']()} {m['common.title_suffix']()}</title>
 </svelte:head>
 
-<!-- Left half above md (768px, matching InfoPortrait's own SPLIT_BREAKPOINT_PX — the portrait moves
-     to the right half in lockstep); below that the two merge — full-width text laid directly over the
-     portrait, so it switches to black there instead of white (illegible against the bright portrait).
-     Text color otherwise follows isBackMode (see the script's own textClass etc). -->
+<!-- Left half above md; below that, text laid over portrait (switches to black). -->
 <div
 	class="pointer-events-none fixed bottom-0 left-0 z-20 flex w-full flex-col gap-4 p-8 sm:max-w-xl md:w-1/2 md:max-w-none"
 >

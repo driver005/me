@@ -7,11 +7,6 @@
 
 	const skill = $derived(skills.find((s) => s.slug === page.params.slug));
 
-	// m's keys are compiled 1:1 from messages/en.json's "skill_detail.<slug>.<field>" paths (see
-	// that file) — a plain dynamic property read, same object `m['skills.core']()` elsewhere in this
-	// codebase already reads via a static string. TS can't type-check a template-literal key against
-	// m's exact-string-union type, hence the cast — the key genuinely exists for every skill in
-	// `skills` since both are generated from the same slug list.
 	const messages = m as unknown as Record<string, () => string>;
 	const description = $derived(skill ? messages[`skill_detail.${skill.slug}.description`]() : '');
 	const pro = $derived(skill ? messages[`skill_detail.${skill.slug}.pro`]() : '');

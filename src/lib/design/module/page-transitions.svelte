@@ -1,24 +1,4 @@
-<!-- EXPERIMENTAL — page transition test, ported from the technique in
-     github.com/Ibaliqbal/codrops-barbajs-page-transition (Astro + Barba.js + GSAP). That repo
-     intercepts full page loads via Barba and keeps the outgoing + incoming DOM both mounted to
-     crossfade between them — there's no Barba equivalent here since SvelteKit's router only ever
-     mounts one route at a time, so this ports the other half of that repo's approach instead: a
-     handful of route-specific curtain overlays (opaque shape covers the screen, the route swaps
-     underneath while hidden, the same shape uncovers). Which shape plays is picked from the
-     destination route id, so different sections of the site get a different signature transition
-     instead of one generic effect.
-
-     First cut of this drove the cover/reveal with GSAP timelines keyed to beforeNavigate/
-     afterNavigate — invisible in practice, because those hooks don't pause the actual route swap.
-     On this static-adapter SPA the swap is close to instant, so afterNavigate fired and reversed the
-     cover animation within the same frame or two it started in. Rewritten on `onNavigate`, which
-     SvelteKit actually awaits a returned Promise for, using real Svelte in:/out: transitions on the
-     overlay element: set `visible = true`, wait for its introend event (cover finished), await
-     navigation.complete (route has swapped), set `visible = false`, wait for outroend (reveal
-     finished), resolve. That's what makes the timing correct regardless of how fast the swap is.
-
-     Self-contained: to remove, delete this file and drop the <PageTransitions /> mount + its import
-     in src/routes/+layout.svelte. -->
+<!-- Page transition overlay — route-specific shape covers, driven via onNavigate. -->
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { cubicInOut } from 'svelte/easing';
@@ -26,12 +6,7 @@
 
 	type Variant = 'curtain' | 'sweep' | 'draw' | 'polygon' | 'iris';
 
-	// Maps a destination pathname to which shape plays. Deliberately NOT navigation.to.route.id —
-	// that includes the (bg) route-group segment (e.g. '/(bg)/about'), which none of these
-	// comparisons would ever match, silently falling through to the default every time. pathname is
-	// what the rest of the codebase already matches routes on (see src/routes/(bg)/+layout.svelte's
-	// own isHomeRoute/isAboutRoute) precisely because the group segment doesn't appear in it.
-	// Everything not called out below falls back to the plain curtain wipe.
+	// Maps destination pathname to shape variant. Uses pathname (not route.id) to avoid route-group segments.
 	function variantFor(pathname: string): Variant {
 		if (pathname === '/' || pathname === '/home') return 'iris';
 		if (pathname === '/about') return 'sweep';
@@ -44,9 +19,7 @@
 		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const DURATION = REDUCED_MOTION ? 1 : 650;
 
-	// A single reversible custom transition, shape picked by `variant`: Svelte runs t 0->1 on mount
-	// (in:, i.e. "cover") and 1->0 on unmount (out:, i.e. "reveal"), so one clip-path/transform
-	// function per shape naturally plays forwards then backwards — no separate enter/exit code needed.
+	// Reversible custom transition: Svelte runs t 0→1 (in) and 1→0 (out), so one function plays both directions.
 	function shapeTransition(_node: Element, { variant }: { variant: Variant }): TransitionConfig {
 		return {
 			duration: DURATION,
@@ -92,9 +65,7 @@
 		return new Promise((resolve) => el.addEventListener(type, () => resolve(), { once: true }));
 	}
 
-	// Bumped on every call so a nav that starts before a previous one finished doesn't leave stale
-	// awaits resolving the WRONG onNavigate's promise (SvelteKit would otherwise hang on the older,
-	// now-abandoned one).
+	// Bumped per nav to prevent stale awaits from resolving a previous onNavigate's promise.
 	let runId = 0;
 
 	onNavigate((navigation) => {
@@ -110,10 +81,7 @@
 					return;
 				}
 				await waitForEvent(overlayEl, 'introend');
-				// Resolve now — SvelteKit gates the actual DOM swap on THIS promise, so awaiting
-				// navigation.complete before resolving would deadlock (it can't complete until the
-				// swap happens, which can't happen until this resolves). Everything after this point
-				// runs during/after the swap instead of blocking it.
+				// Must resolve before navigation.complete — SvelteKit gates the DOM swap on this promise.
 				resolve();
 				await navigation.complete;
 				if (myRun !== runId) return;
@@ -154,6 +122,6 @@
 	}
 
 	.polygon {
-		background: #ff3b00;
+		background: #0a0a0a;
 	}
 </style>

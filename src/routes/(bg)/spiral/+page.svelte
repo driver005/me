@@ -8,26 +8,16 @@
 	import { BG_ENGINE_CONTEXT, type BgEngineContext } from '$lib/three/shared/context';
 	import { getSpiralCenterX } from '$lib/three/spiral/spiral-layout';
 
-	// Same random photo set /gallery uses (its own masonry-grid treatment of the same data) — this
-	// page's own treatment is the twisted spiral column instead. `href` set to the image itself so
-	// clicking opens the full-res photo in a new tab, matching what this page has always done.
 	const items: SpiralCarouselItem[] = buildGalleryImages().map((g) => ({ src: g.src, href: g.src }));
 
 	const bgContext = getContext<BgEngineContext>(BG_ENGINE_CONTEXT);
+	const isBack = $derived(bgContext.getIsBackMode());
 
-	// A real Layer sharing the shared engine's own canvas/camera (see spiral-carousel.ts's own header
-	// comment) — this page no longer stands up its own separate WebGLRenderer/camera; Mars (the (bg)
-	// layout's own default backdrop for a route it doesn't otherwise recognize) sits behind it now,
-	// where the standalone version had its own solid #0A0A0A background.
 	$effect(() => {
 		const ready = bgContext.getReady();
 		const scene = bgContext.getScene();
 		if (!ready || !scene) return;
 
-		// Right two-thirds of the viewport above spiral-layout.ts's own SPIRAL_MOBILE_BREAKPOINT, dead
-		// center below it (a narrow phone has no room for a side split) — see getSpiralCenterX(),
-		// re-evaluated every frame via `getCenter` rather than a one-off `center` + a `window.resize`
-		// listener (see SpiralCarouselOptions.getCenter's own comment on why).
 		const carousel = new SpiralCarousel(scene, items, {
 			getCenter: () => ({ x: getSpiralCenterX(scene), y: 0, z: 0 }),
 			duotone: true,
@@ -64,7 +54,7 @@
 	/>
 </svelte:head>
 
-<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-8 text-white">
-	<a href="/" class="pointer-events-auto w-fit text-sm text-white/60 underline hover:text-white">{m['common.back_link']()}</a>
-	<p class="max-w-md text-sm text-white/70">{m['spiral.meta_sub']()}</p>
+<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-8 {isBack ? 'text-white' : 'text-black'}">
+	<a href="/" class="pointer-events-auto w-fit text-sm underline {isBack ? 'text-white/60 hover:text-white' : 'text-black/60 hover:text-black'}">{m['common.back_link']()}</a>
+	<p class="max-w-md text-sm {isBack ? 'text-white/70' : 'text-black/70'}">{m['spiral.meta_sub']()}</p>
 </div>
